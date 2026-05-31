@@ -1,0 +1,22 @@
+[project]
+name = "aether-data-spine"
+version = "0.1.0"
+description = "Aether data spine — ingestion, normalization, caching of public datasets (EMIT, Sentinel, Landsat, ERA5)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "aether-ontology",
+    "earthaccess>=0.9",
+    "rioxarray>=0.15",
+    "xarray>=2024.0",
+    "zarr>=2.17",
+    "numpy>=1.26",
+    "rasterio>=1.3",
+    "pyproj>=3.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["aether_data_spine"]

@@ -82,6 +82,9 @@ cache/
 *.h5
 *.hdf
 
+# Rendered outputs (PNG maps from reproduce command)
+*_plume.png
+
 # Jupyter
 .ipynb_checkpoints/
 

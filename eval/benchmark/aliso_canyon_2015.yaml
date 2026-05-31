@@ -1,0 +1,85 @@
+# Aliso Canyon natural gas storage facility blowout
+#
+# Reference benchmark event used to validate the eval harness schema and
+# loader end-to-end with peer-reviewed ground truth.
+#
+# NOTE: This event predates EMIT's launch (July 2022) and is NOT suitable
+# for EMIT-based detection benchmarking. It is included here for schema
+# validation and to document the canonical structure of a benchmark entry.
+# Sprint 2 will add EMIT-observable events pulled from the Carbon Mapper
+# public API.
+
+event_id: aliso_canyon_2015
+name: "Aliso Canyon natural gas storage facility blowout"
+planetary_body: earth
+
+phenomenon_type: emission_event
+expected_detection_types:
+  - methane_plume
+
+date_range:
+  start: "2015-10-23T00:00:00Z"
+  end: "2016-02-11T00:00:00Z"
+
+# Aliso Canyon facility, San Fernando Valley, California
+location:
+  lon: -118.560
+  lat: 34.314
+bbox:
+  min_lon: -118.59
+  min_lat: 34.29
+  max_lon: -118.53
+  max_lat: 34.34
+
+known_measurements:
+  peak_emission_rate_kg_per_hr:
+    value: 60000.0
+    uncertainty: 5000.0
+    unit: "kg/hr"
+    note: >-
+      Peak atmospheric leak rate observed in early phase of event. From
+      Conley et al. 2016 aircraft measurements: "atmospheric leak rates of up
+      to 60 metric tons of methane ... per hour."
+  total_release_metric_tonnes:
+    value: 97100.0
+    uncertainty: 7500.0
+    unit: "tonnes"
+    note: >-
+      Total methane released over the Oct 23 2015 - Feb 11 2016 event window,
+      per Conley et al. 2016: "in total, released 97,100 metric tons of methane
+      to the atmosphere."
+
+attribution:
+  operator: "Southern California Gas Company"
+  facility: "Aliso Canyon Natural Gas Storage Facility, Well SS-25"
+  sector: "natural_gas_storage"
+
+observed_by:
+  - sensor: "Scientific Aviation Mooney aircraft"
+    sensor_type: "ground_based"
+    note: >-
+      13 research flights between 7 November 2015 and 13 February 2016,
+      flown by S. Conley (UC Davis / Scientific Aviation). Aircraft samples
+      were the primary measurement; satellites had limited coverage of the
+      event.
+
+references:
+  - citation: >-
+      Conley, S., Franco, G., Faloona, I., Blake, D. R., Peischl, J., & Ryerson, T. B.
+      (2016). Methane emissions from the 2015 Aliso Canyon blowout in Los Angeles, CA.
+      Science, 351(6279), 1317-1320.
+    doi: "10.1126/science.aaf2348"
+    url: "https://www.science.org/doi/10.1126/science.aaf2348"
+
+notes: |
+  Schema-validation reference event. Numbers are taken directly from the
+  Conley et al. 2016 Science paper. This event is not EMIT-observable and
+  will recall = 0 against any EMIT-based detection pipeline; that is the
+  expected behavior, not a regression. Use Sprint 2 Carbon Mapper events
+  for EMIT detection benchmarking.
+
+tags:
+  - reference_event
+  - schema_validation
+  - pre_emit_era
+  - peer_reviewed

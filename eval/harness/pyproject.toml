@@ -1,0 +1,22 @@
+[project]
+name = "aether-eval"
+version = "0.1.0"
+description = "Aether evaluation harness — benchmarks, metrics, runner"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "aether-ontology",
+    "pydantic>=2.7",
+    "pyyaml>=6.0",
+    "typer>=0.12",
+    "rich>=13.7",
+]
+
+[project.scripts]
+aether-eval = "aether_eval.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["aether_eval"]

@@ -5,14 +5,23 @@ description = "Aether Planetary Engine — workspace root"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "aether-ontology",
+    "aether-eval",
+    "aether-data-spine",
+    "aether-cli",
 ]
 
 [tool.uv.sources]
 aether-ontology = { workspace = true }
+aether-eval = { workspace = true }
+aether-data-spine = { workspace = true }
+aether-cli = { workspace = true }
 
 [tool.uv.workspace]
 members = [
     "packages/ontology",
+    "packages/data_spine",
+    "packages/cli",
+    "eval/harness",
 ]
 
 [dependency-groups]
@@ -38,6 +47,9 @@ warn_return_any = true
 warn_unused_configs = true
 
 [tool.pytest.ini_options]
-testpaths = ["packages"]
+testpaths = ["packages", "eval/harness"]
 python_files = ["test_*.py"]
-addopts = "-ra --strict-markers"
+addopts = "-ra --strict-markers -m 'not integration'"
+markers = [
+    "integration: marks tests as integration tests that hit real network endpoints (deselected by default)",
+]

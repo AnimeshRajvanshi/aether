@@ -2,15 +2,21 @@
 name = "aether-workspace"
 version = "0.1.0"
 description = "Aether Planetary Engine — workspace root"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "aether-ontology",
+]
+
+[tool.uv.sources]
+aether-ontology = { workspace = true }
 
 [tool.uv.workspace]
 members = [
     "packages/ontology",
 ]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "pytest>=8.0",
     "pytest-cov>=5.0",
     "ruff>=0.6",

@@ -1,30 +1,37 @@
-# Permian Basin methane plume detected by EMIT
+# Permian Basin methane plume detected by EMIT (Carlsbad, NM)
 #
-# First EMIT-observable benchmark event for the Aether platform.
-# This event was detected by NASA's EMIT instrument aboard the ISS in August 2022
-# and was featured in NASA's initial methane super-emitter announcements.
+# Status: DEFERRED for Sprint 2. Sprint 2 quantification validation runs against
+# the Goturdepe event (turkmenistan_goturdepe_2022_08_15.yaml) instead, because
+# this event lacks a peer-reviewed quantification reference and lacks a
+# granule-matched NASA target spectrum.
 #
-# References:
-# - NASA announcement: https://www.nasa.gov/centers-and-facilities/jpl/methane-super-emitters-mapped-by-nasas-new-earth-space-mission/
-# - Location: Southeast of Carlsbad, New Mexico, in the Permian Basin
-# - Data source: EMIT L2B Methane Enhancement (EMITL2BCH4ENH.002)
+# Two corrections from earlier:
+#   1. The publicized 3.3 km Permian plume in NASA's October 2022 announcement
+#      corresponds to granule 20220826T174642 (Aug 26), not Aug 10 (Sprint 1's
+#      PNG, where NASA published NO plume complex) and not Aug 15 (Turkmenistan).
+#      Verified by direct CMR query: the Carlsbad bbox shows NASA L2B plume
+#      complexes ONLY on 20220826T174642 and 20230205T171255 in 2022-23.
+#   2. The 18.3 t/hr figure is a PRESS-RELEASE value from NASA JPL's October
+#      2022 communications. I have not found a peer-reviewed citation that
+#      attributes it to a specific overpass. Treat the uncertainty bar as
+#      unknown rather than the +/- 2.0 originally written.
 
 event_id: permian_basin_2022
-name: "Permian Basin methane plume (Carlsbad, NM)"
+name: "Permian Basin methane plume (Carlsbad, NM) — Aug 26 overpass"
 planetary_body: earth
 
 phenomenon_type: emission_event
 expected_detection_types:
   - methane_plume
 
-# EMIT detection window: August 10 - September 13, 2022
-# (After Sept 13, EMIT had a power shutdown until Jan 6, 2023)
+# Restricted to the Aug 26 acquisition that NASA's L2B plume catalogue covers.
+# The Aug 10 acquisitions over Carlsbad have no NASA-published plume complex.
 date_range:
-  start: "2022-08-01T00:00:00Z"
-  end: "2022-09-13T23:59:59Z"
+  start: "2022-08-26T17:46:00Z"
+  end: "2022-08-26T17:48:00Z"
 
-# Location approximately 10 miles southeast of Carlsbad, NM
-# The plume extended ~2 miles (3.3 km) northward from the source
+# Location approximately 10 miles southeast of Carlsbad, NM. The plume extended
+# ~2 miles (3.3 km) northward from the source per NASA's October 2022 release.
 location:
   lon: -104.15
   lat: 32.25
@@ -37,19 +44,23 @@ bbox:
 known_measurements:
   emission_rate_metric_tonnes_per_hr:
     value: 18.3
-    uncertainty: 2.0
+    uncertainty: null
     unit: "tonnes/hr"
     note: >-
-      NASA estimated flow rates of 20.2 tons (18.3 metric tonnes) per hour at
-      the Permian site. This is equivalent to 40,300 pounds of methane per hour.
-      Source: NASA JPL EMIT methane super-emitter announcement, October 2022.
+      PRESS-RELEASE VALUE only. NASA JPL's October 2022 communications state
+      "scientists estimate flow rates of 20.2 tons (18.3 metric tons) per
+      hour at the Permian site." NASA's public materials do not name a
+      specific granule or report a formal uncertainty bar; the +/- 2.0
+      previously written here was inferred, not stated, and has been
+      removed. Until a peer-reviewed source is identified, treat this as a
+      qualitative reference value, not a calibration target.
   plume_length_km:
     value: 3.3
     uncertainty: 0.3
     unit: "km"
     note: >-
-      The plume stretched approximately 2 miles (3.3 kilometers) northward from
-      the source location.
+      Approximate plume length from NASA's announcement ("about 2 miles, or
+      3.3 kilometers"). Press-release-grade.
 
 attribution:
   operator: "Unknown"
@@ -60,38 +71,62 @@ observed_by:
   - sensor: "EMIT (Earth Surface Mineral Dust Source Investigation)"
     sensor_type: "hyperspectral"
     note: >-
-      EMIT hyperspectral imaging spectrometer aboard the International Space
-      Station (ISS). EMIT L2B Methane Enhancement product (EMITL2BCH4ENH.002)
-      at 60m resolution. EMIT launched July 14, 2022 and began science operations
-      in August 2022. Data are Cloud Optimized GeoTIFFs already orthorectified
-      to EPSG:4326.
+      EMIT hyperspectral imaging spectrometer aboard the ISS. The Carlsbad
+      bbox is covered on Aug 10 (no published plume complex) and Aug 26 (two
+      published plume complexes). EMIT then went into a power-shutdown gap
+      from 2022-09-13 to 2023-01-06.
+
+# Sprint 2 cannot run this event because NASA has not published a per-granule
+# unit absorption spectrum for the Aug 26 overpass. Generating a HITRAN-based
+# k for this granule is a deferred work item — see
+# docs/tasks/sprint2_detection_quantification.md.
+canonical_acquisition:
+  utc: "2022-08-26T17:46:42Z"
+  l1b_granule_ur: "EMIT_L1B_RAD_001_20220826T174642_2223812_024"
+  l2a_mask_granule_ur: "EMIT_L2A_MASK_002_20220826T174642_2223812_024"
+  l2b_ch4_granule_ur: "EMIT_L2B_CH4ENH_002_20220826T174642_2223812_024"
+  source: >-
+    Granule pinned to the Aug 26 overpass because (a) NASA's L2B CH4 plume
+    catalogue shows plume complexes for the Carlsbad bbox only on
+    20220826T174642 and 20230205T171255 in 2022-23, and (b) NASA's Oct 2022
+    announcement of "August 2022" Carlsbad data must therefore refer to this
+    overpass given the Sept 13 - Jan 6 EMIT power outage. NOT actionable for
+    Sprint 2 because no NASA-published unit absorption spectrum exists for
+    this granule; awaiting a HITRAN-generated target (Sprint 3 work).
 
 references:
   - citation: >-
-      NASA Jet Propulsion Laboratory. (2022). Methane 'Super-Emitters' Mapped
-      by NASA's New Earth Space Mission. NASA News Release.
+      NASA Jet Propulsion Laboratory. (2022, October 25). Methane
+      'Super-Emitters' Mapped by NASA's New Earth Space Mission. Press
+      release.
     url: "https://www.nasa.gov/centers-and-facilities/jpl/methane-super-emitters-mapped-by-nasas-new-earth-space-mission/"
   - citation: >-
-      NASA LP DAAC. (2025). EMIT L2B Methane Enhancement Data 60 m V002.
-      doi:10.5067/EMIT/EMITL2BCH4ENH.002
+      NASA LP DAAC. EMIT L2B Methane Enhancement Data 60 m V002.
     doi: "10.5067/EMIT/EMITL2BCH4ENH.002"
     url: "https://www.earthdata.nasa.gov/data/catalog/lpcloud-emitl2bch4enh-002"
+  - citation: >-
+      NASA LP DAAC. EMIT L2B Estimated Methane Plume Complexes 60 m V002.
+      Plume complexes EMIT_L2B_CH4PLM_002_20220826T174642_000524 and _000525
+      cover the Aug 26 Carlsbad bbox.
+    doi: "10.5067/EMIT/EMITL2BCH4PLM.002"
+    url: "https://www.earthdata.nasa.gov/data/catalog/lpcloud-emitl2bch4plm-002"
 
 notes: |
-  First EMIT-observable benchmark event for Sprint 1. This event validates the
-  full EMIT ingestion pipeline: authentication, granule search, download,
-  caching, and visualization.
+  DEFERRED in Sprint 2. Activation requires either (a) NASA publishing a
+  per-granule unit absorption spectrum for 20220826T174642, or (b) us building
+  a HITRAN-based k generator. Without either, running Sprint 2's matched
+  filter on this granule means using a wrong target on the wrong granule —
+  the exact failure mode this benchmark family must not introduce silently.
 
-  The exact granule ID(s) covering this location/date are resolved dynamically
-  by the data spine's search functionality. EMIT coverage is opportunistic due
-  to ISS orbit; not all locations have guaranteed coverage.
-
-  Emission rate estimate is from NASA's public announcement. More precise
-  quantification would require atmospheric modeling and is deferred to Sprint 2.
+  Sprint 1 produced a PNG from EMIT_L2B_CH4ENH_002_20220810T160726, which
+  shows the L2B enhancement raster for the Aug 10 Carlsbad overpass but
+  does NOT include a NASA-identified plume complex for this region.
 
 tags:
   - emit_observable
-  - first_emit_event
+  - oil_and_gas
   - super_emitter
   - permian_basin
-  - oil_and_gas
+  - press_release_reference_only
+  - awaiting_hitran_k
+  - deferred

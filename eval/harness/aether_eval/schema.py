@@ -9,8 +9,6 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
-
 from aether_ontology import (
     BBox,
     DetectionType,
@@ -20,6 +18,7 @@ from aether_ontology import (
     SensorType,
     TimeRange,
 )
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class Measurement(BaseModel):
@@ -68,6 +67,25 @@ class Reference(BaseModel):
     url: str | None = None
 
 
+class CanonicalAcquisition(BaseModel):
+    """A specific overpass pinned as the reference for a benchmark event.
+
+    Some events have a particular overpass NASA's published values were derived
+    from. Pinning it matters when downstream processing depends on per-granule
+    artifacts (e.g., a per-granule unit absorption spectrum) that are only valid
+    for the granule they were generated from. Optional: only set when the event
+    has a defensible single-acquisition reference.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    utc: datetime
+    l1b_granule_ur: str | None = None
+    l2a_mask_granule_ur: str | None = None
+    l2b_ch4_granule_ur: str | None = None
+    source: str = Field(..., min_length=1, description="Why this acquisition was pinned (citation)")
+
+
 class BenchmarkEvent(BaseModel):
     """A ground-truth phenomenon used for evaluating Aether detection pipelines.
 
@@ -92,6 +110,7 @@ class BenchmarkEvent(BaseModel):
     attribution: Attribution = Field(default_factory=Attribution)
     observed_by: list[ObservedBy] = Field(default_factory=list)
     references: list[Reference] = Field(default_factory=list)
+    canonical_acquisition: CanonicalAcquisition | None = None
 
     notes: str | None = None
     tags: list[str] = Field(default_factory=list)

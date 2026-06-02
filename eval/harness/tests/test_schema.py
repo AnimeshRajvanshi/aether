@@ -2,13 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
-from pydantic import ValidationError
-
-from aether_ontology import BBox, DetectionType, PhenomenonType, PlanetaryBody, Point, TimeRange
-
 from aether_eval.schema import (
     Attribution,
     BenchmarkEvent,
@@ -16,6 +12,8 @@ from aether_eval.schema import (
     ObservedBy,
     Reference,
 )
+from aether_ontology import BBox, DetectionType, PhenomenonType, PlanetaryBody, Point, TimeRange
+from pydantic import ValidationError
 
 
 def _valid_event_kwargs() -> dict:
@@ -25,8 +23,8 @@ def _valid_event_kwargs() -> dict:
         phenomenon_type=PhenomenonType.EMISSION_EVENT,
         expected_detection_types=[DetectionType.METHANE_PLUME],
         date_range=TimeRange(
-            start=datetime(2024, 6, 15, tzinfo=timezone.utc),
-            end=datetime(2024, 6, 16, tzinfo=timezone.utc),
+            start=datetime(2024, 6, 15, tzinfo=UTC),
+            end=datetime(2024, 6, 16, tzinfo=UTC),
         ),
         location=Point(lon=-102.5, lat=31.8),
         bbox=BBox(min_lon=-103.0, min_lat=31.0, max_lon=-102.0, max_lat=32.0),

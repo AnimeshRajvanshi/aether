@@ -1,21 +1,49 @@
 """Reproduce benchmark events from EMIT data."""
 
 from pathlib import Path
-from typing import Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
-from matplotlib import cm
-from matplotlib.colors import Normalize
-
 from aether_data_spine import emit
 from aether_eval.loader import load_event
+from matplotlib.colors import Normalize
+
+
+def _canonical_granule_ur(event: object) -> str | None:
+    """Return the L2B CH4 granule UR pinned by the benchmark, if any.
+
+    Honors `BenchmarkEvent.canonical_acquisition.l2b_ch4_granule_ur` when set.
+    We do not invent a granule pin; we only honor one if the event declares it.
+    """
+    pin = getattr(event, "canonical_acquisition", None)
+    if pin is None:
+        return None
+    return getattr(pin, "l2b_ch4_granule_ur", None)
+
+
+def _select_granule(granules: list, canonical_ur: str | None) -> dict:
+    """Pick the canonical granule by UR if present in the search results.
+
+    Falls back to the first granule if no pin is set or if the pinned UR is
+    absent. A missing pinned UR is unusual enough to print a warning — it means
+    the search returned different granules than the benchmark expects.
+    """
+    if canonical_ur is None:
+        return granules[0]
+    for g in granules:
+        if g["umm"]["GranuleUR"] == canonical_ur:
+            return g
+    print(
+        f"WARNING: canonical granule {canonical_ur} not in search results; "
+        f"falling back to first available ({granules[0]['umm']['GranuleUR']})."
+    )
+    return granules[0]
 
 
 def reproduce_event(
     event_id: str,
-    output_path: Optional[Path] = None,
+    output_path: Path | None = None,
     force: bool = False,
 ) -> Path:
     """Reproduce a benchmark event: download EMIT data and render PNG.
@@ -58,8 +86,13 @@ def reproduce_event(
 
     print(f"Found {len(granules)} granule(s)")
 
-    # Use the first granule (most events have one; if multiple, first is usually best)
-    granule = granules[0]
+    # If the benchmark pins a canonical acquisition (Sprint 2 onward), prefer it.
+    # Otherwise fall back to the first granule returned. The canonical pin matters
+    # because downstream detection uses NASA's per-granule methane target spectrum,
+    # which is column-mean-radiance dependent and is only valid for the granule it
+    # was generated from.
+    canonical_ur = _canonical_granule_ur(event)
+    granule = _select_granule(granules, canonical_ur)
     print(f"Using granule: {granule['umm']['GranuleUR']}")
 
     # Download and cache
@@ -75,10 +108,9 @@ def reproduce_event(
     ch4_enh = emit.extract_ch4_enhancement(ds)
 
     # Render as PNG
-    if output_path is None:
-        output_path = Path.cwd() / f"{event_id}_plume.png"
-    else:
-        output_path = Path(output_path)
+    output_path = (
+        Path.cwd() / f"{event_id}_plume.png" if output_path is None else Path(output_path)
+    )
 
     print(f"Rendering PNG to {output_path}...")
     render_plume_png(ch4_enh, output_path, event_id=event_id)

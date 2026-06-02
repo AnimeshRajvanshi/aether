@@ -1,14 +1,11 @@
 """Unit tests for EMIT data access module."""
 
-import hashlib
-from datetime import datetime
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import numpy as np
 import pytest
 import xarray as xr
-
 from aether_data_spine import emit
 
 

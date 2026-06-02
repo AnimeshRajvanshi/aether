@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 from aether_ontology import Detection
@@ -94,7 +94,7 @@ def run_evaluation(
         error_msg: str | None = None
         try:
             detections = pipeline(event)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             detections = []
             error_msg = f"{type(e).__name__}: {e}"
         latency = time.perf_counter() - t0

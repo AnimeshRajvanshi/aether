@@ -2,21 +2,10 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 import pytest
-
-from aether_ontology import (
-    BBox,
-    Detection,
-    DetectionType,
-    PhenomenonType,
-    Point,
-    Provenance,
-    TimeRange,
-)
-
 from aether_eval.metrics import (
     EARTH_RADIUS_M,
     PipelineRunResult,
@@ -28,6 +17,15 @@ from aether_eval.schema import (
     BenchmarkEvent,
     Measurement,
     Reference,
+)
+from aether_ontology import (
+    BBox,
+    Detection,
+    DetectionType,
+    PhenomenonType,
+    Point,
+    Provenance,
+    TimeRange,
 )
 
 
@@ -42,9 +40,9 @@ def _event(
     measurements: dict[str, Measurement] | None = None,
 ) -> BenchmarkEvent:
     if start is None:
-        start = datetime(2024, 6, 15, 18, 0, tzinfo=timezone.utc)
+        start = datetime(2024, 6, 15, 18, 0, tzinfo=UTC)
     if end is None:
-        end = datetime(2024, 6, 15, 19, 0, tzinfo=timezone.utc)
+        end = datetime(2024, 6, 15, 19, 0, tzinfo=UTC)
     if detection_types is None:
         detection_types = [DetectionType.METHANE_PLUME]
     return BenchmarkEvent(

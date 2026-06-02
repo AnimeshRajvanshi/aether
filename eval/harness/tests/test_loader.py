@@ -5,10 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from aether_eval.loader import default_benchmark_dir, discover_events, load_event, load_event_file
 from aether_eval.runner import run_evaluation, stub_pipeline
-
 
 REPO_BENCHMARK_DIR = Path(__file__).resolve().parents[2] / "benchmark"
 

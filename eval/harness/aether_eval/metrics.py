@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from aether_ontology import Detection
 
@@ -41,7 +41,7 @@ def haversine_meters(lon1: float, lat1: float, lon2: float, lat2: float) -> floa
 
 def _ensure_tzaware(dt: datetime) -> datetime:
     """Treat naive datetimes as UTC to avoid surprises when comparing."""
-    return dt if dt.tzinfo is not None else dt.replace(tzinfo=timezone.utc)
+    return dt if dt.tzinfo is not None else dt.replace(tzinfo=UTC)
 
 
 def _detection_in_event_time_window(

@@ -1,0 +1,37 @@
+{
+  "started_utc": "2026-06-01T22:06:11.353115+00:00",
+  "finished_utc": "2026-06-01T22:06:20.508302+00:00",
+  "acquisition_utc": "2022-08-15T04:28:38Z",
+  "l1b_granule_ur": "EMIT_L1B_RAD_001_20220815T042838_2222703_003",
+  "l2a_mask_granule_ur": "EMIT_L2A_MASK_002_20220815T042838_2222703_003",
+  "l2b_ch4_granule_ur": "EMIT_L2B_CH4ENH_002_20220815T042838_2222703_003",
+  "target_spectrum_source": "https://raw.githubusercontent.com/nasa/EMIT-Data-Resources/main/data/methane_tutorial/emit20220815t042838_ch4_target",
+  "target_spectrum_local_path": "/Users/animeshrajvanshi/.aether_cache/emit_targets/emit20220815t042838_ch4_target",
+  "radiance_shape": [
+    1280,
+    1242,
+    285
+  ],
+  "bands_used": 49,
+  "bad_pixel_fraction": 0.021852355072463768,
+  "enhancement_raw_npy": "/Users/animeshrajvanshi/Documents/aether/stage_a_outputs/turkmenistan_goturdepe_2022_08_15/our_enhancement_raw.npz",
+  "nasa_l2b_geotiff": "/Users/animeshrajvanshi/.aether_cache/emit_l2b_ch4/EMIT_L2B_CH4ENH_002_20220815T042838_2222703_003/EMIT_L2B_CH4ENH_002_20220815T042838_2222703_003.tif",
+  "side_by_side_png": "/Users/animeshrajvanshi/Documents/aether/stage_a_outputs/turkmenistan_goturdepe_2022_08_15/side_by_side.png",
+  "plume_bbox": {
+    "min_lon": 53.5,
+    "min_lat": 39.3,
+    "max_lon": 54.2,
+    "max_lat": 39.7
+  },
+  "pearson_full_scene": 0.7353646421754687,
+  "pearson_in_bbox": 0.7485177591221628,
+  "pearson_in_bbox_strong_signal": 0.3831515573405034,
+  "n_pixels_compared_full": 2281401,
+  "n_pixels_compared_bbox": 913911,
+  "shrinkage_alpha_min": 1e-09,
+  "shrinkage_alpha_median": 1e-09,
+  "shrinkage_alpha_p95": 1e-09,
+  "shrinkage_alpha_max": 1e-09,
+  "shrinkage_alpha_n_columns": 1242,
+  "notes": []
+}

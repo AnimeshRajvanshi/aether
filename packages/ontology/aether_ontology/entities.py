@@ -11,7 +11,6 @@ from aether_ontology.base import AetherBase
 from aether_ontology.spatial import BBox, GeoJSONGeometry, Point
 from aether_ontology.temporal import TimeRange
 
-
 # --------------------------------------------------------------------------- #
 # Observation
 # --------------------------------------------------------------------------- #

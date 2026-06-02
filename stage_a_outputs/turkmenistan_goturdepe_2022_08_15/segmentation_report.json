@@ -1,0 +1,35 @@
+{
+  "n_components": 2002,
+  "background_n": 1396195,
+  "background_mean_ppmm": 6.969898578465163,
+  "background_std_ppmm": 481.3629409433743,
+  "plume_component_label": 1213,
+  "plume_component_pixel_count": 68382,
+  "blob_a_center": [
+    53.452734528091796,
+    39.509177718102364
+  ],
+  "blob_a_component_label": 816,
+  "blob_a_component_pixel_count": 67079,
+  "blob_a_inside_plume": false,
+  "blob_b_center": [
+    53.62950232969537,
+    39.47067920916416
+  ],
+  "blob_b_component_label": 816,
+  "blob_b_component_pixel_count": 67079,
+  "blob_b_inside_plume": false,
+  "top10_component_pixel_counts": [
+    68382,
+    67079,
+    43259,
+    12885,
+    10301,
+    8924,
+    6923,
+    6529,
+    6465,
+    6030
+  ],
+  "notes": []
+}

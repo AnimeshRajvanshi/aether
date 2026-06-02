@@ -1,0 +1,52 @@
+{
+  "started_utc": "2026-06-02T15:29:20.885490+00:00",
+  "finished_utc": "2026-06-02T15:29:30.794695+00:00",
+  "plume_cc_label": 1213,
+  "plume_cc_pixel_count": 68382,
+  "plume_cc_area_m2": 192603009.5116149,
+  "plume_cc_area_km2": 192.60300951161489,
+  "plume_length_m": 13878.148634151996,
+  "plume_centroid_lon": 53.690483402895126,
+  "plume_centroid_lat": 39.37139501691728,
+  "surface_pressure_pa": 101325.0,
+  "surface_temperature_k": 295.0,
+  "n_air_mol_m3": 41.310496186199394,
+  "era5_u_ms": -6.742477962440915,
+  "era5_v_ms": -1.621759198639128,
+  "era5_u10_speed_ms": 6.93477555313595,
+  "era5_grid_lat": 39.25,
+  "era5_grid_lon": 53.75,
+  "era5_nearest_hour_utc": "2022-08-15T04:00:00+00:00",
+  "era5_hour_distance_h": 0.4772222222222222,
+  "u_eff_ms": 2.5365486888790993,
+  "central_p_value": 0.05,
+  "ime_central_kg": 41165.324005644026,
+  "q_central_kg_per_s": 7.523903323591978,
+  "q_central_t_hr": 27.08605196493112,
+  "wind_fractional_alpha1": 0.07634581182570796,
+  "wind_fractional_u10": 0.10181060764557409,
+  "wind_fractional_total": 0.12725597358272592,
+  "u10_sigma_ms": 1.790888888888889,
+  "enhancement_bias_factor": 1.66,
+  "q_central_nasa_calibrated_t_hr": 16.31689877405489,
+  "seg_sensitivity_p_values": [
+    0.01,
+    0.05,
+    0.1
+  ],
+  "seg_sensitivity_pixel_counts": [
+    48583,
+    68382,
+    76154
+  ],
+  "seg_sensitivity_q_t_hr": [
+    26.028099550722146,
+    27.08605196493112,
+    26.778730986365744
+  ],
+  "seg_sensitivity_q_spread_fractional": 0.039058937625118875,
+  "q_total_fractional_sigma": 0.1287458075612102,
+  "q_low_t_hr": 14.216166464494673,
+  "q_high_t_hr": 30.57326759880108,
+  "notes": []
+}

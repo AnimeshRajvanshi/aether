@@ -9,12 +9,10 @@ Covers the invariants that make the rest of the platform safe:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 import pytest
-from pydantic import ValidationError
-
 from aether_ontology import (
     BBox,
     Brief,
@@ -34,7 +32,7 @@ from aether_ontology import (
     SensorType,
     TimeRange,
 )
-
+from pydantic import ValidationError
 
 # --------------------------------------------------------------------------- #
 # Fixtures
@@ -73,7 +71,7 @@ def observation(basic_provenance: Provenance, permian_footprint: GeoJSONGeometry
         sensor="EMIT",
         sensor_type=SensorType.HYPERSPECTRAL,
         granule_id="EMIT_L2B_CH4ENH_001_TEST",
-        time_range=TimeRange(start=datetime(2024, 6, 15, 18, 30, tzinfo=timezone.utc)),
+        time_range=TimeRange(start=datetime(2024, 6, 15, 18, 30, tzinfo=UTC)),
         footprint=permian_footprint,
         provenance=basic_provenance,
     )
@@ -90,7 +88,7 @@ class TestBaseInvariants:
             Observation(  # type: ignore[call-arg]
                 sensor="EMIT",
                 sensor_type=SensorType.HYPERSPECTRAL,
-                time_range=TimeRange(start=datetime.now(timezone.utc)),
+                time_range=TimeRange(start=datetime.now(UTC)),
                 footprint=GeoJSONGeometry(type="Point", coordinates=[0, 0]),
             )
 
@@ -99,7 +97,7 @@ class TestBaseInvariants:
             Observation(  # type: ignore[call-arg]
                 sensor="EMIT",
                 sensor_type=SensorType.HYPERSPECTRAL,
-                time_range=TimeRange(start=datetime.now(timezone.utc)),
+                time_range=TimeRange(start=datetime.now(UTC)),
                 footprint=GeoJSONGeometry(type="Point", coordinates=[0, 0]),
                 provenance=basic_provenance,
                 this_field_does_not_exist=True,
@@ -112,7 +110,7 @@ class TestBaseInvariants:
         obs = Observation(
             sensor="CRISM",
             sensor_type=SensorType.HYPERSPECTRAL,
-            time_range=TimeRange(start=datetime.now(timezone.utc)),
+            time_range=TimeRange(start=datetime.now(UTC)),
             footprint=GeoJSONGeometry(type="Point", coordinates=[0, 0]),
             provenance=basic_provenance,
             planetary_body=PlanetaryBody.MARS,
@@ -165,26 +163,26 @@ class TestSpatial:
 class TestTimeRange:
     def test_basic(self) -> None:
         tr = TimeRange(
-            start=datetime(2024, 6, 15, tzinfo=timezone.utc),
-            end=datetime(2024, 6, 16, tzinfo=timezone.utc),
+            start=datetime(2024, 6, 15, tzinfo=UTC),
+            end=datetime(2024, 6, 16, tzinfo=UTC),
         )
         assert not tr.is_instantaneous
         assert not tr.is_ongoing
 
     def test_instantaneous(self) -> None:
-        t = datetime(2024, 6, 15, tzinfo=timezone.utc)
+        t = datetime(2024, 6, 15, tzinfo=UTC)
         tr = TimeRange(start=t, end=t)
         assert tr.is_instantaneous
 
     def test_ongoing(self) -> None:
-        tr = TimeRange(start=datetime(2024, 6, 15, tzinfo=timezone.utc))
+        tr = TimeRange(start=datetime(2024, 6, 15, tzinfo=UTC))
         assert tr.is_ongoing
 
     def test_end_before_start_rejected(self) -> None:
         with pytest.raises(ValueError):
             TimeRange(
-                start=datetime(2024, 6, 16, tzinfo=timezone.utc),
-                end=datetime(2024, 6, 15, tzinfo=timezone.utc),
+                start=datetime(2024, 6, 16, tzinfo=UTC),
+                end=datetime(2024, 6, 15, tzinfo=UTC),
             )
 
 
@@ -204,7 +202,7 @@ class TestDetection:
             detection_type=DetectionType.METHANE_PLUME,
             observation_ids=[observation.id],
             location=permian_point,
-            time_range=TimeRange(start=datetime(2024, 6, 15, 18, 30, tzinfo=timezone.utc)),
+            time_range=TimeRange(start=datetime(2024, 6, 15, 18, 30, tzinfo=UTC)),
             measurements={"emission_rate_kg_per_hr": 543.0, "ime_kg": 215.0},
             measurement_units={"emission_rate_kg_per_hr": "kg/hr", "ime_kg": "kg"},
             measurement_uncertainty={"emission_rate_kg_per_hr": 120.0, "ime_kg": 40.0},
@@ -223,7 +221,7 @@ class TestDetection:
                 detection_type=DetectionType.METHANE_PLUME,
                 observation_ids=[],
                 location=permian_point,
-                time_range=TimeRange(start=datetime.now(timezone.utc)),
+                time_range=TimeRange(start=datetime.now(UTC)),
                 algorithm="matched_filter_cmf",
                 algorithm_version="0.1.0",
                 provenance=basic_provenance,
@@ -304,7 +302,7 @@ class TestJsonRoundTrip:
         p = Phenomenon(
             phenomenon_type=PhenomenonType.EMISSION_EVENT,
             name="Permian super-emitter 2024-06-15",
-            time_range=TimeRange(start=datetime(2024, 6, 15, tzinfo=timezone.utc)),
+            time_range=TimeRange(start=datetime(2024, 6, 15, tzinfo=UTC)),
             region=BBox(min_lon=-103.0, min_lat=31.0, max_lon=-102.0, max_lat=32.0),
             provenance=basic_provenance,
         )

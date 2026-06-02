@@ -85,6 +85,15 @@ cache/
 # Rendered outputs (PNG maps from reproduce command)
 *_plume.png
 
+# Sprint 2 derived rasters — npz files are large (~30 MB) and regenerable
+# via scripts/run_stage_a_*.py. PNG / JSON / MD artefacts in the same
+# directories are deliberately KEPT so the validation doc's visual evidence
+# is visible on GitHub.
+stage_a_outputs/**/*.npz
+stage_b_outputs/**/*.npz
+# Pre-LOOCV snapshot is a debugging backup, not for the repo.
+stage_a_outputs/**/_pre_loocv/
+
 # Jupyter
 .ipynb_checkpoints/
 

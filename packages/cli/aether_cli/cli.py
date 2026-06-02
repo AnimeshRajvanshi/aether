@@ -2,14 +2,14 @@
 
 import sys
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
+from aether_data_spine import emit
 from rich import print as rprint
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from aether_cli import reproduce
-from aether_data_spine import emit
 
 app = typer.Typer(
     name="aether",
@@ -22,7 +22,7 @@ app = typer.Typer(
 def reproduce_cmd(
     event_id: Annotated[str, typer.Argument(help="Benchmark event ID to reproduce")],
     output: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option("--output", "-o", help="Output PNG path (default: ./<event_id>_plume.png)"),
     ] = None,
     force: Annotated[

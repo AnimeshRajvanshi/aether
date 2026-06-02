@@ -13,18 +13,12 @@ Resolution: 60 meters
 """
 
 import hashlib
-import json
 import os
-from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 import earthaccess
-import numpy as np
 import rioxarray as rxr
 import xarray as xr
-import zarr
-
 from aether_ontology.base import Provenance
 
 # Product constants verified from LP DAAC
@@ -133,7 +127,7 @@ def download_and_cache(
     # Configure GDAL environment variables for vsicurl (streaming COGs from HTTPS with auth)
     # Following NASA EMIT-Data-Resources tutorial pattern:
     # https://github.com/nasa/EMIT-Data-Resources/blob/main/python/tutorials/Visualizing_Methane_Plume_Timeseries.ipynb
-    # Note: Using environment variables instead of direct GDAL config to avoid system-level GDAL dependency
+    # Note: env vars instead of direct GDAL config to avoid system-level GDAL dependency
     os.environ["GDAL_HTTP_COOKIEFILE"] = str(Path.home() / ".urs_cookies")
     os.environ["GDAL_HTTP_COOKIEJAR"] = str(Path.home() / ".urs_cookies")
     os.environ["GDAL_DISABLE_READDIR_ON_OPEN"] = "EMPTY_DIR"
@@ -182,8 +176,9 @@ def download_and_cache(
     ds.attrs["product_short_name"] = EMITL2BCH4ENH_SHORT_NAME
     ds.attrs["product_version"] = EMITL2BCH4ENH_VERSION
     ds.attrs["concept_id"] = EMITL2BCH4ENH_CONCEPT_ID
-    ds.attrs["temporal_start"] = granule["umm"]["TemporalExtent"]["RangeDateTime"]["BeginningDateTime"]
-    ds.attrs["temporal_end"] = granule["umm"]["TemporalExtent"]["RangeDateTime"]["EndingDateTime"]
+    temporal = granule["umm"]["TemporalExtent"]["RangeDateTime"]
+    ds.attrs["temporal_start"] = temporal["BeginningDateTime"]
+    ds.attrs["temporal_end"] = temporal["EndingDateTime"]
 
     # Cache as Zarr
     ds.to_zarr(cache_path, mode="w", consolidated=True)

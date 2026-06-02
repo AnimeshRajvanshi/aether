@@ -7,6 +7,7 @@ dependencies = [
     "aether-ontology",
     "aether-eval",
     "aether-data-spine",
+    "aether-detection",
     "aether-cli",
 ]
 
@@ -14,12 +15,14 @@ dependencies = [
 aether-ontology = { workspace = true }
 aether-eval = { workspace = true }
 aether-data-spine = { workspace = true }
+aether-detection = { workspace = true }
 aether-cli = { workspace = true }
 
 [tool.uv.workspace]
 members = [
     "packages/ontology",
     "packages/data_spine",
+    "packages/detection",
     "packages/cli",
     "eval/harness",
 ]
@@ -39,6 +42,12 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+# Scientific notation in this codebase deliberately uses Greek letters (μ, α, σ,
+# λ, β, τ), the ⊙ Hadamard-product symbol, the · centered dot, and the °/× signs.
+# These are standard in atmospheric/spectroscopy literature and are unambiguous
+# in context. RUF001/RUF002/RUF003 (ambiguous-unicode-character) would flag them
+# as confusables; we disable them rather than rewrite physics in ASCII.
+ignore = ["RUF001", "RUF002", "RUF003"]
 
 [tool.mypy]
 python_version = "3.12"

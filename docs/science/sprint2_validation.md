@@ -414,6 +414,16 @@ materially affect the headline number.** Stage B uses the centroid value of
 record; the source-based verification is preserved as
 `wind_location_check.json` for audit.
 
+**Scope of this finding — scene-specific, not a general guarantee.** The
+non-materiality here is because this overpass's wind field is spatially
+smooth: a 25.6 km displacement straddling two ERA5 cells changes \|U₁₀\| by
+only 1.4%. A different scene — with sharper synoptic gradients, a frontal
+boundary, or terrain-driven local circulation — could show a material Q
+change at the same source/centroid displacement. **Future granules must
+re-run this check** (`scripts/diagnose_wind_location.py` is the template);
+do not assume the wind-location choice is non-material on a fresh
+acquisition.
+
 ### IME and Q
 
 - IME (central) = 41 165 kg = 41.17 tonnes

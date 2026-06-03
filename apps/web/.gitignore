@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# next.js
+.next/
+out/
+next-env.d.ts
+
+# cesium static assets (copied from node_modules at build time)
+public/cesium/
+
+# misc
+.DS_Store
+*.tsbuildinfo
+.env*.local

@@ -1,0 +1,8 @@
+# pnpm 11 reads these settings here. We don't build sharp/protobufjs (native
+# postinstalls unused by this app); acknowledging them stops the IGNORED_BUILDS
+# notice. verifyDepsBeforeRun:false skips the pre-script install check that
+# otherwise treats that notice as a fatal error.
+verifyDepsBeforeRun: false
+allowBuilds:
+  protobufjs: false
+  sharp: false

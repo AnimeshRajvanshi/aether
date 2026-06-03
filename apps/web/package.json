@@ -1,0 +1,31 @@
+{
+  "name": "aether-web",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Aether dashboard — photoreal Cesium globe + event inspector",
+  "scripts": {
+    "copy-cesium": "node scripts/copy-cesium.mjs",
+    "predev": "pnpm run copy-cesium",
+    "dev": "next dev",
+    "prebuild": "pnpm run copy-cesium",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "cesium": "^1.123.0",
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": ["sharp", "protobufjs"]
+  }
+}

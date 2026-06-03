@@ -54,6 +54,10 @@ known_measurements:
     value: 163.0
     uncertainty: 18.0
     unit: "tonnes/hr"
+    # Twelve distinct sources, per Thorpe et al. 2023 (also stated in the note
+    # below). Structured so the dashboard can source the single-vs-cluster
+    # comparability framing without parsing prose.
+    n_sources: 12
     note: >-
       Cluster TOTAL for twelve methane sources at the Goturdepe and
       Barsagelmez fields, attributed by Thorpe et al. 2023 (Sci. Adv. 9

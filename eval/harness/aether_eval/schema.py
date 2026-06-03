@@ -34,6 +34,14 @@ class Measurement(BaseModel):
     uncertainty: float | None = Field(None, description="One-sigma absolute uncertainty in `unit`")
     unit: str
     note: str
+    n_sources: int | None = Field(
+        None,
+        description=(
+            "For cluster/aggregate measurements: how many distinct sources this "
+            "value sums over. Makes single-vs-cluster comparability machine-readable "
+            "(e.g. a single-plume estimate is not comparable to a 12-source total)."
+        ),
+    )
 
 
 class Attribution(BaseModel):

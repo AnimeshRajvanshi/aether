@@ -35,15 +35,14 @@ matplotlib.use("Agg")
 import matplotlib.colors as mcolors
 import matplotlib.image as mpimg
 import numpy as np
-from matplotlib import colormaps
 import rasterio.features
 import rioxarray
-from affine import Affine
-
 from aether_detection.plume_segmentation import (
     largest_component_in_region,
     segment_plume_varon,
 )
+from affine import Affine
+from matplotlib import colormaps
 
 # --- Paths: mirror scripts/run_stage_b_goturdepe.py so we read the same files - #
 EVENT_ID = "turkmenistan_goturdepe_2022_08_15"
@@ -102,9 +101,13 @@ def _reconstruct_plume_mask(enh: np.ndarray, lon_c: np.ndarray, lat_c: np.ndarra
     bg_mask = np.isfinite(enh) & (~in_bbox)
     seg = segment_plume_varon(enh, bg_mask, p_value=CENTRAL_P_VALUE)
     label = largest_component_in_region(
-        seg.labels, lon_c, lat_c,
-        PLUME_BBOX["min_lon"], PLUME_BBOX["max_lon"],
-        PLUME_BBOX["min_lat"], PLUME_BBOX["max_lat"],
+        seg.labels,
+        lon_c,
+        lat_c,
+        PLUME_BBOX["min_lon"],
+        PLUME_BBOX["max_lon"],
+        PLUME_BBOX["min_lat"],
+        PLUME_BBOX["max_lat"],
     )
     mask = seg.labels == label
 
@@ -208,7 +211,7 @@ def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     print(f"Building dashboard assets for {EVENT_ID} -> {OUT_DIR.relative_to(REPO_ROOT)}")
 
-    enh, lon_c, lat_c, transform = _load_ortho()
+    enh, lon_c, lat_c, _transform = _load_ortho()
     print(f"  ortho grid: {enh.shape}")
     nasa = _sample_l2b_on_grid(lon_c, lat_c)
     mask_full = _reconstruct_plume_mask(enh, lon_c, lat_c)
@@ -229,12 +232,22 @@ def main() -> int:
     print(f"  colormap window (ppm·m): vmin={vmin:.1f} vmax={vmax:.1f} (P98 of in-mask plume)")
 
     _write_colormap_png(
-        enh_c, OUT_DIR / "enhancement.png", "inferno", vmin, vmax,
-        ramp_alpha=True, emphasis=mask_c,
+        enh_c,
+        OUT_DIR / "enhancement.png",
+        "inferno",
+        vmin,
+        vmax,
+        ramp_alpha=True,
+        emphasis=mask_c,
     )
     _write_colormap_png(
-        nasa_c, OUT_DIR / "nasa.png", "inferno", vmin, vmax,
-        ramp_alpha=True, emphasis=mask_c,
+        nasa_c,
+        OUT_DIR / "nasa.png",
+        "inferno",
+        vmin,
+        vmax,
+        ramp_alpha=True,
+        emphasis=mask_c,
     )
 
     diff = enh_c - nasa_c

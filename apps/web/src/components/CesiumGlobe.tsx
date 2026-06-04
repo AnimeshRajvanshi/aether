@@ -11,7 +11,7 @@
 // NOT bundled — because Next's minifier mis-compiles its vendored code. We keep
 // full typing via `import type` and read the runtime object from window.
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type * as CesiumNS from "cesium";
 import type { EventSummary, RasterBounds, RetrievalLayer } from "@/lib/types";
 import { maskGeoJsonUrl, rasterUrl } from "@/lib/api";
@@ -78,6 +78,7 @@ export default function CesiumGlobe({
   const autoRotate = useRef(true);
   const draggingRef = useRef(false);
   const prevFly = useRef<FlyTarget | null>(null);
+  const [ready, setReady] = useState(false);
 
   const cb = useRef({ onSelect, onArrived, onReturned });
   cb.current = { onSelect, onArrived, onReturned };
@@ -123,8 +124,6 @@ export default function CesiumGlobe({
         Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
       );
       viewer.camera.setView({ destination: homeRef.current });
-
-      void applyBody(viewer, "earth", baseLayerRef);
 
       const canvas = viewer.canvas;
       const down = () => (draggingRef.current = true);
@@ -172,6 +171,10 @@ export default function CesiumGlobe({
         canvas.removeEventListener("mousedown", down);
         window.removeEventListener("mouseup", up);
       };
+
+      // Imagery is applied through the single [body, ready] effect below — never
+      // from here — so the base layer is added exactly once (no orphaned layer).
+      setReady(true);
     });
 
     return () => {
@@ -183,12 +186,12 @@ export default function CesiumGlobe({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ---- body switch ----
+  // ---- body switch (and initial imagery once the viewer is ready) ----
   useEffect(() => {
     const viewer = viewerRef.current;
-    if (!viewer) return;
-    void applyBody(viewer, body, baseLayerRef);
-  }, [body]);
+    if (!viewer || !ready) return;
+    void applyBody(viewer, body, baseLayerRef, rasterLayerRef.current);
+  }, [body, ready]);
 
   // ---- update marker cartesians when events change ----
   useEffect(() => {
@@ -335,17 +338,22 @@ async function applyBody(
   viewer: CesiumNS.Viewer,
   body: "earth" | "moon" | "mars",
   baseLayerRef: React.MutableRefObject<CesiumNS.ImageryLayer | null>,
+  keep: CesiumNS.ImageryLayer | null,
 ): Promise<void> {
   const Cesium = window.Cesium;
   const layers = viewer.imageryLayers;
-  if (baseLayerRef.current) {
-    layers.remove(baseLayerRef.current, true);
-    baseLayerRef.current = null;
+  // Remove every base imagery layer (keep the plume raster overlay if present),
+  // so a body switch can never leave an orphaned Earth layer behind.
+  for (let i = layers.length - 1; i >= 0; i--) {
+    const lyr = layers.get(i);
+    if (lyr !== keep) layers.remove(lyr, true);
   }
+  baseLayerRef.current = null;
   const scene = viewer.scene;
   if (body === "earth") {
     if (scene.skyAtmosphere) scene.skyAtmosphere.show = true;
     scene.globe.showGroundAtmosphere = true;
+    scene.globe.baseColor = Cesium.Color.fromCssColorString("#0b1018");
     const token = process.env.NEXT_PUBLIC_CESIUM_ION_TOKEN;
     const provider = token
       ? await Cesium.IonImageryProvider.fromAssetId(2)
@@ -354,11 +362,11 @@ async function applyBody(
         );
     baseLayerRef.current = layers.addImageryProvider(provider);
   } else {
+    // Other bodies are deferred (Earth MVP). Render an unmistakable empty state,
+    // NOT a tinted Earth: a plain neutral sphere with no imagery and no
+    // atmosphere. The "NO DATA · EARTH MVP" caption is drawn by the UI overlay.
     if (scene.skyAtmosphere) scene.skyAtmosphere.show = false;
     scene.globe.showGroundAtmosphere = false;
-    scene.globe.baseColor =
-      body === "moon"
-        ? Cesium.Color.fromCssColorString("#8a8f98")
-        : Cesium.Color.fromCssColorString("#8a3a22");
+    scene.globe.baseColor = Cesium.Color.fromCssColorString("#262b33");
   }
 }

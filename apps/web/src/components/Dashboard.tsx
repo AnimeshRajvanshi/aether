@@ -143,6 +143,16 @@ export default function Dashboard() {
             drag to orbit · scroll to zoom · <b>click a signal</b> to inspect
           </div>
 
+          {body !== "earth" && (
+            <div className="nodata-overlay">
+              <div className="nodata-body">{body.toUpperCase()}</div>
+              <div className="nodata-msg">NO DATA · EARTH MVP</div>
+              <div className="nodata-sub">
+                Planetary bodies beyond Earth are modelled in the ontology but not yet ingested.
+              </div>
+            </div>
+          )}
+
           {error && (
             <div className="loading" style={{ color: "var(--alert)" }}>
               API UNREACHABLE — start apps/api (uvicorn :8000)
@@ -152,7 +162,6 @@ export default function Dashboard() {
           {/* ----- detail overlay (HUD + inspector) ----- */}
           <div className={`detail ${inDetail ? "show" : ""}`}>
             <div className="plume-hud">
-              <div className="grid-overlay" />
               <div className="bracket b1" />
               <div className="bracket b2" />
               <div className="bracket b3" />

@@ -304,6 +304,45 @@ body::after {
   }
 }
 
+/* ---- non-Earth empty state (Moon/Mars are deferred) ---- */
+.nodata-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 18;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+  text-align: center;
+}
+.nodata-overlay .nodata-body {
+  font-family: var(--font-hud), sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 8px;
+  color: var(--text-2);
+}
+.nodata-overlay .nodata-msg {
+  font-family: var(--font-hud), sans-serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--text-3);
+  border: 1px solid var(--border-bright);
+  border-radius: 6px;
+  padding: 6px 14px;
+  background: rgba(8, 11, 16, 0.55);
+  backdrop-filter: blur(4px);
+}
+.nodata-overlay .nodata-sub {
+  font-family: var(--font-mono), monospace;
+  font-size: 10.5px;
+  color: var(--text-3);
+  max-width: 320px;
+  line-height: 1.5;
+}
+
 /* ---- HTML markers projected from the Cesium scene ---- */
 .markers {
   position: absolute;
@@ -457,17 +496,6 @@ body::after {
 }
 .detail.show .plume-hud {
   opacity: 1;
-}
-.grid-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 46px 46px;
-  opacity: 0.35;
-  -webkit-mask-image: radial-gradient(ellipse 75% 75% at 50% 50%, #000 55%, transparent 100%);
-  mask-image: radial-gradient(ellipse 75% 75% at 50% 50%, #000 55%, transparent 100%);
 }
 .bracket {
   position: absolute;

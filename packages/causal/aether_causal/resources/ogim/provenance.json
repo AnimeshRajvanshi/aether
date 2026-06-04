@@ -1,0 +1,26 @@
+{
+  "dataset": "OGIM_v2.7 (Oil and Gas Infrastructure Mapping database)",
+  "doi": "10.5281/zenodo.15103476",
+  "methods_doi": "10.5194/essd-15-3761-2023",
+  "source_url": "https://zenodo.org/api/records/15103476/files/OGIM_v2.7.gpkg/content",
+  "source_sha256": "6025432af1fa748bb1306edfcecb6ea296de9f9946eec57395e8779be19bc365",
+  "region_bbox_min_lon_min_lat_max_lon_max_lat": [
+    52.5,
+    38.5,
+    55.0,
+    40.0
+  ],
+  "crs": "EPSG:4326",
+  "total_features_in_subset": 114,
+  "features_per_layer": {
+    "Natural_Gas_Flaring_Detections": 19,
+    "Offshore_Platforms": 31,
+    "Oil_Natural_Gas_Pipelines": 21,
+    "Oil_and_Natural_Gas_Basins": 4,
+    "Oil_and_Natural_Gas_Fields": 20,
+    "Oil_and_Natural_Gas_License_Blocks": 16,
+    "Petroleum_Terminals": 3
+  },
+  "geometry_note": "Features copied verbatim from OGIM; full geometry retained.",
+  "license": "OGIM is public-domain (EDF/MethaneSAT)."
+}

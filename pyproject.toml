@@ -10,6 +10,7 @@ dependencies = [
     "aether-detection",
     "aether-cli",
     "aether-api",
+    "aether-causal",
 ]
 
 [tool.uv.sources]
@@ -19,6 +20,7 @@ aether-data-spine = { workspace = true }
 aether-detection = { workspace = true }
 aether-cli = { workspace = true }
 aether-api = { workspace = true }
+aether-causal = { workspace = true }
 
 [tool.uv.workspace]
 members = [
@@ -28,6 +30,7 @@ members = [
     "packages/cli",
     "eval/harness",
     "apps/api",
+    "packages/causal",
 ]
 
 [dependency-groups]

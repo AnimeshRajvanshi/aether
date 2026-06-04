@@ -21,6 +21,12 @@ const RETRIEVAL_LABELS: Record<RetrievalLayer, string> = {
   diff: "Δ Diff",
 };
 
+/** "2022-08-15T04:28:38Z" -> "2022-08-15 04:28:38 UTC" (the granule overpass). */
+function formatAcq(utc: string): string {
+  const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/.exec(utc);
+  return m ? `${m[1]} ${m[2]} UTC` : utc;
+}
+
 export default function Dashboard() {
   const [events, setEvents] = useState<EventSummary[]>([]);
   const [body, setBody] = useState<"earth" | "moon" | "mars">("earth");
@@ -71,7 +77,12 @@ export default function Dashboard() {
   }, []);
 
   const inDetail = phase === "detail";
-  const activeCount = events.filter((e) => e.status === "active").length;
+  const activeEvents = events.filter((e) => e.status === "active");
+  const pendingCount = events.filter((e) => e.status === "pending").length;
+  // Acquisition timestamp of the (single) reconstructed event — the static
+  // historical overpass this app displays. From /api/events, which reads it from
+  // stage_a_report.json. There is no live feed; nothing here is real-time.
+  const acquisition = activeEvents[0]?.acquisition_utc ?? null;
 
   return (
     <div className="app">
@@ -86,14 +97,12 @@ export default function Dashboard() {
             <span className="lbl">Body</span>
             <span className="val">{body.toUpperCase()}</span>
           </div>
-          <div className="si">
-            <span className="lbl">Signals</span>
-            <span className="val">{activeCount} ACTIVE</span>
-          </div>
-          <div className="live">
-            <span className="dot" />
-            LIVE
-          </div>
+          {acquisition && (
+            <div className="si">
+              <span className="lbl">Acquired</span>
+              <span className="val">{formatAcq(acquisition)}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -133,7 +142,8 @@ export default function Dashboard() {
 
           <div className={`scan-readout ${phase !== "globe" ? "fade-out" : ""}`}>
             <div>
-              <span className="lv">● LIVE</span> · {events.length} signals
+              {activeEvents.length} {activeEvents.length === 1 ? "EVENT" : "EVENTS"} ·{" "}
+              {pendingCount} PENDING
             </div>
             <div>CH₄ · HYPERSPECTRAL</div>
             <div>EMIT · L2B CH4ENH</div>

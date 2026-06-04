@@ -14,6 +14,7 @@ export interface EventSummary {
   status: EventStatus;
   sensor: string;
   headline: string | null;
+  acquisition_utc: string | null;
 }
 
 export interface CalibratedRate {

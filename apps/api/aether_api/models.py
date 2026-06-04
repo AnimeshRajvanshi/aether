@@ -39,6 +39,14 @@ class EventSummary(_Base):
     status: EventStatus
     sensor: str
     headline: str | None = Field(None, description="e.g. 'CH₄ · 27.1 t/hr' or 'pending'")
+    acquisition_utc: str | None = Field(
+        None,
+        description=(
+            "Acquisition timestamp of the processed overpass (from "
+            "stage_a_report.json). None for pending events — we have not run a "
+            "retrieval, so we don't imply one. This is a static historical event."
+        ),
+    )
 
 
 class CalibratedRate(_Base):

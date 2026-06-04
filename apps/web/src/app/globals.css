@@ -117,33 +117,6 @@ body::after {
   font-size: 11px;
   color: var(--text);
 }
-.live {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-family: var(--font-hud), sans-serif;
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  color: var(--good);
-}
-.live .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--good);
-  box-shadow: 0 0 8px var(--good);
-  animation: pulse 2.4s infinite;
-}
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
-  }
-}
-
 .main {
   position: relative;
   flex: 1;
@@ -267,9 +240,6 @@ body::after {
   z-index: 20;
   line-height: 1.7;
   transition: opacity 0.5s;
-}
-.scan-readout .lv {
-  color: var(--good);
 }
 .fade-out {
   opacity: 0 !important;

@@ -58,6 +58,14 @@ def test_marker_sits_on_real_centroid(q: dict) -> None:
     assert g["lon"] == pytest.approx(q["plume_centroid_lon"])
 
 
+def test_summary_acquisition_traces_to_stage_a(stage_a: dict) -> None:
+    by_id = {e["event_id"]: e for e in client.get("/api/events").json()}
+    # Active event's acquisition timestamp must equal the committed Stage A file.
+    assert by_id[GOTURDEPE]["acquisition_utc"] == stage_a["acquisition_utc"]
+    # Pending event has no processed overpass — we must not imply one.
+    assert by_id[PERMIAN]["acquisition_utc"] is None
+
+
 def test_quantification_matches_q_estimate(q: dict) -> None:
     d = client.get(f"/api/events/{GOTURDEPE}").json()
     quant = d["quantification"]

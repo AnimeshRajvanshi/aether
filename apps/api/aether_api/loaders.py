@@ -100,6 +100,7 @@ def _summary(event_id: str) -> EventSummary:
 
     if q_path.exists():
         q = _read_json(q_path)
+        stage_a = _read_json(config.stage_a_dir(event_id) / "stage_a_report.json")
         # Marker sits on the real plume centroid; headline is the OURS-CAL rate.
         return EventSummary(
             event_id=event_id,
@@ -112,6 +113,7 @@ def _summary(event_id: str) -> EventSummary:
             status=EventStatus.ACTIVE,
             sensor=sensor_name,
             headline=f"CH₄ · {q['q_central_t_hr']:.1f} t/hr",
+            acquisition_utc=stage_a.get("acquisition_utc"),
         )
 
     # No Stage B result -> pending marker at the benchmark location (honest gap).

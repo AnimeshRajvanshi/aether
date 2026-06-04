@@ -13,17 +13,21 @@ export default function Inspector({
   detail,
   qcal,
   onQcal,
+  onResizeStart,
 }: {
   detail: EventDetail;
   qcal: QCal;
   onQcal: (c: QCal) => void;
+  onResizeStart: (e: React.PointerEvent) => void;
 }) {
   const chipClass = ["type", "body", "sensor"];
 
   return (
     <div className="inspector">
+      {/* drag the left edge to resize the panel; the plume stage reflows live */}
+      <div className="panel-resize" onPointerDown={onResizeStart} title="Drag to resize" />
       <div className="insp-scroll">
-        <div className="reveal" style={{ animationDelay: ".25s" }}>
+        <div>
           <div className="evt-name">{detail.short_name}</div>
           <div className="evt-sub">{detail.location_label}</div>
           <div className="evt-chips">
@@ -41,7 +45,7 @@ export default function Inspector({
           : renderActive(detail, qcal, onQcal)}
 
         {detail.references.length > 0 && (
-          <div className="panel reveal" style={{ animationDelay: ".73s" }}>
+          <div className="panel">
             <div className="panel-h">
               <span className="tag">Provenance · References</span>
               <span className="line" />
@@ -65,7 +69,7 @@ export default function Inspector({
 
 function renderPending(detail: EventDetail) {
   return (
-    <div className="caveat reveal" style={{ animationDelay: ".31s" }}>
+    <div className="caveat">
       <div className="ch">Pending · No Quantification</div>
       <p className="pending-note">{detail.pending_reason}</p>
     </div>
@@ -86,7 +90,7 @@ function renderActive(detail: EventDetail, qcal: QCal, onQcal: (c: QCal) => void
 
   return (
     <>
-      <div className="panel reveal" style={{ animationDelay: ".31s" }}>
+      <div className="panel">
         <div className="panel-h">
           <span className="tag">Emission Rate · IME</span>
           <span className="line" />
@@ -113,7 +117,7 @@ function renderActive(detail: EventDetail, qcal: QCal, onQcal: (c: QCal) => void
         <div className="q-note">{cal.note}</div>
       </div>
 
-      <div className="panel reveal" style={{ animationDelay: ".37s" }}>
+      <div className="panel">
         <div className="panel-h">
           <span className="tag">Uncertainty Budget</span>
           <span className="line" />
@@ -131,12 +135,12 @@ function renderActive(detail: EventDetail, qcal: QCal, onQcal: (c: QCal) => void
         ))}
       </div>
 
-      <div className="caveat reveal" style={{ animationDelay: ".43s" }}>
+      <div className="caveat">
         <div className="ch">Scope · Read Before Citing</div>
         <p>{scope.text}</p>
       </div>
 
-      <div className="panel reveal" style={{ animationDelay: ".49s" }}>
+      <div className="panel">
         <div className="panel-h">
           <span className="tag">Stage A Validation</span>
           <span className="line" />
@@ -166,7 +170,7 @@ function renderActive(detail: EventDetail, qcal: QCal, onQcal: (c: QCal) => void
         </div>
       </div>
 
-      <div className="panel reveal" style={{ animationDelay: ".55s" }}>
+      <div className="panel">
         <div className="panel-h">
           <span className="tag">Plume Geometry</span>
           <span className="line" />
@@ -176,7 +180,7 @@ function renderActive(detail: EventDetail, qcal: QCal, onQcal: (c: QCal) => void
         <Drow k="Length L = √A" v={f2(geom.length_km)} u="km" />
       </div>
 
-      <div className="panel reveal" style={{ animationDelay: ".61s" }}>
+      <div className="panel">
         <div className="panel-h">
           <span className="tag">Atmospheric State</span>
           <span className="line" />
@@ -186,7 +190,7 @@ function renderActive(detail: EventDetail, qcal: QCal, onQcal: (c: QCal) => void
       </div>
 
       {detail.brief && (
-        <div className="panel reveal brief" style={{ animationDelay: ".67s" }}>
+        <div className="panel brief">
           <div className="panel-h">
             <span className="tag">Generated Brief</span>
             <span className="line" />

@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import type * as CesiumNS from "cesium";
 import type { EventSummary, RasterBounds, RetrievalLayer } from "@/lib/types";
 import { maskGeoJsonUrl, rasterUrl } from "@/lib/api";
+import { FLY_DURATION_S } from "@/lib/motion";
 
 declare global {
   interface Window {
@@ -210,6 +211,9 @@ export default function CesiumGlobe({
     const prev = prevFly.current;
     prevFly.current = flyTarget;
 
+    // The panel slide is bound to FLY_DURATION_S via CSS (see Dashboard); both
+    // flyTo calls use the same constant + easing so camera and panel move as one.
+    const easingFunction = Cesium.EasingFunction.QUADRATIC_IN_OUT;
     if (flyTarget) {
       autoRotate.current = false;
       viewer.camera.flyTo({
@@ -219,13 +223,15 @@ export default function CesiumGlobe({
           frameHeight(flyTarget.bounds),
         ),
         orientation: { heading: 0, pitch: toRad(-78), roll: 0 },
-        duration: 1.5,
+        duration: FLY_DURATION_S,
+        easingFunction,
         complete: () => cb.current.onArrived(),
       });
     } else if (prev && homeRef.current) {
       viewer.camera.flyTo({
         destination: homeRef.current,
-        duration: 1.2,
+        duration: FLY_DURATION_S,
+        easingFunction,
         complete: () => {
           autoRotate.current = true;
           cb.current.onReturned();

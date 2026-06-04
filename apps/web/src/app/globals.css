@@ -454,15 +454,19 @@ body::after {
   display: none;
   pointer-events: none;
 }
-.detail.show {
+/* `mounted` controls presence (display); `show` (added one frame later) drives
+   the slide. Separating them lets the panel transition in instead of popping. */
+.detail.mounted {
   display: block;
 }
 .plume-hud {
   position: absolute;
-  inset: 0 392px 0 0;
+  /* right inset tracks the panel width so the stage reflows live on resize */
+  inset: 0 var(--panel-width, 392px) 0 0;
   overflow: hidden;
   opacity: 0;
-  transition: opacity 0.8s ease 0.55s;
+  /* fades in over the camera flight (shared --fly-duration), no extra delay */
+  transition: opacity var(--fly-duration, 1.5s) var(--fly-easing, ease);
 }
 .detail.show .plume-hud {
   opacity: 1;
@@ -581,11 +585,13 @@ body::after {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 392px;
+  width: var(--panel-width, 392px);
   background: var(--bg-panel);
   border-left: 1px solid var(--border);
   transform: translateX(100%);
-  transition: transform 0.85s cubic-bezier(0.6, 0, 0.2, 1) 0.2s;
+  /* slide bound to the camera flyTo: same duration + easing, no start delay,
+     so panel and camera begin and end together (both directions) */
+  transition: transform var(--fly-duration, 1.5s) var(--fly-easing, ease);
   display: flex;
   flex-direction: column;
   z-index: 7;
@@ -593,6 +599,33 @@ body::after {
 }
 .detail.show .inspector {
   transform: none;
+}
+/* left-edge drag handle to resize the panel */
+.panel-resize {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  margin-left: -3px;
+  cursor: ew-resize;
+  z-index: 8;
+  touch-action: none;
+}
+.panel-resize::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 34px;
+  border-radius: 2px;
+  background: var(--border-bright);
+  transition: background 0.15s;
+}
+.panel-resize:hover::before {
+  background: var(--cyan-dim);
 }
 .insp-scroll {
   overflow-y: auto;
@@ -919,20 +952,6 @@ body::after {
   padding: 3px 8px;
   text-transform: uppercase;
 }
-.reveal {
-  opacity: 0;
-  transform: translateY(8px);
-}
-.detail.show .reveal {
-  animation: rise 0.5s forwards;
-}
-@keyframes rise {
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 /* Cesium chrome: we drive our own HUD. Keep the credit (imagery attribution)
    but make it subtle; hide the default toolbar/selection widgets. */
 .cesium-viewer-bottom {

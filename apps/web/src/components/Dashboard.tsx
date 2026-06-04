@@ -4,15 +4,25 @@
 // state machine and the currently-selected event detail. CesiumGlobe is loaded
 // client-only (it touches window/WebGL on import).
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import type { FlyTarget } from "./CesiumGlobe";
 import Inspector from "./Inspector";
 import { fetchEvent, fetchEvents } from "@/lib/api";
 import type { EventDetail, EventSummary, RetrievalLayer } from "@/lib/types";
+import {
+  clampPanelWidth,
+  FLY_DURATION_S,
+  FLY_EASING_CSS,
+  PANEL_DEFAULT_W,
+} from "@/lib/motion";
 
 const CesiumGlobe = dynamic(() => import("./CesiumGlobe"), { ssr: false });
 
-type Phase = "globe" | "flying" | "detail" | "returning";
+// "mounting" renders the populated panel off-screen (display:block, translated
+// out) for one frame so the subsequent slide actually transitions instead of
+// popping; the camera flight starts on that same next frame, keeping them synced.
+type Phase = "globe" | "mounting" | "flying" | "detail" | "returning";
 type QCal = "ours" | "nasa";
 
 const RETRIEVAL_LABELS: Record<RetrievalLayer, string> = {
@@ -37,33 +47,41 @@ export default function Dashboard() {
   const [layer, setLayer] = useState<RetrievalLayer>("enhancement");
   const [qcal, setQcal] = useState<QCal>("ours");
   const [error, setError] = useState<string | null>(null);
-  const pendingDetail = useRef<EventDetail | null>(null);
+  const [panelWidth, setPanelWidth] = useState(PANEL_DEFAULT_W);
 
   useEffect(() => {
     fetchEvents().then(setEvents).catch((e) => setError(String(e)));
   }, []);
 
+  // Select: fetch + populate the panel and drape the plume NOW, then start the
+  // flight. The panel becomes visible at the same instant the camera starts
+  // moving (see detailShown), so its fully-rendered content slides in over the
+  // exact flyTo duration — one synchronized motion, no pop-in.
   const handleSelect = useCallback(async (ev: EventSummary) => {
     try {
       const d = await fetchEvent(ev.event_id);
-      pendingDetail.current = d;
       setLayer("enhancement");
       setQcal("ours");
-      setPhase("flying");
-      setFlyTarget({ lon: ev.lon, lat: ev.lat, bounds: d.raster?.bounds });
+      setDetail(d);
+      if (d.raster) setRaster({ eventId: d.event_id, bounds: d.raster.bounds });
+      // Frame 1: mount the populated panel off-screen (display:block, slid out).
+      setPhase("mounting");
+      // Frame 2: begin the slide-in AND the camera flight together — synced.
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          setPhase("flying");
+          setFlyTarget({ lon: ev.lon, lat: ev.lat, bounds: d.raster?.bounds });
+        }),
+      );
     } catch (e) {
       setError(String(e));
     }
   }, []);
 
-  const onArrived = useCallback(() => {
-    const d = pendingDetail.current;
-    if (!d) return;
-    setDetail(d);
-    if (d.raster) setRaster({ eventId: d.event_id, bounds: d.raster.bounds });
-    setPhase("detail");
-  }, []);
+  // Camera reached the plume — just mark arrival; the panel is already in.
+  const onArrived = useCallback(() => setPhase("detail"), []);
 
+  // Back: panel slides out as the camera pulls back (same shared duration).
   const onBack = useCallback(() => {
     setPhase("returning");
     setRaster(null);
@@ -73,10 +91,29 @@ export default function Dashboard() {
   const onReturned = useCallback(() => {
     setPhase("globe");
     setDetail(null);
-    pendingDetail.current = null;
   }, []);
 
-  const inDetail = phase === "detail";
+  // Drag the inspector's left edge to resize; clamped so neither side collapses.
+  // Width is session state (in-memory) — intentionally not persisted to storage.
+  const onResizeStart = useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
+    const move = (ev: PointerEvent) =>
+      setPanelWidth(clampPanelWidth(window.innerWidth - ev.clientX, window.innerWidth));
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      document.body.style.userSelect = "";
+    };
+    document.body.style.userSelect = "none";
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  }, []);
+
+  // mounted = overlay in the DOM (display:block); shown = slid in. They differ
+  // by one frame on entry so the slide transitions, and the camera flight is
+  // bound to the same `shown` toggle so panel + camera move as one (both ways).
+  const detailMounted = phase !== "globe";
+  const detailShown = phase === "flying" || phase === "detail";
   const activeEvents = events.filter((e) => e.status === "active");
   const pendingCount = events.filter((e) => e.status === "pending").length;
   // Acquisition timestamp of the (single) reconstructed event — the static
@@ -170,7 +207,16 @@ export default function Dashboard() {
           )}
 
           {/* ----- detail overlay (HUD + inspector) ----- */}
-          <div className={`detail ${inDetail ? "show" : ""}`}>
+          <div
+            className={`detail ${detailMounted ? "mounted" : ""} ${detailShown ? "show" : ""}`}
+            style={
+              {
+                "--fly-duration": `${FLY_DURATION_S}s`,
+                "--fly-easing": FLY_EASING_CSS,
+                "--panel-width": `${panelWidth}px`,
+              } as CSSProperties
+            }
+          >
             <div className="plume-hud">
               <div className="bracket b1" />
               <div className="bracket b2" />
@@ -211,7 +257,14 @@ export default function Dashboard() {
               )}
             </div>
 
-            {detail && <Inspector detail={detail} qcal={qcal} onQcal={setQcal} />}
+            {detail && (
+              <Inspector
+                detail={detail}
+                qcal={qcal}
+                onQcal={setQcal}
+                onResizeStart={onResizeStart}
+              />
+            )}
           </div>
         </div>
       </div>

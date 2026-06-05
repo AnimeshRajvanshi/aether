@@ -131,3 +131,66 @@ export interface EventDetail {
 }
 
 export type RetrievalLayer = "enhancement" | "nasa" | "diff";
+
+// ---- Source attribution (Sprint 4 artifact, served verbatim by the API) ----
+// These mirror aether_causal.schema; every string is rendered verbatim.
+
+export interface ScoreComponent {
+  name: string;
+  value: number;
+  weight: number;
+  rationale: string;
+  contribution: number;
+}
+
+export interface AttributionSourceRef {
+  dataset: string;
+  locator: string;
+  ogim_id: number | null;
+  ogim_layer: string | null;
+}
+
+export interface EvidenceItem {
+  kind: string;
+  statement: string;
+  source: AttributionSourceRef;
+  temporal_caveat: string | null;
+}
+
+export interface AttributionCandidate {
+  kind: string;
+  descriptor: string;
+  ogim_layer: string | null;
+  ogim_id: number | null;
+  ogim_name: string | null;
+  operator: string | null;
+}
+
+export interface SourceHypothesis {
+  id: string;
+  rank: number;
+  candidate: AttributionCandidate;
+  claim: string;
+  confidence_tier: string;
+  confidence_rationale: string;
+  score: number;
+  score_components: ScoreComponent[];
+  evidence: EvidenceItem[];
+  assumptions: string[];
+  counter_considerations: string[];
+  falsification: string;
+  generation_method: string;
+}
+
+export interface HypothesisSet {
+  event_id: string;
+  phenomenon: string;
+  generated_method: string;
+  headline_finding: string;
+  scoring_disclaimer: string;
+  confidence_cap: string;
+  plume_summary: Record<string, string>;
+  global_assumptions: string[];
+  hypotheses: SourceHypothesis[];
+  provenance: Record<string, string>;
+}

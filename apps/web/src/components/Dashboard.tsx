@@ -8,8 +8,8 @@ import { useCallback, useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import type { FlyTarget } from "./CesiumGlobe";
 import Inspector from "./Inspector";
-import { fetchEvent, fetchEvents } from "@/lib/api";
-import type { EventDetail, EventSummary, RetrievalLayer } from "@/lib/types";
+import { fetchEvent, fetchEvents, fetchHypotheses } from "@/lib/api";
+import type { EventDetail, EventSummary, HypothesisSet, RetrievalLayer } from "@/lib/types";
 import {
   clampPanelWidth,
   FLY_DURATION_S,
@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [body, setBody] = useState<"earth" | "moon" | "mars">("earth");
   const [phase, setPhase] = useState<Phase>("globe");
   const [detail, setDetail] = useState<EventDetail | null>(null);
+  const [hypotheses, setHypotheses] = useState<HypothesisSet | null>(null);
   const [flyTarget, setFlyTarget] = useState<FlyTarget | null>(null);
   const [raster, setRaster] = useState<{ eventId: string; bounds: { west: number; south: number; east: number; north: number } } | null>(null);
   const [layer, setLayer] = useState<RetrievalLayer>("enhancement");
@@ -59,10 +60,16 @@ export default function Dashboard() {
   // exact flyTo duration — one synchronized motion, no pop-in.
   const handleSelect = useCallback(async (ev: EventSummary) => {
     try {
-      const d = await fetchEvent(ev.event_id);
+      // Prefetch detail + the attribution artifact together so the populated
+      // panel (incl. Source Attribution) is fully rendered as it slides in.
+      const [d, hyp] = await Promise.all([
+        fetchEvent(ev.event_id),
+        fetchHypotheses(ev.event_id),
+      ]);
       setLayer("enhancement");
       setQcal("ours");
       setDetail(d);
+      setHypotheses(hyp);
       if (d.raster) setRaster({ eventId: d.event_id, bounds: d.raster.bounds });
       // Frame 1: mount the populated panel off-screen (display:block, slid out).
       setPhase("mounting");
@@ -91,6 +98,7 @@ export default function Dashboard() {
   const onReturned = useCallback(() => {
     setPhase("globe");
     setDetail(null);
+    setHypotheses(null);
   }, []);
 
   // Drag the inspector's left edge to resize; clamped so neither side collapses.
@@ -260,6 +268,7 @@ export default function Dashboard() {
             {detail && (
               <Inspector
                 detail={detail}
+                hypotheses={hypotheses}
                 qcal={qcal}
                 onQcal={setQcal}
                 onResizeStart={onResizeStart}

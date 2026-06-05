@@ -2,7 +2,8 @@
 
 // The right-hand inspector. Pure presentation of one EventDetail — every number
 // is read from the prop (sourced by the API from committed Stage A/B files).
-import type { EventDetail } from "@/lib/types";
+import SourceAttribution from "./SourceAttribution";
+import type { EventDetail, HypothesisSet } from "@/lib/types";
 
 type QCal = "ours" | "nasa";
 
@@ -11,11 +12,13 @@ const f2 = (n: number) => n.toFixed(2);
 
 export default function Inspector({
   detail,
+  hypotheses,
   qcal,
   onQcal,
   onResizeStart,
 }: {
   detail: EventDetail;
+  hypotheses: HypothesisSet | null;
   qcal: QCal;
   onQcal: (c: QCal) => void;
   onResizeStart: (e: React.PointerEvent) => void;
@@ -43,6 +46,10 @@ export default function Inspector({
         {detail.status === "pending"
           ? renderPending(detail)
           : renderActive(detail, qcal, onQcal)}
+
+        {/* Source attribution renders the committed Sprint 4 artifact verbatim;
+            absent for pending events (the API returns no artifact). */}
+        {hypotheses && <SourceAttribution data={hypotheses} />}
 
         {detail.references.length > 0 && (
           <div className="panel">

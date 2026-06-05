@@ -110,11 +110,14 @@ score** whose components are individually displayed with a rationale.
 | magnitude_consistency | 0.15 | is ~27 t/hr in the plausible super-emitter range for the sector |
 
 **Component bases (documented heuristics):**
-- *spatial* — H1 = 1.0 because S is *contained* in BARSAGELMEZ (a point-in-polygon
-  fact robust to the wind-direction approximation, since S is a fixed point). H2 =
-  0.30 because an alternative requires *displacing* the source from S (permitted by
-  the localization uncertainty, not favored). H3 = 0.50 (neutral): location does not
-  discriminate sector, so spatial is non-informative for a non-O&G claim.
+- *spatial* — H1 = **0.85**: S sits well inside the *large* BARSAGELMEZ polygon
+  (133 km²). S's exact position is uncertain (the ~20° bearing gap and the speed-
+  derived wedge — the same uncertainty H2 rests on), but because it lies well within
+  such a large field, that wobble is very unlikely to move it across the field
+  boundary. **High, not 1.0 — S is not a fixed point.** H2 = 0.30 because an
+  alternative requires *displacing* the source from S (permitted by the localization
+  uncertainty, not favored). H3 = 0.50 (neutral): location does not discriminate
+  sector, so spatial is non-informative for a non-O&G claim.
 - *type_prior* — O&G = 0.90: Thorpe et al. 2023 attribute *this cluster* to O&G
   super-emitters, and an isolated ~27 t/hr point source inside an active gas field is
   characteristically O&G. Non-O&G = 0.15: natural geologic seeps exist in the South
@@ -126,14 +129,14 @@ score** whose components are individually displayed with a rationale.
 **Tier assignment with the structural cap.** Raw score bands are High ≥ 0.80,
 Moderate ≥ 0.55, Low ≥ 0.30, else Insufficient. **A structural ceiling of MODERATE
 is then applied** because no OGIM point data exists — no hypothesis may be reported
-above field/sector-level confidence. Thus H1's raw band (High, 0.96) is **capped to
+above field/sector-level confidence. Thus H1's raw band (High, 0.87) is **capped to
 MODERATE**; the cap is stated in H1's `confidence_rationale`.
 
 **Result:**
 
 | id | candidate | score | raw band | reported tier |
 |---|---|--:|---|---|
-| H1 | O&G within BARSAGELMEZ field | 0.96 | high | **moderate (capped)** |
+| H1 | O&G within BARSAGELMEZ field | 0.87 | high | **moderate (capped)** |
 | H2 | different/adjacent O&G (localization can't exclude) | 0.54 | low | low |
 | H3 | non-O&G (seep / other) | 0.40 | low | low |
 
@@ -173,9 +176,11 @@ assumptions in the JSON:
 
 **We CAN claim, at MODERATE (field/sector-level) confidence:**
 - The back-projected upwind source of this ~27 t/hr plume falls **inside the
-  BARSAGELMEZ oil & gas field** (point-in-polygon, robust to the wind-direction
-  approximation), within the Goturdepe–Barsagelmez producing complex Thorpe et al.
-  2023 attribute to O&G super-emitters.
+  BARSAGELMEZ oil & gas field** (point-in-polygon). The field is large (133 km²) and
+  S sits well within it, so the ~20° localization wobble is very unlikely to move S
+  across the field boundary — the *field-level* containment is robust even though S's
+  *exact* position is uncertain. This is within the Goturdepe–Barsagelmez producing
+  complex Thorpe et al. 2023 attribute to O&G super-emitters.
 - The sector is **most plausibly oil & gas**, corroborated by persistent VIIRS
   flaring in the area (with the temporal caveat).
 

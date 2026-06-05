@@ -36,15 +36,15 @@
       },
       "claim": "The ~27 t/hr methane plume most plausibly originates from oil & gas operations within the BARSAGELMEZ field, inside which the back-projected upwind source falls. Field/sector-level only: no specific facility can be named because OGIM has no point infrastructure in this region.",
       "confidence_tier": "moderate",
-      "confidence_rationale": "Heuristic score 0.96 (band high) CAPPED to moderate: facility-level attribution is impossible (no OGIM point data), so MODERATE field/sector-level is the highest defensible tier — NOT high-confidence facility attribution.",
-      "score": 0.96,
+      "confidence_rationale": "Heuristic score 0.87 (band high) CAPPED to moderate: facility-level attribution is impossible (no OGIM point data), so MODERATE field/sector-level is the highest defensible tier — NOT high-confidence facility attribution.",
+      "score": 0.87,
       "score_components": [
         {
           "name": "spatial_consistency",
-          "value": 1.0,
+          "value": 0.85,
           "weight": 0.6,
-          "rationale": "The back-projected upwind source S is INSIDE the BARSAGELMEZ field polygon (point-in-polygon = True); robust to the wind-direction approximation because S is a fixed point.",
-          "contribution": 0.6
+          "rationale": "The back-projected upwind source S sits well inside the BARSAGELMEZ field polygon (point-in-polygon = True; field area 133.0 km^2). S's exact position IS uncertain (the ~20 deg centroid/upwind bearing gap and the speed-derived wedge — the same uncertainty H2 rests on), but because S lies well within such a large field, that wobble is very unlikely to move it across the field boundary. High, not 1.0.",
+          "contribution": 0.51
         },
         {
           "name": "type_prior",

@@ -69,9 +69,13 @@ TYPE_PRIOR_NON_OG = 0.15
 # ~2x the per-source mean of the Thorpe 163 t/hr / 12-source cluster.
 MAGNITUDE_OG = 0.90
 MAGNITUDE_NON_OG = 0.40
-# Spatial basis: H1 = S contained in the field polygon (computed). H2 = an
-# alternative requires displacing the source from S (permitted by localization
-# uncertainty, not favored). H3 = location does not discriminate sector (neutral).
+# Spatial basis: H1 = S sits well inside a LARGE field polygon, so although S's
+# position is uncertain (the same uncertainty that justifies H2), that wobble is
+# very unlikely to move S across the field boundary — high but NOT 1.0 (S is not a
+# fixed point). H2 = an alternative requires displacing the source from S (permitted
+# by the localization uncertainty, not favored). H3 = location does not discriminate
+# sector (neutral).
+SPATIAL_CONTAINED = 0.85
 SPATIAL_DISPLACED = 0.30
 SPATIAL_SECTOR_NEUTRAL = 0.50
 
@@ -240,10 +244,13 @@ def build_hypothesis_set(root: Path | None = None) -> HypothesisSet:
     h1_components = [
         comp(
             "spatial_consistency",
-            1.0 if s_in_bars else 0.5,
-            f"The back-projected upwind source S is INSIDE the BARSAGELMEZ field polygon "
-            f"(point-in-polygon = {s_in_bars}); robust to the wind-direction approximation "
-            f"because S is a fixed point.",
+            SPATIAL_CONTAINED if s_in_bars else 0.5,
+            f"The back-projected upwind source S sits well inside the BARSAGELMEZ field polygon "
+            f"(point-in-polygon = {s_in_bars}; field area {bars_feat['properties'].get('AREA_KM2')} "
+            f"km^2). S's exact position IS uncertain (the ~20 deg centroid/upwind bearing gap and "
+            f"the speed-derived wedge — the same uncertainty H2 rests on), but because S lies well "
+            f"within such a large field, that wobble is very unlikely to move it across the field "
+            f"boundary. High, not 1.0.",
         ),
         comp(
             "type_prior",

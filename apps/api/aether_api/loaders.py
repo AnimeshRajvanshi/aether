@@ -19,6 +19,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from aether_causal.schema import HypothesisSet
 from aether_eval.loader import load_event_file
 from aether_eval.schema import BenchmarkEvent, Measurement
 
@@ -129,6 +130,21 @@ def _summary(event_id: str) -> EventSummary:
         sensor=sensor_name,
         headline="pending",
     )
+
+
+# --------------------------------------------------------------------------- #
+# Source attribution (Sprint 4 artifact)
+# --------------------------------------------------------------------------- #
+def get_hypotheses(event_id: str) -> HypothesisSet | None:
+    """Load + validate the committed attribution artifact, or None if absent.
+
+    Validated through aether_causal's own HypothesisSet (extra="forbid"), so the
+    API can neither add nor drop a field relative to the committed JSON.
+    """
+    path = config.hypotheses_json(event_id)
+    if not path.exists():
+        return None
+    return HypothesisSet.model_validate_json(path.read_text())
 
 
 # --------------------------------------------------------------------------- #

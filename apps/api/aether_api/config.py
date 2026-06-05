@@ -35,5 +35,10 @@ def benchmark_yaml(event_id: str) -> Path:
     return data_root() / "eval" / "benchmark" / f"{event_id}.yaml"
 
 
+def hypotheses_json(event_id: str) -> Path:
+    """Committed Sprint 4 attribution artifact for an event (may not exist)."""
+    return data_root() / "attribution_outputs" / event_id / "hypotheses.json"
+
+
 def assets_dir(event_id: str) -> Path:
     return ASSETS_ROOT / event_id

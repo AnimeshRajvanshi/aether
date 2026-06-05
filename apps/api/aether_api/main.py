@@ -90,3 +90,18 @@ def bounds(event_id: str) -> JSONResponse:
 def mask_geojson(event_id: str) -> FileResponse:
     """CC-1213 plume mask outline as a GeoJSON FeatureCollection (lon/lat)."""
     return _asset(event_id, "mask.geojson", "application/geo+json")
+
+
+@app.get("/api/events/{event_id}/hypotheses")
+def hypotheses(event_id: str) -> JSONResponse:
+    """The committed Sprint 4 source-attribution artifact (validated, verbatim).
+
+    Events without an attribution artifact (e.g. pending Permian) get an honest
+    absent state — never fabricated hypotheses.
+    """
+    if event_id not in loaders.EVENT_IDS:
+        raise HTTPException(status_code=404, detail=f"Unknown event_id: {event_id}")
+    result = loaders.get_hypotheses(event_id)
+    if result is None:
+        return JSONResponse(content={"hypotheses": None, "status": "pending"})
+    return JSONResponse(content=result.model_dump(mode="json"))

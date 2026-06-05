@@ -148,6 +148,39 @@ def test_pending_event_has_no_quantification() -> None:
     assert any("nasa.gov" in (r.get("url") or "") for r in d["references"])
 
 
+def test_hypotheses_equals_committed_artifact() -> None:
+    committed = json.loads(
+        (config.data_root() / "attribution_outputs" / GOTURDEPE / "hypotheses.json").read_text()
+    )
+    api = client.get(f"/api/events/{GOTURDEPE}/hypotheses").json()
+    # The API must serve the artifact verbatim — equal values AND equal field sets
+    # at every level (no fields added, none dropped).
+    assert api == committed
+
+
+def test_hypotheses_preserve_the_caveats() -> None:
+    api = client.get(f"/api/events/{GOTURDEPE}/hypotheses").json()
+    h1 = api["hypotheses"][0]
+    # the flaring temporal_caveat survives the API round-trip
+    flare = next(e for e in h1["evidence"] if e["kind"] == "flaring_corroboration")
+    assert "NOT the located source" in flare["temporal_caveat"]
+    # H1's cap rationale survives
+    assert "CAPPED" in h1["confidence_rationale"]
+    assert "NO facility-level point infrastructure" in api["headline_finding"]
+    assert "not calibrated" in api["scoring_disclaimer"].lower()
+
+
+def test_pending_event_hypotheses_absent_not_fabricated() -> None:
+    r = client.get(f"/api/events/{PERMIAN}/hypotheses")
+    assert r.status_code == 200
+    body = r.json()
+    assert body == {"hypotheses": None, "status": "pending"}
+
+
+def test_hypotheses_unknown_event_404() -> None:
+    assert client.get("/api/events/does_not_exist/hypotheses").status_code == 404
+
+
 def test_unknown_event_404() -> None:
     assert client.get("/api/events/does_not_exist").status_code == 404
 

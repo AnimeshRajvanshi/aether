@@ -25,6 +25,7 @@ name = "aether-api"
 version = "0.1.0"
 source = { editable = "apps/api" }
 dependencies = [
+    { name = "aether-causal" },
     { name = "aether-eval" },
     { name = "aether-ontology" },
     { name = "fastapi" },
@@ -35,6 +36,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aether-causal", editable = "packages/causal" },
     { name = "aether-eval", editable = "eval/harness" },
     { name = "aether-ontology", editable = "packages/ontology" },
     { name = "fastapi", specifier = ">=0.115" },

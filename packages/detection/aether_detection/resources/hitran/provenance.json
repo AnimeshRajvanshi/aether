@@ -1,0 +1,22 @@
+{
+  "table": "CH4_win",
+  "database": "HITRAN2020 (line-by-line) via HAPI",
+  "hitran2020_doi": "10.1016/j.jqsrt.2021.107949",
+  "hapi_doi": "10.1016/j.jqsrt.2016.03.005",
+  "molecule": "CH4 (HITRAN molecule 6)",
+  "isotopologue_global_ids": [
+    32,
+    33,
+    34,
+    35
+  ],
+  "wavenumber_min_cm": 3951.231448054553,
+  "wavenumber_max_cm": 4739.457182966776,
+  "wavelength_window_nm": [
+    2137.0,
+    2493.0
+  ],
+  "wavenumber_margin_cm": 60.0,
+  "n_lines": 67715,
+  "note": "Fetched verbatim from HITRAN; NASA's per-granule target file is NOT used."
+}

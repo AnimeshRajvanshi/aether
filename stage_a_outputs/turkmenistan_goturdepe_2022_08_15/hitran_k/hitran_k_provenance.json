@@ -1,0 +1,45 @@
+{
+  "method": "HITRAN2020 line-by-line (HAPI) Voigt cross-section, Beer-Lambert linear unit absorption, Gaussian-SRF convolved to EMIT",
+  "hitran2020_doi": "10.1016/j.jqsrt.2021.107949",
+  "hapi_doi": "10.1016/j.jqsrt.2016.03.005",
+  "line_table": "CH4_win",
+  "isotopologues": [
+    [
+      6,
+      1
+    ],
+    [
+      6,
+      2
+    ],
+    [
+      6,
+      3
+    ],
+    [
+      6,
+      4
+    ]
+  ],
+  "wavenumber_range_cm": [
+    3951.231448054553,
+    4739.457182966776
+  ],
+  "wavenumber_step_cm": 0.01,
+  "solar_zenith_deg": 58.078543392598824,
+  "view_zenith_deg": 8.261424993708633,
+  "air_mass_factor": 2.9017167419704255,
+  "surface_pressure_pa": 101325.0,
+  "surface_temperature_k": 295.0,
+  "n_air_cm3": 2.4877762289415078e+19,
+  "excess_ch4_column_per_ppmm_molec_cm2": 2487776228941508.0,
+  "ch4_background_ppm": 1.87,
+  "n_emit_bands": 285,
+  "n_in_window_bands": 52,
+  "window_nm": [
+    2137.0,
+    2493.0
+  ],
+  "nasa_target_used": false,
+  "shape_pearson_r_vs_nasa": 0.9281686515792804
+}

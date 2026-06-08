@@ -8,6 +8,7 @@ dependencies = [
     "numpy>=1.26",
     "xarray>=2024.0",
     "scipy>=1.13",
+    "hitran-api>=1.2",
 ]
 
 [build-system]

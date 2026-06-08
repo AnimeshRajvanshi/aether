@@ -128,6 +128,7 @@ version = "0.1.0"
 source = { editable = "packages/detection" }
 dependencies = [
     { name = "aether-ontology" },
+    { name = "hitran-api" },
     { name = "numpy" },
     { name = "scipy" },
     { name = "xarray" },
@@ -136,6 +137,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "aether-ontology", editable = "packages/ontology" },
+    { name = "hitran-api", specifier = ">=1.2" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "scipy", specifier = ">=1.13" },
     { name = "xarray", specifier = ">=2024.0" },
@@ -958,6 +960,14 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/01/ee/02a2c011bdab74c6fb3c75474d40b3052059d95df7e73351460c8588d963/h11-0.16.0.tar.gz", hash = "sha256:4e35b956cf45792e4caa5885e69fba00bdbc6ffafbfa020300e549b208ee5ff1", size = 101250, upload-time = "2025-04-24T03:35:25.427Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl", hash = "sha256:63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86", size = 37515, upload-time = "2025-04-24T03:35:24.344Z" },
+]
+
+[[package]]
+name = "hitran-api"
+version = "1.3.0.0"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/74/d8/4fa0fb59ce8d29cd153496b6e8f92c4fdee070dfc78724daab0008a0fe38/hitran_api-1.3.0.0-py2.py3-none-any.whl", hash = "sha256:ce4129913c64e1c40700d059c117c774704eafcc49faece61d875e08220950f5", size = 1285882, upload-time = "2026-01-13T05:56:50.156Z" },
 ]
 
 [[package]]

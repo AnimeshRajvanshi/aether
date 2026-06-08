@@ -97,3 +97,23 @@ def test_provenance_marks_nasa_unused() -> None:
     assert prov["nasa_target_used"] is False
     assert prov["hitran2020_doi"] == "10.1016/j.jqsrt.2021.107949"
     assert prov["hapi_doi"] == "10.1016/j.jqsrt.2016.03.005"
+
+
+# --- Stage B: guard the committed end-to-end report (CI-safe; reads the artifact) ---
+_STAGE_B = _KDIR / "hitran_k_stage_b_report.json"
+
+
+def test_stage_b_scaling_is_forward_not_reverse_fit() -> None:
+    rep = json.loads(_STAGE_B.read_text())
+    # the forward unit-chain scale, NOT chosen to match 27.1 t/hr
+    assert rep["ppm_scaling_factor_forward"] == 1.0
+    assert "not reverse-fit" in rep["scaling_chain"].lower()
+
+
+def test_stage_b_divergence_recorded_honestly() -> None:
+    rep = json.loads(_STAGE_B.read_text())
+    # the report must surface (not hide) the Pearson drop and the calibration shift
+    assert rep["pearson_in_bbox"] < rep["sprint2_pearson_in_bbox"]
+    assert rep["amplitude_vs_nasa_l2b_over_cc"] != rep["sprint2_bias_factor"]
+    # ours-cal Q is reported as-is (falls out of the forward scale), not patched to 27.1
+    assert abs(rep["q_ours_cal_t_hr"] - rep["sprint2_q_ours_cal_t_hr"]) > 1.0

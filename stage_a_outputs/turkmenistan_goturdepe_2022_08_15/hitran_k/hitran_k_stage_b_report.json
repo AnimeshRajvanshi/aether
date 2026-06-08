@@ -1,0 +1,20 @@
+{
+  "event_id": "turkmenistan_goturdepe_2022_08_15",
+  "stage": "B \u2014 end-to-end with our HITRAN k (forward scale 1.0)",
+  "ppm_scaling_factor_forward": 1.0,
+  "scaling_chain": "k in 1/(ppm\u00b7m vertical) = -AMF*sigma*N_per_ppmm; MF solves (x-\u03bc)=\u03b1(k\u2299\u03bc) so raw \u03b1 is already ppm\u00b7m vertical -> ppm_scaling=1.0 (not reverse-fit).",
+  "pearson_full_scene": 0.5155614868945652,
+  "pearson_in_bbox": 0.5322565294514309,
+  "sprint2_pearson_in_bbox": 0.7485177591221628,
+  "plume_cc_pixel_count": 58207,
+  "ime_t": 16.646415545273026,
+  "q_ours_cal_t_hr": 11.871919395525573,
+  "sprint2_q_ours_cal_t_hr": 27.08605196493112,
+  "amplitude_vs_nasa_l2b_over_cc": 0.7891727516032657,
+  "sprint2_bias_factor": 1.66,
+  "q_nasa_cal_t_hr": 15.0434988681589,
+  "sprint2_q_nasa_cal_t_hr": 16.31689877405489,
+  "u_eff_ms": 2.5365486888790993,
+  "mean_enh_ours_cc_ppm_m": 153.28164315539948,
+  "mean_enh_nasa_cc_ppm_m": 194.23078514051065
+}

@@ -61,9 +61,25 @@ def test_flaring_evidence_carries_temporal_caveat(hs: HypothesisSet) -> None:
 
 
 def test_bearing_disagreement_surfaced(hs: HypothesisSet) -> None:
+    import re
+
     joined = " ".join(hs.global_assumptions)
     assert "disagrees with the ERA5 upwind azimuth" in joined
-    assert "~20 deg" in joined  # the centroid->S vs upwind azimuth gap
+    # The gap must be SURFACED and internally consistent with the two bearings it
+    # quotes — not a hardcoded magic number (it shifts with the back-projected
+    # source S; e.g. ~20 deg under NASA-k, ~23 deg under the v2 HITRAN-k retrieval).
+    m = re.search(
+        r"source S \((\d+) deg\) disagrees with the ERA5 upwind azimuth \((\d+) deg\) "
+        r"by ~(\d+) deg",
+        joined,
+    )
+    assert m, f"bearing-gap clause not found / malformed in: {joined!r}"
+    s_bearing, upwind_az, stated_gap = (int(m.group(i)) for i in (1, 2, 3))
+    expected_gap = abs(((s_bearing - upwind_az + 180) % 360) - 180)
+    assert abs(stated_gap - expected_gap) <= 1, (
+        f"stated bearing gap ~{stated_gap} deg disagrees with |{s_bearing}-{upwind_az}| "
+        f"= {expected_gap} deg"
+    )
 
 
 def test_half_angle_weakest_link_assumption(hs: HypothesisSet) -> None:

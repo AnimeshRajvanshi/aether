@@ -1,12 +1,17 @@
 {
-  "started_utc": "2026-06-01T22:06:11.353115+00:00",
-  "finished_utc": "2026-06-01T22:06:20.508302+00:00",
+  "started_utc": "2026-06-09T23:21:20.253328+00:00",
+  "finished_utc": "2026-06-09T23:21:35.075987+00:00",
   "acquisition_utc": "2022-08-15T04:28:38Z",
   "l1b_granule_ur": "EMIT_L1B_RAD_001_20220815T042838_2222703_003",
   "l2a_mask_granule_ur": "EMIT_L2A_MASK_002_20220815T042838_2222703_003",
   "l2b_ch4_granule_ur": "EMIT_L2B_CH4ENH_002_20220815T042838_2222703_003",
-  "target_spectrum_source": "https://raw.githubusercontent.com/nasa/EMIT-Data-Resources/main/data/methane_tutorial/emit20220815t042838_ch4_target",
-  "target_spectrum_local_path": "/Users/animeshrajvanshi/.aether_cache/emit_targets/emit20220815t042838_ch4_target",
+  "target_spectrum_source": "Independent HITRAN2020 line-by-line (HAPI) \u2014 saturation-aware unit absorption via finite-enhancement log-radiance regression (Thompson/EMIT-ATBD method). NASA per-granule target NOT used (shape cross-check only, r=0.993). See stage_a_outputs/turkmenistan_goturdepe_2022_08_15/hitran_k/hitran_k_sat.json and hitran_k/hitran_k_sat_provenance.json.",
+  "target_spectrum_local_path": "/Users/animeshrajvanshi/Documents/aether/stage_a_outputs/turkmenistan_goturdepe_2022_08_15/hitran_k/hitran_k_sat.json",
+  "k_method": "HITRAN2020 line-by-line (HAPI) Voigt; saturation-aware unit absorption via finite-enhancement log-radiance regression (Thompson/EMIT-ATBD method), Gaussian-SRF convolved to EMIT",
+  "k_nasa_target_used": false,
+  "k_shape_pearson_r_vs_nasa": null,
+  "k_provenance_ref": "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/hitran_k/hitran_k_sat_provenance.json",
+  "ppm_scaling_factor_forward": 1.0,
   "radiance_shape": [
     1280,
     1242,
@@ -23,9 +28,9 @@
     "max_lon": 54.2,
     "max_lat": 39.7
   },
-  "pearson_full_scene": 0.7353646421754687,
-  "pearson_in_bbox": 0.7485177591221628,
-  "pearson_in_bbox_strong_signal": 0.3831515573405034,
+  "pearson_full_scene": 0.715395738270241,
+  "pearson_in_bbox": 0.7314199018679506,
+  "pearson_in_bbox_strong_signal": 0.34282315826874776,
   "n_pixels_compared_full": 2281401,
   "n_pixels_compared_bbox": 913911,
   "shrinkage_alpha_min": 1e-09,
@@ -33,5 +38,9 @@
   "shrinkage_alpha_p95": 1e-09,
   "shrinkage_alpha_max": 1e-09,
   "shrinkage_alpha_n_columns": 1242,
-  "notes": []
+  "retrieval": "v2 saturation-aware HITRAN k (operational migration; Sprint 6)",
+  "nasa_k_baseline": "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/stage_a_report.nasa_k.json",
+  "notes": [
+    "Operational retrieval migrated from NASA per-granule k to the independent v2 HITRAN2020/HAPI saturation-aware k. NASA-k baseline preserved alongside."
+  ]
 }

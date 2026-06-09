@@ -133,7 +133,10 @@ def test_raster_assets_served() -> None:
         assert r.status_code == 200
         assert r.headers["content-type"] == "image/png"
     geo = client.get(f"/api/events/{GOTURDEPE}/mask.geojson").json()
-    assert geo["properties"]["cc_label"] == 1213
+    # cc_label must equal the quantified CC in q_estimate.json — not a magic constant
+    # (it changed 1213 → 1143 in the Sprint 6 v2 HITRAN-k operational migration).
+    q = json.loads((config.stage_b_dir(GOTURDEPE) / "q_estimate.json").read_text())
+    assert geo["properties"]["cc_label"] == q["plume_cc_label"]
     bounds = client.get(f"/api/events/{GOTURDEPE}/bounds").json()
     assert set(bounds["bounds"]) == {"west", "south", "east", "north"}
 

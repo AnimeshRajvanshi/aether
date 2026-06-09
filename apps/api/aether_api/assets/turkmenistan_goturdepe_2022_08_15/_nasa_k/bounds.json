@@ -3,18 +3,18 @@
   "crs": "EPSG:4326",
   "bounds": {
     "west": 53.2854557955927,
-    "east": 54.40570818244236,
-    "south": 39.21826997098482,
-    "north": 39.50131534655865
+    "east": 54.402997019841074,
+    "south": 39.21772773846457,
+    "north": 39.50239981159916
   },
   "colormap": {
     "name": "inferno",
     "vmin_ppm_m": 0.0,
-    "vmax_ppm_m": 974.2132628585503
+    "vmax_ppm_m": 1156.1986891051324
   },
   "diff_colormap": {
     "name": "RdBu_r",
-    "abs_limit_ppm_m": 917.7281844503563
+    "abs_limit_ppm_m": 1024.7844682217726
   },
   "rendering": "Cropped to CC-1213 bbox + margin. Alpha ramps with normalized signal; in-mask (quantified plume) pixels floored to 0.92 opacity, off-mask scaled to 0.55 as faint context. Real pixels throughout \u2014 no thresholding-away.",
   "source": {

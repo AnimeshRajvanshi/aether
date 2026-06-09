@@ -200,8 +200,11 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
             range_high_t_hr=ours_high,
             sigma_fractional=sigma,
             note=(
-                "Central estimate from our matched-filter retrieval. A one-sided "
-                f"+{bias:g}× systematic from MF over-amplitude is carried separately."
+                "Central estimate from our INDEPENDENT retrieval — matched filter on a "
+                "methane absorption spectrum generated from HITRAN2020 via HAPI (NASA's "
+                f"per-granule target is not used). The +{bias:.2f}× MF over-amplitude vs NASA "
+                "L2B is now reproduced independently — a real MF systematic, not a "
+                "NASA-convention artifact — and carried one-sided."
             ),
         ),
         nasa_cal=CalibratedRate(
@@ -211,8 +214,9 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
             range_high_t_hr=nasa_high,
             sigma_fractional=sigma,
             note=(
-                f"After dividing IME by the {bias:g}× MF amplitude bias measured "
-                "against NASA L2B at Stage A. More directly comparable to NASA-derived rates."
+                f"Our IME divided by the independently-measured {bias:.2f}× MF amplitude ratio "
+                "vs NASA L2B (ours/NASA over the plume CC), anchoring the rate to NASA's "
+                "enhancement amplitude for direct comparison to NASA-derived rates."
             ),
         ),
         enhancement_bias_factor=bias,
@@ -256,7 +260,7 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
             label="MF amplitude (systematic)",
             kind="systematic",
             factor=bias,
-            display=f"+{bias:g}×",
+            display=f"+{bias:.2f}×",
             bar_fraction=1.0,
         ),
     ]
@@ -329,9 +333,10 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
     acq_date = a["acquisition_utc"][:10]
     brief = (
         f"EMIT imaged a coherent methane plume over the {disp['short_name'].split('–')[0].title()} "
-        f"gas field on {acq_date}. Our independent matched-filter retrieval reproduces "
-        f"NASA's enhancement at r = {validation.pearson_in_bbox:.2f} and yields "
-        f"{geometry.ime_t:.1f} t integrated mass over a {geometry.area_km2:.1f} km² mask. "
+        f"gas field on {acq_date}. Our independent retrieval — a matched filter on a methane "
+        f"absorption spectrum generated from HITRAN2020 via HAPI, with no NASA per-granule "
+        f"target — reproduces NASA's L2B enhancement at r = {validation.pearson_in_bbox:.2f} and "
+        f"yields {geometry.ime_t:.1f} t integrated mass over a {geometry.area_km2:.1f} km² mask. "
         f"With a {atmosphere.u10_speed_ms:.1f} m/s wind this implies ≈{ours_central:.0f} t CH₄/hr "
         f"from this single source — one of {n_sources} Thorpe et al. quantify at "
         f"{ref_total:g} ± {meas.uncertainty:g} t/hr."

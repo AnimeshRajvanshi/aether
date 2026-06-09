@@ -61,12 +61,14 @@ GENERATION_METHOD = "rule_based_deterministic_v1"
 WEIGHTS = {"spatial_consistency": 0.60, "type_prior": 0.25, "magnitude_consistency": 0.15}
 
 # Type-prior basis: Thorpe et al. 2023 attribute THIS cluster to O&G super-emitters;
-# an isolated ~27 t/hr point source spatially inside an active gas field is
-# characteristically O&G (compressor venting, well/processing fugitives, flaring).
+# an isolated super-emitter-magnitude point source spatially inside an active gas
+# field is characteristically O&G (compressor venting, well/processing fugitives,
+# flaring). The exact rate is templated from q_central_t_hr at render time.
 TYPE_PRIOR_OG = 0.90
 TYPE_PRIOR_NON_OG = 0.15
-# Magnitude basis: ~27 t/hr is well within documented O&G super-emitter range and
-# ~2x the per-source mean of the Thorpe 163 t/hr / 12-source cluster.
+# Magnitude basis: the retrieved rate is well within documented O&G super-emitter
+# range and a small multiple of the per-source mean of the Thorpe 163 t/hr /
+# 12-source cluster (the rate itself is templated, never hardcoded).
 MAGNITUDE_OG = 0.90
 MAGNITUDE_NON_OG = 0.40
 # Spatial basis: H1 = S sits well inside a LARGE field polygon, so although S's
@@ -255,8 +257,8 @@ def build_hypothesis_set(root: Path | None = None) -> HypothesisSet:
         comp(
             "type_prior",
             TYPE_PRIOR_OG,
-            "Active oil & gas field; ~27 t/hr point sources here are characteristically O&G "
-            "(Thorpe 2023 attributes this cluster to O&G).",
+            f"Active oil & gas field; ~{q_t_hr:.0f} t/hr point sources here are characteristically "
+            f"O&G (Thorpe 2023 attributes this cluster to O&G).",
         ),
         comp(
             "magnitude_consistency",
@@ -456,14 +458,15 @@ def build_hypothesis_set(root: Path | None = None) -> HypothesisSet:
         comp(
             "type_prior",
             TYPE_PRIOR_NON_OG,
-            "Natural geologic methane seeps exist in the South Caspian region, but an isolated "
-            "~27 t/hr point source spatially coincident with an active gas field is far more "
-            "consistent with O&G; non-O&G is not excluded but is a low prior.",
+            f"Natural geologic methane seeps exist in the South Caspian region, but an isolated "
+            f"~{q_t_hr:.0f} t/hr point source spatially coincident with an active gas field is far "
+            f"more consistent with O&G; non-O&G is not excluded but is a low prior.",
         ),
         comp(
             "magnitude_consistency",
             MAGNITUDE_NON_OG,
-            "A ~27 t/hr natural point seep is possible but high; magnitude weakly disfavors it.",
+            f"A ~{q_t_hr:.0f} t/hr natural point seep is possible but high; magnitude weakly "
+            f"disfavors it.",
         ),
     ]
     h3_score = round(sum(c.value * c.weight for c in h3_components), 4)

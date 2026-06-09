@@ -187,8 +187,14 @@ def _write_colormap_png(
     print(f"  wrote {path.relative_to(REPO_ROOT)}  ({arr.shape[1]}x{arr.shape[0]})")
 
 
-def _write_mask_geojson(mask: np.ndarray, transform: Affine, path: Path) -> None:
-    """Vectorize the plume mask to lon/lat polygons (largest first)."""
+def _write_mask_geojson(mask: np.ndarray, transform: Affine, path: Path, cc_label: int) -> None:
+    """Vectorize the plume mask to lon/lat polygons (largest first).
+
+    ``cc_label`` is the quantified connected-component label read from
+    ``q_estimate.json`` — never hardcoded, so the geojson always names the CC
+    that was actually quantified (it changed from 1213 → 1143 in the Sprint 6
+    v2 HITRAN-k migration because the enhancement map changed).
+    """
     shapes = [
         geom
         for geom, val in rasterio.features.shapes(mask.astype(np.uint8), transform=transform)
@@ -197,7 +203,7 @@ def _write_mask_geojson(mask: np.ndarray, transform: Affine, path: Path) -> None
     shapes.sort(key=lambda g: -len(g["coordinates"][0]))
     fc: dict[str, Any] = {
         "type": "FeatureCollection",
-        "properties": {"cc_label": 1213, "source": "stage_b segment_plume_varon p<0.05"},
+        "properties": {"cc_label": cc_label, "source": "stage_b segment_plume_varon p<0.05"},
         "features": [
             {"type": "Feature", "properties": {"rank": i}, "geometry": g}
             for i, g in enumerate(shapes)
@@ -258,7 +264,8 @@ def main() -> int:
     dx = float(np.mean(np.diff(lon_cc)))
     dy = float(np.mean(np.diff(lat_cc)))
     crop_transform = Affine(dx, 0, bounds["west"], 0, dy, bounds["north"])
-    _write_mask_geojson(mask_c, crop_transform, OUT_DIR / "mask.geojson")
+    cc_label = int(json.loads(Q_ESTIMATE.read_text())["plume_cc_label"])
+    _write_mask_geojson(mask_c, crop_transform, OUT_DIR / "mask.geojson", cc_label)
 
     bounds_doc = {
         "event_id": EVENT_ID,

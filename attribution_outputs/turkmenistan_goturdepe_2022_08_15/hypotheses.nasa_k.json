@@ -6,8 +6,8 @@
   "scoring_disclaimer": "Scores are a documented additive heuristic (weighted components shown), NOT calibrated probabilities. We have no calibration basis for probabilities; rely on the qualitative tiers and the visible component rationales.",
   "confidence_cap": "No hypothesis may exceed MODERATE confidence: with no OGIM point data, the best defensible claim is field/sector-level. H1 is field-level MODERATE, not facility-level HIGH.",
   "plume_summary": {
-    "emission_rate_ours_cal_t_hr": "23.405",
-    "upwind_source_S": "39.33380 N, 53.98835 E",
+    "emission_rate_ours_cal_t_hr": "27.086",
+    "upwind_source_S": "39.34331 N, 53.98627 E",
     "upwind_azimuth_deg": "76.5",
     "wedge_half_angle_1sigma_deg": "14.5",
     "wedge_half_angle_2sigma_deg": "27.3",
@@ -15,9 +15,9 @@
     "search_radius_km": "25"
   },
   "global_assumptions": [
-    "Steady ERA5 wind over the ~1.52 h plume transit (transit = plume length 13922 m / U_eff 2.54 m/s).",
+    "Steady ERA5 wind over the ~1.52 h plume transit (transit = plume length 13878 m / U_eff 2.54 m/s).",
     "WEAKEST LINK: the wedge half-angle (14.5 deg at 1-sigma, 27.3 deg at 2-sigma) is approximated from the ERA5 wind SPEED 1-sigma (1.79 m/s) treated as an isotropic wind-vector uncertainty — NOT a measured wind-direction variance. Sub-field localization rests on this approximation.",
-    "The bearing from the plume centroid to the back-projected source S (99 deg) disagrees with the ERA5 upwind azimuth (76 deg) by ~23 deg. This is within the 2-sigma wedge but widens source-localization uncertainty; sub-field placement should not be over-trusted.",
+    "The bearing from the plume centroid to the back-projected source S (97 deg) disagrees with the ERA5 upwind azimuth (76 deg) by ~20 deg. This is within the 2-sigma wedge but widens source-localization uncertainty; sub-field placement should not be over-trusted.",
     "OGIM field boundaries are accepted as drawn (Barsagelmez SRC_DATE 2014-01-01); field extent/accuracy is not independently verified here.",
     "Sector prior favoring O&G rests on Thorpe et al. 2023 attributing this cluster to O&G super-emitters and on the active-gas-field context.",
     "HEADLINE: OGIM v2.7 contains NO well, compressor, processing, tank-battery or equipment records anywhere in Turkmenistan, so facility-level attribution is impossible; all hypotheses are field/sector-level and capped at MODERATE confidence."
@@ -34,7 +34,7 @@
         "ogim_name": "BARSAGELMEZ",
         "operator": "N/A"
       },
-      "claim": "The ~23 t/hr methane plume most plausibly originates from oil & gas operations within the BARSAGELMEZ field, inside which the back-projected upwind source falls. Field/sector-level only: no specific facility can be named because OGIM has no point infrastructure in this region.",
+      "claim": "The ~27 t/hr methane plume most plausibly originates from oil & gas operations within the BARSAGELMEZ field, inside which the back-projected upwind source falls. Field/sector-level only: no specific facility can be named because OGIM has no point infrastructure in this region.",
       "confidence_tier": "moderate",
       "confidence_rationale": "Heuristic score 0.87 (band high) CAPPED to moderate: facility-level attribution is impossible (no OGIM point data), so MODERATE field/sector-level is the highest defensible tier — NOT high-confidence facility attribution.",
       "score": 0.87,
@@ -50,21 +50,21 @@
           "name": "type_prior",
           "value": 0.9,
           "weight": 0.25,
-          "rationale": "Active oil & gas field; ~23 t/hr point sources here are characteristically O&G (Thorpe 2023 attributes this cluster to O&G).",
+          "rationale": "Active oil & gas field; ~27 t/hr point sources here are characteristically O&G (Thorpe 2023 attributes this cluster to O&G).",
           "contribution": 0.225
         },
         {
           "name": "magnitude_consistency",
           "value": 0.9,
           "weight": 0.15,
-          "rationale": "~23 t/hr is within documented O&G super-emitter range and ~2x the per-source mean of the Thorpe 163 t/hr / 12-source cluster.",
+          "rationale": "~27 t/hr is within documented O&G super-emitter range and ~2x the per-source mean of the Thorpe 163 t/hr / 12-source cluster.",
           "contribution": 0.135
         }
       ],
       "evidence": [
         {
           "kind": "spatial_containment",
-          "statement": "The back-projected upwind source S (39.3338 N, 53.9884 E) lies inside the BARSAGELMEZ field polygon (OGIM_ID 2017938, 133.0 km^2).",
+          "statement": "The back-projected upwind source S (39.3433 N, 53.9863 E) lies inside the BARSAGELMEZ field polygon (OGIM_ID 2017938, 133.0 km^2).",
           "source": {
             "dataset": "packages/causal/aether_causal/resources/ogim/ogim_v2.7_goturdepe_region.geojson",
             "locator": "ogim_id=2017938 BARSAGELMEZ",
@@ -86,10 +86,10 @@
         },
         {
           "kind": "magnitude_range",
-          "statement": "Emission rate 23.4 t/hr (OURS-CAL) is a plausible single-source super-emitter magnitude within the Thorpe 163 +/- 18 t/hr, 12-source cluster.",
+          "statement": "Emission rate 27.1 t/hr (OURS-CAL) is a plausible single-source super-emitter magnitude within the Thorpe 163 +/- 18 t/hr, 12-source cluster.",
           "source": {
             "dataset": "stage_b_outputs/turkmenistan_goturdepe_2022_08_15/q_estimate.json",
-            "locator": "q_central_t_hr=23.405",
+            "locator": "q_central_t_hr=27.086",
             "ogim_id": null,
             "ogim_layer": null
           },
@@ -97,7 +97,7 @@
         },
         {
           "kind": "flaring_corroboration",
-          "statement": "A VIIRS flaring detection (OGIM_ID 141883, 'UPSTREAM OIL') lies 3.2 km from S within the 2-sigma wedge, corroborating ONGOING upstream O&G activity in the area.",
+          "statement": "A VIIRS flaring detection (OGIM_ID 141883, 'UPSTREAM OIL') lies 3.4 km from S within the 2-sigma wedge, corroborating ONGOING upstream O&G activity in the area.",
           "source": {
             "dataset": "packages/causal/aether_causal/resources/ogim/ogim_v2.7_goturdepe_region.geojson",
             "locator": "ogim_id=141883 flaring",
@@ -110,11 +110,11 @@
       "assumptions": [
         "Wind back-projection places the source upwind; S (top-5%-upwind plume pixels) is the best source estimate.",
         "WEAKEST LINK: the wedge half-angle (14.5 deg at 1-sigma, 27.3 deg at 2-sigma) is approximated from the ERA5 wind SPEED 1-sigma (1.79 m/s) treated as an isotropic wind-vector uncertainty — NOT a measured wind-direction variance. Sub-field localization rests on this approximation.",
-        "The bearing from the plume centroid to the back-projected source S (99 deg) disagrees with the ERA5 upwind azimuth (76 deg) by ~23 deg. This is within the 2-sigma wedge but widens source-localization uncertainty; sub-field placement should not be over-trusted."
+        "The bearing from the plume centroid to the back-projected source S (97 deg) disagrees with the ERA5 upwind azimuth (76 deg) by ~20 deg. This is within the 2-sigma wedge but widens source-localization uncertainty; sub-field placement should not be over-trusted."
       ],
       "counter_considerations": [
         "No specific facility can be identified — OGIM has zero wells/compressors/processing in Turkmenistan; this is field-level attribution only.",
-        "Sub-field placement is weakly constrained (see the 23 deg bearing gap and the speed-derived wedge); H2 cannot be excluded."
+        "Sub-field placement is weakly constrained (see the 20 deg bearing gap and the speed-derived wedge); H2 cannot be excluded."
       ],
       "falsification": "A facility-resolved inventory (or higher-resolution back-projection) placing the source outside BARSAGELMEZ, or evidence the plume originates from a non-O&G process, would falsify this.",
       "generation_method": "rule_based_deterministic_v1"
@@ -139,7 +139,7 @@
           "name": "spatial_consistency",
           "value": 0.3,
           "weight": 0.6,
-          "rationale": "Requires displacing the true source from S (which is inside BARSAGELMEZ). The localization uncertainty — speed-derived wedge + ~23 deg bearing gap — permits an alternative location elsewhere in BARSAGELMEZ or in adjacent GOTURDEPE (S not contained in GOTURDEPE; ~24 km to its interior), but does not favor it.",
+          "rationale": "Requires displacing the true source from S (which is inside BARSAGELMEZ). The localization uncertainty — speed-derived wedge + ~20 deg bearing gap — permits an alternative location elsewhere in BARSAGELMEZ or in adjacent GOTURDEPE (S not contained in GOTURDEPE; ~23 km to its interior), but does not favor it.",
           "contribution": 0.18
         },
         {
@@ -160,7 +160,7 @@
       "evidence": [
         {
           "kind": "localization_uncertainty",
-          "statement": "The bearing from the plume centroid to S (99 deg) disagrees with the ERA5 upwind azimuth (76 deg) by ~23 deg, and the wedge half-angle is speed-approximated — so an alternative in-field/adjacent location is within uncertainty.",
+          "statement": "The bearing from the plume centroid to S (97 deg) disagrees with the ERA5 upwind azimuth (76 deg) by ~20 deg, and the wedge half-angle is speed-approximated — so an alternative in-field/adjacent location is within uncertainty.",
           "source": {
             "dataset": "stage_b_outputs/turkmenistan_goturdepe_2022_08_15/wind_location_check.json",
             "locator": "source_lat,source_lon (upwind source S)",
@@ -171,7 +171,7 @@
         },
         {
           "kind": "adjacent_field",
-          "statement": "GOTURDEPE (OGIM_ID 2017939) is an adjacent OIL & GAS field; S is NOT inside it (~24 km to its interior point), so it is a weaker but non-excludable alternative.",
+          "statement": "GOTURDEPE (OGIM_ID 2017939) is an adjacent OIL & GAS field; S is NOT inside it (~23 km to its interior point), so it is a weaker but non-excludable alternative.",
           "source": {
             "dataset": "packages/causal/aether_causal/resources/ogim/ogim_v2.7_goturdepe_region.geojson",
             "locator": "ogim_id=2017939 GOTURDEPE",
@@ -218,14 +218,14 @@
           "name": "type_prior",
           "value": 0.15,
           "weight": 0.25,
-          "rationale": "Natural geologic methane seeps exist in the South Caspian region, but an isolated ~23 t/hr point source spatially coincident with an active gas field is far more consistent with O&G; non-O&G is not excluded but is a low prior.",
+          "rationale": "Natural geologic methane seeps exist in the South Caspian region, but an isolated ~27 t/hr point source spatially coincident with an active gas field is far more consistent with O&G; non-O&G is not excluded but is a low prior.",
           "contribution": 0.0375
         },
         {
           "name": "magnitude_consistency",
           "value": 0.4,
           "weight": 0.15,
-          "rationale": "A ~23 t/hr natural point seep is possible but high; magnitude weakly disfavors it.",
+          "rationale": "A ~27 t/hr natural point seep is possible but high; magnitude weakly disfavors it.",
           "contribution": 0.06
         }
       ],

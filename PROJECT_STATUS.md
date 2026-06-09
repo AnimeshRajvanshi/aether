@@ -1,6 +1,6 @@
 # PROJECT_STATUS.md
 
-> This status was last verified by running the tests and linter on 2026-06-08 22:12 MST.
+> Last verified by running tests + linter on 2026-06-08 22:19:34 MST.
 
 ```yaml
 phase: "Sprint 6 - HITRAN Independence (Stage A + B complete, awaiting human review)"
@@ -41,8 +41,9 @@ recent_changes:
   - "Sprint 5: SOURCE ATTRIBUTION section in the inspector rendering the committed hypotheses.json verbatim (caveats preserved)."
   - "Sprint 4: field/sector-level source-attribution engine (OGIM-backed, no fabricated facilities)."
 validation_status:
-  tests: "uv run pytest -> 175 passed, 6 deselected, 2 warnings (exit code 0). Verified 2026-06-08 22:12 MST."
-  lint: "uv run ruff check . -> 72 errors (exit code 1). All in PRE-EXISTING files, not current Sprint 6 work: mostly scripts/diagnose_*.py (E501/N806), plus a few in packages/ontology/ and eval/harness/. Rule counts: 37 E501, 19 N806, 7 F541, 1 each I001/F841/F401/B905. Sprint 6 files lint clean per-file."
+  verified_at: "2026-06-08 22:19:34 MST (fresh run of pytest + ruff)"
+  tests: "uv run pytest -> 175 passed, 6 deselected, 2 warnings (exit code 0). NOT proof of the science thesis — see 'Validated vs. Unvalidated'."
+  lint: "uv run ruff check . -> Found 72 errors (exit code 1, FAILING). All in PRE-EXISTING files, not current Sprint 6 work: mostly scripts/diagnose_*.py (E501/N806), plus a few in packages/ontology/ and eval/harness/. Rule counts: 37 E501, 19 N806, 7 F541, 1 each I001/F841/F401/B905. Sprint 6 files lint clean per-file."
   sprint_gate: "Sprint 1 gate PASSED (aether reproduce renders a real methane plume). Current gate: Sprint 6 human review of the HITRAN independence calibration verdict before the provenance-line UI update."
   eval: "aether-eval run = stub_pipeline, 0/3 recall (baseline; real detection not yet registered as the eval pipeline)"
 next_milestones:
@@ -85,13 +86,44 @@ Everything composes the ontology entities (`Observation`, `Detection`, `Phenomen
 
 ## Validation & Testing
 
-_Verified by a fresh run on 2026-06-08 22:12 MST._
+_Verbatim results of a fresh run on **2026-06-08 22:19:34 MST** (not transcribed from any prior doc)._
 
-- **Tests — `uv run pytest`: 175 passed, 6 deselected, 2 warnings — exit code 0.** The 6 deselected are network-gated integration tests. Includes the no-fabrication guard (attribution entities trace to the committed OGIM subset) and the HITRAN independence guards (k generation reads no value from NASA's file; reproducible regeneration).
-- **Lint — `uv run ruff check .`: 72 errors — exit code 1.** These are **all in pre-existing files, not current Sprint 6 work**: chiefly the diagnostic scripts (`scripts/diagnose_stage_a.py` 18, `..._confirm.py` 15, `..._alignment.py` 13, etc.), plus a few in `packages/ontology/aether_ontology/entities.py` (6), `eval/harness/aether_eval/cli.py` (4), and tests. Rule breakdown: 37 × E501 (line length), 19 × N806 (non-lowercase variable), 7 × F541 (f-string without placeholders), and 1 each of I001/F841/F401/B905. New Sprint 6 files (`hitran_k.py`, the fetch/run scripts, tests) pass `ruff check` when checked per-file; the repo-wide failure is legacy lint debt that predates this work. Fixing it is out of scope for this verification.
+**`uv run pytest` — exit code 0**
+```
+================ 175 passed, 6 deselected, 2 warnings in 11.55s ================
+```
+The 6 deselected are network-gated integration tests. The suite includes the no-fabrication guard (attribution entities trace to the committed OGIM subset) and the HITRAN independence guards (k generation reads no value from NASA's file; reproducible regeneration). **What this proves: the plumbing, schema guards, and reproducibility hold — NOT that the science thesis is validated** (see Validated vs. Unvalidated below).
+
+**`uv run ruff check .` — exit code 1**
+```
+Found 72 errors.
+[*] 11 fixable with the `--fix` option (5 hidden fixes can be enabled with the `--unsafe-fixes` option).
+```
+All 72 are in **pre-existing files, not current Sprint 6 work**: chiefly the diagnostic scripts (`scripts/diagnose_stage_a.py` 18, `..._confirm.py` 15, `..._alignment.py` 13, etc.), plus `packages/ontology/aether_ontology/entities.py` (6), `eval/harness/aether_eval/cli.py` (4), and a couple of tests. Rule breakdown: 37 × E501, 19 × N806, 7 × F541, and 1 each of I001/F841/F401/B905. New Sprint 6 files pass `ruff check` per-file; the repo-wide failure is legacy lint debt. **The linter currently fails (exit 1); this is not hidden.**
+
 - **Sprint 1 gate:** PASSED — `aether reproduce <event_id>` renders a real methane plume; Goturdepe Stage A/B committed.
 - **Eval:** `uv run aether-eval run` → stub_pipeline, recall 0/3 (baseline only; real detection not wired into the harness).
 - **Sprint 6 control:** the Stage B runner fed NASA's `k` reproduces Sprint 2's Pearson exactly (full 0.7354 / bbox 0.7485), confirming the pipeline is faithful and the divergence is the `k` swap alone.
+
+## Validated vs. Unvalidated
+
+> ⚠️ **The 175 passing tests are NOT proof that the core thesis is validated.** They exercise plumbing, schema guards, reproducibility, and the no-fabrication guards. The scientific claims are validated only where explicitly stated below, against real reference data — on a **single event (Goturdepe)**.
+>
+> **Note on this request:** the instruction asked to distinguish PX4/Gazebo items (headless SIH telemetry path, bridge end-to-end, gate plumbing, Gazebo DetachableJoint baseline, INDI+RLS offboard controller) and to pull from `ROADMAP.md`. **None of those exist in this repository** — there is no PX4, Gazebo, MAVLink, INDI/RLS, SIH, telemetry bridge, or `ROADMAP.md` here (verified by grep; the only ADR is 0001-ontology-as-foundation). Aether is a methane-detection/attribution engine, not a flight-control project. Rather than fabricate that content (which the cardinal rule forbids), the table below applies the same validated-vs-written discipline to Aether's *actual* state, sourced from `docs/science/` and the task briefs.
+
+**VALIDATED (verified against real reference data / reproducible runs):**
+- **Matched-filter detection + IME quantification on the real Goturdepe EMIT granule**, validated against NASA's L2B CH4ENH product: bbox Pearson **0.7485** (`docs/science/sprint2_validation.md`, `stage_a_outputs/`, `stage_b_outputs/q_estimate.json`).
+- **Pipeline faithfulness control (Sprint 6):** the Stage B runner fed NASA's `k` reproduces Sprint 2's Pearson exactly (full 0.7354 / bbox 0.7485).
+- **HITRAN `k` spectral SHAPE** vs NASA's per-granule target (cross-check only): Pearson **0.93** (`docs/science/sprint6_hitran_independence.md`).
+- **API serves committed artifacts byte-for-byte** (endpoint tests assert API JSON == committed files; no-fabrication guard on attribution entities).
+
+**UNVALIDATED (written/planned, or run but NOT proven against ground truth):**
+- **HITRAN independence at the RETRIEVAL level: NOT validated.** End-to-end map Pearson drops 0.75 → **0.53** (and ~0.04 on strong plume pixels); the independent `k` is NOT a proven drop-in for NASA's. A saturation-aware `k` (Stage C) is *planned but unbuilt*.
+- **Detection performance via the eval harness: UNVALIDATED.** `aether-eval` runs a `stub_pipeline` (0/3 recall); the real matched filter is **not wired into the harness**, so the eval number does not reflect actual detection performance.
+- **Source attribution: not validated against ground truth.** The engine runs and is honest (field/sector-level, sparse-coverage caveats), but the ranked hypotheses are *not* checked against a confirmed source.
+- **Generalization: UNVALIDATED beyond one event.** All quantitative validation is on Goturdepe only; Permian is deferred (press-release reference only, no per-granule NASA target).
+- **AI orchestration layer (`packages/ai`): not built.**
+- **Absolute flux accuracy:** the NASA-L2B-anchored flux (~15–16 t/hr) is consistent across methods but is NOT independently validated against an in-situ or peer-reviewed single-source measurement (Thorpe 2023 is a 12-source cluster total).
 
 ## Next Steps
 

@@ -61,6 +61,10 @@ L2B_TIF = (
 )
 
 PLUME_BBOX = {"min_lon": 53.5, "min_lat": 39.3, "max_lon": 54.2, "max_lat": 39.7}
+# (min_lon, max_lon, min_lat, max_lat) — argument order for largest_component_in_region.
+_BBOX_ARGS = (
+    PLUME_BBOX["min_lon"], PLUME_BBOX["max_lon"], PLUME_BBOX["min_lat"], PLUME_BBOX["max_lat"],
+)
 PIXEL_SIZE_DEG = 5.422325e-4
 C_MAX_PPM_M = 10000.0
 SEG_P_VALUES = (0.01, 0.05, 0.10)
@@ -68,12 +72,12 @@ TOP_FRACTION_FOR_SOURCE = 0.05  # locked (matches diagnose_wind_location.py)
 
 # Provenance descriptor for the FLIPPED target-spectrum line. The independent k is
 # generated, not downloaded; this string names the method + the file we wrote.
-K_LOCAL = "stage_a_outputs/%s/hitran_k/hitran_k_sat.json" % EVENT_ID
+K_LOCAL = f"stage_a_outputs/{EVENT_ID}/hitran_k/hitran_k_sat.json"
 TARGET_SPECTRUM_SOURCE = (
     "Independent HITRAN2020 line-by-line (HAPI) — saturation-aware unit absorption "
     "via finite-enhancement log-radiance regression (Thompson/EMIT-ATBD method). "
     "NASA per-granule target NOT used (shape cross-check only, r=0.993). "
-    "See %s and hitran_k/hitran_k_sat_provenance.json." % K_LOCAL
+    f"See {K_LOCAL} and hitran_k/hitran_k_sat_provenance.json."
 )
 
 
@@ -176,11 +180,11 @@ def main() -> int:
         "l2b_ch4_granule_ur": nasa_a["l2b_ch4_granule_ur"],
         # --- FLIPPED provenance: independent HITRAN, NASA target NOT used ---
         "target_spectrum_source": TARGET_SPECTRUM_SOURCE,
-        "target_spectrum_local_path": str((SA_DIR / "hitran_k" / "hitran_k_sat.json")),
+        "target_spectrum_local_path": str(SA_DIR / "hitran_k" / "hitran_k_sat.json"),
         "k_method": res.provenance["method"],
         "k_nasa_target_used": False,
         "k_shape_pearson_r_vs_nasa": shape_r,
-        "k_provenance_ref": "stage_a_outputs/%s/hitran_k/hitran_k_sat_provenance.json" % EVENT_ID,
+        "k_provenance_ref": f"stage_a_outputs/{EVENT_ID}/hitran_k/hitran_k_sat_provenance.json",
         "ppm_scaling_factor_forward": 1.0,
         "radiance_shape": list(radiance.shape),
         "bands_used": int(mf.band_indices_kept.size),
@@ -200,7 +204,7 @@ def main() -> int:
         "shrinkage_alpha_max": float(alpha.max()) if alpha.size else None,
         "shrinkage_alpha_n_columns": int(alpha.size),
         "retrieval": "v2 saturation-aware HITRAN k (operational migration; Sprint 6)",
-        "nasa_k_baseline": "stage_a_outputs/%s/stage_a_report.nasa_k.json" % EVENT_ID,
+        "nasa_k_baseline": f"stage_a_outputs/{EVENT_ID}/stage_a_report.nasa_k.json",
         "notes": [
             "Operational retrieval migrated from NASA per-granule k to the independent "
             "v2 HITRAN2020/HAPI saturation-aware k. NASA-k baseline preserved alongside.",
@@ -216,10 +220,7 @@ def main() -> int:
     n_air = quantification.n_air_mol_per_m3(p_pa, t_k)
 
     seg = segment_plume_varon(ours_ortho, bg_mask, p_value=0.05)
-    plume_label = largest_component_in_region(
-        seg.labels, lon_c, lat_c,
-        PLUME_BBOX["min_lon"], PLUME_BBOX["max_lon"], PLUME_BBOX["min_lat"], PLUME_BBOX["max_lat"],
-    )
+    plume_label = largest_component_in_region(seg.labels, lon_c, lat_c, *_BBOX_ARGS)
     plume_mask = seg.labels == plume_label
     cc_rows, cc_cols = np.where(plume_mask)
     centroid_lat = float(np.mean(lat_c[cc_rows]))
@@ -254,10 +255,7 @@ def main() -> int:
     seg_counts: list[int] = []
     for p in SEG_P_VALUES:
         seg_alt = segment_plume_varon(ours_ortho, bg_mask, p_value=p)
-        label_alt = largest_component_in_region(
-            seg_alt.labels, lon_c, lat_c,
-            PLUME_BBOX["min_lon"], PLUME_BBOX["max_lon"], PLUME_BBOX["min_lat"], PLUME_BBOX["max_lat"],
-        )
+        label_alt = largest_component_in_region(seg_alt.labels, lon_c, lat_c, *_BBOX_ARGS)
         mask_alt = seg_alt.labels == label_alt
         if int(mask_alt.sum()) < 10:
             seg_qs.append(float("nan"))
@@ -329,7 +327,7 @@ def main() -> int:
         "q_low_t_hr": float(q_low),
         "q_high_t_hr": float(q_high),
         "retrieval": "v2 saturation-aware HITRAN k (operational migration; Sprint 6)",
-        "nasa_k_baseline": "stage_b_outputs/%s/q_estimate.nasa_k.json" % EVENT_ID,
+        "nasa_k_baseline": f"stage_b_outputs/{EVENT_ID}/q_estimate.nasa_k.json",
         "notes": [],
     }
     (SB_DIR / "q_estimate.json").write_text(json.dumps(q_report, indent=2, default=str))
@@ -405,8 +403,10 @@ def main() -> int:
 
     log("\n===== operational migration summary (v2) =====")
     log(f"  Stage A Pearson bbox : {pearson_bbox:.4f}  (NASA-k {nasa_a['pearson_in_bbox']:.4f})")
-    log(f"  Q ours-cal           : {result.q_tonnes_per_hr:.3f} t/hr  (NASA-k {nasa_q['q_central_t_hr']:.3f})")
-    log(f"  Q nasa-cal           : {q_nasa_cal:.3f} t/hr  (NASA-k {nasa_q['q_central_nasa_calibrated_t_hr']:.3f})")
+    log(f"  Q ours-cal           : {result.q_tonnes_per_hr:.3f} t/hr  "
+        f"(NASA-k {nasa_q['q_central_t_hr']:.3f})")
+    log(f"  Q nasa-cal           : {q_nasa_cal:.3f} t/hr  "
+        f"(NASA-k {nasa_q['q_central_nasa_calibrated_t_hr']:.3f})")
     log(f"  MF amplitude bias    : {bias:.4f}×  (NASA-k 1.66×, hand-carried)")
     log(f"  Q range              : [{q_low:.3f}, {q_high:.3f}] t/hr")
     return 0
@@ -427,11 +427,13 @@ def _stage_b_markdown(r: dict) -> str:
         f"- **Q (central, ours-calibrated)**: {r['q_central_t_hr']:.2f} t/hr\n"
         f"- **Q (NASA-calibrated, IME / {r['enhancement_bias_factor']:.2f})**: "
         f"{r['q_central_nasa_calibrated_t_hr']:.2f} t/hr\n"
-        f"- **Q range with all uncertainty**: [{r['q_low_t_hr']:.2f}, {r['q_high_t_hr']:.2f}] t/hr\n"
+        f"- **Q range with all uncertainty**: "
+        f"[{r['q_low_t_hr']:.2f}, {r['q_high_t_hr']:.2f}] t/hr\n"
         f"- **Retrieval**: independent v2 saturation-aware HITRAN2020/HAPI k "
         f"(NASA per-granule target not used; shape cross-check r=0.993).\n"
-        f"- **MF amplitude systematic**: independently measured {r['enhancement_bias_factor']:.2f}× "
-        f"(ours/NASA over the plume CC) — reproduced from physics, not a NASA-convention artifact.\n"
+        f"- **MF amplitude systematic**: independently measured "
+        f"{r['enhancement_bias_factor']:.2f}× (ours/NASA over the plume CC) — reproduced from "
+        f"physics, not a NASA-convention artifact.\n"
         f"- **Scope**: ONE plume from a 12-source cluster. Thorpe 2023's 163 ± 18 t/hr is the "
         f"*cluster total*, NOT a same-scope reference.\n\n"
         f"## Geometry\n"
@@ -446,7 +448,8 @@ def _stage_b_markdown(r: dict) -> str:
         f"| Wind α₁ | {r['wind_fractional_alpha1']:.3f} |\n"
         f"| Wind U₁₀ | {r['wind_fractional_u10']:.3f} |\n"
         f"| Wind combined | {r['wind_fractional_total']:.3f} |\n"
-        f"| Plume-mask sensitivity (half-spread) | {r['seg_sensitivity_q_spread_fractional'] / 2:.3f} |\n"
+        f"| Plume-mask sensitivity (half-spread) | "
+        f"{r['seg_sensitivity_q_spread_fractional'] / 2:.3f} |\n"
         f"| **Symmetric combined** | **{r['q_total_fractional_sigma']:.3f}** |\n"
         f"| MF amplitude (measured, one-sided) | {r['enhancement_bias_factor']:.2f}× |\n\n"
         f"### Mask-sensitivity sweep\n| p | mask px | Q (t/hr) |\n|---|---|---|\n{rows}\n"

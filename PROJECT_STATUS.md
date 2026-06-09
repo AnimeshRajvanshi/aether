@@ -1,5 +1,7 @@
 # PROJECT_STATUS.md
 
+> This status was last verified by running the tests and linter on 2026-06-08 22:12 MST.
+
 ```yaml
 phase: "Sprint 6 - HITRAN Independence (Stage A + B complete, awaiting human review)"
 status: "In Progress"
@@ -39,7 +41,8 @@ recent_changes:
   - "Sprint 5: SOURCE ATTRIBUTION section in the inspector rendering the committed hypotheses.json verbatim (caveats preserved)."
   - "Sprint 4: field/sector-level source-attribution engine (OGIM-backed, no fabricated facilities)."
 validation_status:
-  tests: "175 passed, 6 deselected (integration, network-gated) via uv run pytest"
+  tests: "uv run pytest -> 175 passed, 6 deselected, 2 warnings (exit code 0). Verified 2026-06-08 22:12 MST."
+  lint: "uv run ruff check . -> 72 errors (exit code 1). All in PRE-EXISTING files, not current Sprint 6 work: mostly scripts/diagnose_*.py (E501/N806), plus a few in packages/ontology/ and eval/harness/. Rule counts: 37 E501, 19 N806, 7 F541, 1 each I001/F841/F401/B905. Sprint 6 files lint clean per-file."
   sprint_gate: "Sprint 1 gate PASSED (aether reproduce renders a real methane plume). Current gate: Sprint 6 human review of the HITRAN independence calibration verdict before the provenance-line UI update."
   eval: "aether-eval run = stub_pipeline, 0/3 recall (baseline; real detection not yet registered as the eval pipeline)"
 next_milestones:
@@ -82,7 +85,10 @@ Everything composes the ontology entities (`Observation`, `Detection`, `Phenomen
 
 ## Validation & Testing
 
-- **Tests:** `uv run pytest` → **175 passed, 6 deselected** (the deselected are network-gated integration tests). Includes the no-fabrication guard (attribution entities trace to the committed OGIM subset) and the HITRAN independence guards (k generation reads no value from NASA's file; reproducible regeneration).
+_Verified by a fresh run on 2026-06-08 22:12 MST._
+
+- **Tests — `uv run pytest`: 175 passed, 6 deselected, 2 warnings — exit code 0.** The 6 deselected are network-gated integration tests. Includes the no-fabrication guard (attribution entities trace to the committed OGIM subset) and the HITRAN independence guards (k generation reads no value from NASA's file; reproducible regeneration).
+- **Lint — `uv run ruff check .`: 72 errors — exit code 1.** These are **all in pre-existing files, not current Sprint 6 work**: chiefly the diagnostic scripts (`scripts/diagnose_stage_a.py` 18, `..._confirm.py` 15, `..._alignment.py` 13, etc.), plus a few in `packages/ontology/aether_ontology/entities.py` (6), `eval/harness/aether_eval/cli.py` (4), and tests. Rule breakdown: 37 × E501 (line length), 19 × N806 (non-lowercase variable), 7 × F541 (f-string without placeholders), and 1 each of I001/F841/F401/B905. New Sprint 6 files (`hitran_k.py`, the fetch/run scripts, tests) pass `ruff check` when checked per-file; the repo-wide failure is legacy lint debt that predates this work. Fixing it is out of scope for this verification.
 - **Sprint 1 gate:** PASSED — `aether reproduce <event_id>` renders a real methane plume; Goturdepe Stage A/B committed.
 - **Eval:** `uv run aether-eval run` → stub_pipeline, recall 0/3 (baseline only; real detection not wired into the harness).
 - **Sprint 6 control:** the Stage B runner fed NASA's `k` reproduces Sprint 2's Pearson exactly (full 0.7354 / bbox 0.7485), confirming the pipeline is faithful and the divergence is the `k` swap alone.

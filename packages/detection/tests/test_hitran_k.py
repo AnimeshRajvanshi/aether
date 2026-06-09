@@ -117,3 +117,74 @@ def test_stage_b_divergence_recorded_honestly() -> None:
     assert rep["amplitude_vs_nasa_l2b_over_cc"] != rep["sprint2_bias_factor"]
     # ours-cal Q is reported as-is (falls out of the forward scale), not patched to 27.1
     assert abs(rep["q_ours_cal_t_hr"] - rep["sprint2_q_ours_cal_t_hr"]) > 1.0
+
+
+# --- v2: saturation-aware k (finite-enhancement regression) -------------------
+_KSAT = _KDIR / "hitran_k_sat.json"
+_PROV_SAT = _KDIR / "hitran_k_sat_provenance.json"
+_V2 = _KDIR / "hitran_k_v2_report.json"
+
+
+@pytest.fixture(scope="module")
+def regenerated_sat() -> tuple[np.ndarray, np.ndarray, list[str]]:
+    """Regenerate the saturation-aware k, recording every opened path."""
+    kj = json.loads(_KSAT.read_text())
+    prov = json.loads(_PROV_SAT.read_text())
+    opened: list[str] = []
+    real_open = builtins.open
+
+    def spy_open(file, *a, **k):  # type: ignore[no-untyped-def]
+        opened.append(str(file))
+        return real_open(file, *a, **k)
+
+    builtins.open = spy_open  # type: ignore[assignment]
+    try:
+        res = hitran_k.generate_k_regression(
+            np.asarray(kj["wavelengths_nm"]),
+            np.asarray(kj["fwhm_nm"]),
+            solar_zenith_deg=prov["solar_zenith_deg"],
+            view_zenith_deg=prov["view_zenith_deg"],
+            surface_pressure_pa=prov["surface_pressure_pa"],
+            surface_temperature_k=prov["surface_temperature_k"],
+            c_max_ppm_m=prov["enhancement_ladder_ppm_m"][1],
+            n_c=prov["enhancement_ladder_n"],
+        )
+    finally:
+        builtins.open = real_open  # type: ignore[assignment]
+    return res.k, np.asarray(kj["k"]), opened
+
+
+def test_sat_k_is_reproducible(regenerated_sat: tuple[np.ndarray, np.ndarray, list[str]]) -> None:
+    fresh, committed, _ = regenerated_sat
+    assert np.array_equal(fresh, committed), "regenerated saturation k != committed sat json"
+
+
+def test_sat_k_reads_no_nasa_file(
+    regenerated_sat: tuple[np.ndarray, np.ndarray, list[str]],
+) -> None:
+    _, _, opened = regenerated_sat
+    offenders = [p for p in opened if any(tok in p for tok in _NASA_TOKENS)]
+    assert not offenders, f"INDEPENDENCE VIOLATION: saturation k opened NASA target: {offenders}"
+
+
+def test_sat_k_negative_in_window(
+    regenerated_sat: tuple[np.ndarray, np.ndarray, list[str]],
+) -> None:
+    fresh, _, _ = regenerated_sat
+    inw = fresh[fresh != 0.0]
+    assert inw.size > 40 and np.all(inw <= 0.0)
+
+
+def test_v2_restores_fidelity_and_reproduces_overamplitude() -> None:
+    rep = json.loads(_V2.read_text())
+    # (a) shape recovers past the linear 0.93
+    assert rep["shape_pearson_r_vs_nasa"] > 0.98
+    # (b) end-to-end fidelity restored: much closer to Sprint 2 than v1 linear was
+    assert rep["pearson_in_bbox"] > 0.70
+    assert rep["pearson_in_bbox"] > rep["v1_linear_pearson_in_bbox"]
+    # (c) the +1.66x over-amplitude is reproduced independently (not the v1 0.79x)
+    assert rep["amplitude_vs_nasa_l2b_over_cc"] > 1.0
+    # forward scale unchanged; NASA-anchored flux stays ~16 t/hr (not reverse-fit)
+    assert rep["ppm_scaling_factor_forward"] == 1.0
+    assert abs(rep["q_nasa_cal_t_hr"] - rep["sprint2_q_nasa_cal_t_hr"]) < 1.5
+    assert rep["prov_nasa_target_used"] is False

@@ -1,0 +1,74 @@
+{
+  "event_id": "turkmenistan_goturdepe_2022_08_15",
+  "stage": "v2 saturation-aware k (finite-enhancement log-radiance regression)",
+  "method": "single-point c=0 Jacobian -> multi-c regression; rest identical",
+  "ppm_scaling_factor_forward": 1.0,
+  "c_max_ppm_m": 10000.0,
+  "shape_pearson_r_vs_nasa": 0.9933596340467942,
+  "shape_spearman_rho_vs_nasa": 0.9862244897959183,
+  "stageA_linear_shape_r": 0.9282,
+  "pearson_full_scene": 0.715395738270241,
+  "pearson_in_bbox": 0.7314199018679506,
+  "v1_linear_pearson_in_bbox": 0.5322565294514309,
+  "sprint2_pearson_in_bbox": 0.7485177591221628,
+  "ime_t": 35.682845014480506,
+  "q_ours_cal_t_hr": 23.404806417186464,
+  "v1_linear_q_ours_cal_t_hr": 11.871919395525573,
+  "sprint2_q_ours_cal_t_hr": 27.08605196493112,
+  "amplitude_vs_nasa_l2b_over_cc": 1.4602502841737661,
+  "v1_linear_bias": 0.7891727516032657,
+  "sprint2_bias_factor": 1.66,
+  "q_nasa_cal_t_hr": 16.027941696603943,
+  "sprint2_q_nasa_cal_t_hr": 16.31689877405489,
+  "plume_cc_pixel_count": 68814,
+  "prov_method": "HITRAN2020 line-by-line (HAPI) Voigt; saturation-aware unit absorption via finite-enhancement log-radiance regression (Thompson/EMIT-ATBD method), Gaussian-SRF convolved to EMIT",
+  "prov_hitran2020_doi": "10.1016/j.jqsrt.2021.107949",
+  "prov_hapi_doi": "10.1016/j.jqsrt.2016.03.005",
+  "prov_line_table": "CH4_win",
+  "prov_isotopologues": [
+    [
+      6,
+      1
+    ],
+    [
+      6,
+      2
+    ],
+    [
+      6,
+      3
+    ],
+    [
+      6,
+      4
+    ]
+  ],
+  "prov_wavenumber_range_cm": [
+    3951.231448054553,
+    4739.457182966776
+  ],
+  "prov_wavenumber_step_cm": 0.01,
+  "prov_solar_zenith_deg": 58.078543392598824,
+  "prov_view_zenith_deg": 8.261424993708633,
+  "prov_air_mass_factor": 2.9017167419704255,
+  "prov_surface_pressure_pa": 101325.0,
+  "prov_surface_temperature_k": 295.0,
+  "prov_excess_ch4_column_per_ppmm_molec_cm2": 2487776228941508.0,
+  "prov_ch4_background_ppm": 1.85,
+  "prov_dry_air_column_molec_cm2": 2.1482375460417507e+25,
+  "prov_background_ch4_column_molec_cm2": 3.974239460177239e+19,
+  "prov_enhancement_ladder_ppm_m": [
+    0.0,
+    10000.0
+  ],
+  "prov_enhancement_ladder_n": 21,
+  "prov_background_note": "effective surface-sigma single layer (documented approximation)",
+  "prov_continuum_note": "flat (within-band albedo/H2O shape is a deferred refinement)",
+  "prov_n_emit_bands": 285,
+  "prov_n_in_window_bands": 52,
+  "prov_window_nm": [
+    2137.0,
+    2493.0
+  ],
+  "prov_nasa_target_used": false
+}

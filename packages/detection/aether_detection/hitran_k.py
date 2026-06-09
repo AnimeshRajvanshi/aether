@@ -84,6 +84,16 @@ def _excess_ch4_column_per_ppmm(pressure_pa: float, temperature_k: float) -> flo
     return 1.0e-6 * n_air_m3 * 1.0e-4  # molec/cm^2 per ppm·m
 
 
+# standard gravity and dry-air molecular mass (CODATA) for the background column
+_G0 = 9.80665  # m/s^2
+_M_AIR_PER_MOLEC_KG = 0.0289644 / 6.02214076e23  # kg per air molecule
+
+
+def _dry_air_column_cm2(pressure_pa: float) -> float:
+    """Total dry-air column [molec/cm^2] under hydrostatic balance: P/(g*m_molec)."""
+    return pressure_pa / (_G0 * _M_AIR_PER_MOLEC_KG) * 1.0e-4  # molec/cm^2
+
+
 def _voigt_cross_section(
     pressure_pa: float, temperature_k: float, numin: float, numax: float
 ) -> tuple[np.ndarray, np.ndarray]:
@@ -198,6 +208,124 @@ def generate_k(
         "n_air_cm3": _air_number_density_cm3(surface_pressure_pa, surface_temperature_k),
         "excess_ch4_column_per_ppmm_molec_cm2": n_per_ppmm,
         "ch4_background_ppm": ch4_background_ppm,
+        "n_emit_bands": int(band_centers_nm.size),
+        "n_in_window_bands": int(in_window.sum()),
+        "window_nm": [lo_nm, hi_nm],
+        "nasa_target_used": False,
+    }
+    return KResult(
+        wavelengths_nm=band_centers_nm,
+        k=k_emit,
+        hires_nm=hires_nm,
+        hires_k=hires_k,
+        in_window_mask=in_window,
+        provenance=provenance,
+    )
+
+
+def generate_k_regression(
+    band_centers_nm: npt.NDArray[np.float64],
+    band_fwhm_nm: npt.NDArray[np.float64],
+    *,
+    solar_zenith_deg: float,
+    view_zenith_deg: float,
+    surface_pressure_pa: float,
+    surface_temperature_k: float,
+    ch4_background_ppm: float = 1.85,
+    c_max_ppm_m: float = 10000.0,
+    n_c: int = 21,
+) -> KResult:
+    """Saturation-aware k via finite-enhancement log-radiance regression.
+
+    The only change from :func:`generate_k` (the optically-thin c=0 Jacobian that
+    omitted line-core saturation) is **single-point → multi-c regression**; the
+    spectroscopy, geometry and SRF convolution are otherwise identical. This is the
+    standard Thompson / EMIT-ATBD unit-absorption method, done line-by-line from
+    HITRAN — no MODTRAN, NASA file never read.
+
+    For a ladder of enhancements cᵢ ∈ [0, ``c_max_ppm_m``]:
+      1. monochromatic two-way transmittance
+         T(ν,cᵢ) = exp(−AMF·[τ_bg(ν) + σ(ν)·N_per_ppmm·cᵢ]),
+         τ_bg(ν) = σ(ν)·N_bg, N_bg = background CH4 column (``ch4_background_ppm``
+         × dry-air column). The enhancement sits in a near-surface layer (surface
+         σ); the background uses the same surface σ — a documented effective-layer
+         approximation (a layered profile is a future refinement).
+      2. at-sensor radiance L(ν,cᵢ) = continuum(ν)·T(ν,cᵢ), continuum flat (its
+         multiplicative level cancels in the slope; within-band shape is the
+         deferred H₂O/SZA/albedo refinement). Convolve to each EMIT band with the
+         granule's own Gaussian SRF → L_band(b,cᵢ).
+      3. per band, the SLOPE of ln L_band vs cᵢ is the saturation-aware unit
+         absorption s_b [1/(ppm·m)] — this is the new k. Saturation appears because
+         the band integrates blacked-out cores with unsaturated wings, so
+         ln L_band is sub-linear in c.
+
+    ``c_max_ppm_m`` = 10 000 ppm·m spans super-emitter enhancement magnitudes; it is
+    a physics/scene choice (the slope is the effective sensitivity over the
+    enhancement range present), NOT tuned to any flux.
+    """
+    band_centers_nm = np.asarray(band_centers_nm, dtype=np.float64)
+    band_fwhm_nm = np.asarray(band_fwhm_nm, dtype=np.float64)
+
+    lo_nm = min(w[0] for w in MF_SPECTRAL_WINDOWS_NM)
+    hi_nm = max(w[1] for w in MF_SPECTRAL_WINDOWS_NM)
+    numin = 1.0e7 / hi_nm - 60.0
+    numax = 1.0e7 / lo_nm + 60.0
+
+    nu, xsec = _voigt_cross_section(surface_pressure_pa, surface_temperature_k, numin, numax)
+    hires_nm = 1.0e7 / nu
+    order = np.argsort(hires_nm)
+    hires_nm = hires_nm[order]
+    sigma = xsec[order]
+
+    amf = 1.0 / math.cos(math.radians(solar_zenith_deg)) + 1.0 / math.cos(
+        math.radians(view_zenith_deg)
+    )
+    n_per_ppmm = _excess_ch4_column_per_ppmm(surface_pressure_pa, surface_temperature_k)
+    n_bg = ch4_background_ppm * 1.0e-6 * _dry_air_column_cm2(surface_pressure_pa)
+    tau_bg = sigma * n_bg  # vertical background optical-depth spectrum
+
+    c_ladder = np.linspace(0.0, c_max_ppm_m, n_c)
+    sig_n = sigma * n_per_ppmm  # vertical enhancement OD per ppm·m
+
+    k_emit = np.zeros_like(band_centers_nm, dtype=np.float64)
+    in_window = (band_centers_nm >= hires_nm.min()) & (band_centers_nm <= hires_nm.max())
+    for i in np.nonzero(in_window)[0]:
+        s = band_fwhm_nm[i] / 2.3548200450309493
+        lo, hi = band_centers_nm[i] - 4.0 * s, band_centers_nm[i] + 4.0 * s
+        sel = (hires_nm >= lo) & (hires_nm <= hi)
+        if not np.any(sel):
+            continue
+        w = np.exp(-0.5 * ((hires_nm[sel] - band_centers_nm[i]) / s) ** 2)
+        # two-way OD over (nu in band) x (c ladder); flat continuum so L = T
+        od = amf * (tau_bg[sel][:, None] + sig_n[sel][:, None] * c_ladder[None, :])
+        l_band = (w[:, None] * np.exp(-od)).sum(axis=0) / w.sum()  # SRF-weighted radiance
+        # slope of ln L_band vs c = saturation-aware unit absorption (<= 0)
+        k_emit[i] = float(np.polyfit(c_ladder, np.log(l_band), 1)[0])
+
+    hires_k = -amf * sigma * n_per_ppmm  # optically-thin reference for overlay plots
+    provenance = {
+        "method": "HITRAN2020 line-by-line (HAPI) Voigt; saturation-aware unit "
+        "absorption via finite-enhancement log-radiance regression "
+        "(Thompson/EMIT-ATBD method), Gaussian-SRF convolved to EMIT",
+        "hitran2020_doi": "10.1016/j.jqsrt.2021.107949",
+        "hapi_doi": "10.1016/j.jqsrt.2016.03.005",
+        "line_table": _TABLE,
+        "isotopologues": _CH4_COMPONENTS,
+        "wavenumber_range_cm": [numin, numax],
+        "wavenumber_step_cm": _WAVENUMBER_STEP_CM,
+        "solar_zenith_deg": solar_zenith_deg,
+        "view_zenith_deg": view_zenith_deg,
+        "air_mass_factor": amf,
+        "surface_pressure_pa": surface_pressure_pa,
+        "surface_temperature_k": surface_temperature_k,
+        "excess_ch4_column_per_ppmm_molec_cm2": n_per_ppmm,
+        "ch4_background_ppm": ch4_background_ppm,
+        "dry_air_column_molec_cm2": _dry_air_column_cm2(surface_pressure_pa),
+        "background_ch4_column_molec_cm2": n_bg,
+        "enhancement_ladder_ppm_m": [0.0, c_max_ppm_m],
+        "enhancement_ladder_n": n_c,
+        "background_note": "effective surface-sigma single layer (documented approximation)",
+        "continuum_note": "flat (within-band albedo/H2O shape is a deferred refinement)",
         "n_emit_bands": int(band_centers_nm.size),
         "n_in_window_bands": int(in_window.sum()),
         "window_nm": [lo_nm, hi_nm],

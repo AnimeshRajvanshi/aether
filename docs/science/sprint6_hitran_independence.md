@@ -114,7 +114,11 @@ transparently, **not** tuned back to 27.1.
 
 ---
 
-## 5. Independence verdict — achieved in spectroscopy, NOT yet in retrieval fidelity
+> **Sections 1–6 below document the v1 (optically-thin) result and its
+> diagnosis. Section 8 reports the v2 saturation-aware fix that RESOLVES the
+> fidelity loss — read it for the current verdict.**
+
+## 5. (v1) Independence verdict — achieved in spectroscopy, NOT yet in retrieval fidelity
 
 - **Independence (spectroscopy): achieved.** `k` is genuinely ours; NASA's file is
   never read to build it (guard tests). Stage A shape validates at r = 0.93.
@@ -167,7 +171,92 @@ from the physics — to close the ~21° band-space gap with NASA's MODTRAN `k`
 
 ```
 uv run python scripts/fetch_hitran_ch4.py        # cache CH4 line list (committed)
-uv run python scripts/run_hitran_k_stage_a.py    # k + shape validation (r=0.93)
-uv run python scripts/run_hitran_k_stage_b.py    # end-to-end: Pearson, Q, calibration
+uv run python scripts/run_hitran_k_stage_a.py    # v1 linear k + shape validation (r=0.93)
+uv run python scripts/run_hitran_k_stage_b.py    # v1 end-to-end (Pearson 0.53)
+uv run python scripts/run_hitran_k_v2.py         # v2 saturation-aware k: shape + end-to-end
 uv run pytest packages/detection/tests/test_hitran_k.py   # incl. independence guards
 ```
+
+---
+
+## 8. v2 — saturation-aware `k` (THE FIX, current verdict)
+
+**Root cause (confirmed by external literature review):** the v1 `k` was a
+single-point, c=0, optically-thin Jacobian (`k = −AMF·σ·N`) that omits line-core
+saturation. NASA's MODTRAN target is saturation-aware, so v1 over-weighted the
+saturated cores in the matched-filter projection — costing fidelity (0.53) and
+flipping the amplitude (0.79×).
+
+**The fix (standard Thompson / EMIT-ATBD method, still HITRAN/HAPI, still no
+MODTRAN, still independent):** replace the c=0 evaluation with a
+**finite-enhancement log-radiance regression** (`hitran_k.generate_k_regression`).
+For a ladder of enhancements cᵢ ∈ [0, **10 000 ppm·m**] (a super-emitter-range,
+physics/scene choice — *not* tuned to NASA or to 27.1 t/hr):
+
+1. monochromatic two-way transmittance `T(ν,cᵢ) = exp(−AMF·[τ_bg(ν) + σ(ν)·N·cᵢ])`,
+   `τ_bg = σ·N_bg`, background CH₄ 1.85 ppm in an effective surface-σ layer (a
+   documented approximation; a layered profile is a future refinement);
+2. at-sensor radiance `L = continuum·T` (flat continuum — within-band albedo/H₂O
+   shape is the deferred LUT stage), convolved to each EMIT band with the granule's
+   own Gaussian SRF → `L_band(b,cᵢ)`;
+3. per band, the **slope of `ln L_band` vs cᵢ` is the saturation-aware unit
+   absorption `s_b`** — the new `k`. (Saturation appears at the band level: the band
+   integrates blacked-out cores with unsaturated wings, so `ln L_band` is sub-linear
+   in c.)
+
+The *only* change from Stage A is single-point → multi-c regression; spectroscopy,
+geometry, forward scaling (`ppm_scaling = 1.0`) and SRF convolution are identical.
+
+### Results (v2 vs v1 vs Sprint 2)
+
+| quantity | Sprint 2 (NASA k) | v1 linear k | **v2 saturation-aware k** |
+|---|---:|---:|---:|
+| (a) shape Pearson vs NASA target | — | 0.928 | **0.993** (Spearman 0.986) |
+| (b) end-to-end Pearson vs NASA L2B (bbox) | 0.749 | 0.532 | **0.731** |
+| Pearson vs NASA L2B (full) | 0.735 | 0.516 | 0.715 |
+| (c) amplitude vs NASA L2B over the CC | 1.66× | 0.79× | **1.46×** |
+| Q (ours-cal) | 27.09 t/hr | 11.87 t/hr | 23.41 t/hr |
+| Q (anchored to NASA-L2B amplitude) | 16.32 t/hr | 15.04 t/hr | **16.03 t/hr** |
+
+`c_max` sensitivity (shape r vs NASA, transparency — NOT tuned): 0.989 @ 2 000,
+0.993 @ 10 000, 0.998 @ 40 000 ppm·m. Even the low end is excellent; we keep
+10 000 as the documented super-emitter range. Overlay:
+`hitran_k_sat_vs_nasa.png`; map: `stage_b_map_comparison_v2.png`.
+
+### Verdict (current)
+
+- **(a) Shape:** r = **0.993** — the saturation-aware `k` reproduces NASA's target
+  shape almost exactly (cores de-weighted, |k_sat|/|k_lin| ≈ 0.79 mean).
+- **(b) Fidelity: RESTORED.** End-to-end bbox Pearson recovers **0.53 → 0.73**,
+  essentially Sprint 2's 0.749. Independence is now **retrieval-ready**.
+- **(c) Calibration:** the 0.79× moves to **1.46×** — i.e. the **+1.66× MF
+  over-amplitude is largely PRESERVED** and is now reproduced **independently**
+  (1.46×) without NASA's `k`. So the over-amplitude is a *real MF-implementation
+  systematic*, not a NASA-convention artifact (v1's 0.79× was the artifact of the
+  missing saturation). The NASA-L2B-anchored flux is **16.0 t/hr**, matching
+  Sprint 2's 16.3 within ~2%. The residual 1.46× vs 1.66× is the effective-layer
+  background / flat-continuum approximation, the next physics refinement.
+
+**Can claim now:** an independent (HITRAN2020/HAPI, no MODTRAN, NASA file never
+read) saturation-aware `k` that reproduces NASA's target shape (r=0.99) AND
+preserves end-to-end retrieval fidelity vs NASA L2B (Pearson 0.73 ≈ 0.75), with a
+forward-derived scale and the +1.66× over-amplitude independently reproduced
+(~1.46×). **Cannot yet claim:** that the *displayed* dashboard quantification is
+independent — the committed operational result (27.1 t/hr, `stage_a/b_outputs`)
+was computed with NASA's `k`; migrating the operational pipeline to the v2 `k`
+(which would show ~23.4 t/hr ours-cal) is the gated next step.
+
+### Provenance-line gate — held for review (not flipped this turn)
+
+Fidelity is now preserved, so the validation gate is met. But the dashboard's
+displayed numbers and `target_spectrum_source` still come from the NASA-`k`
+operational run; relabelling their provenance as "independent HITRAN" without
+re-deriving them would misrepresent what is on screen. The honest prerequisite —
+re-running the operational pipeline with the v2 `k` so the displayed retrieval IS
+the independent one (changing the headline ~27→~23 t/hr ours-cal) — is an
+outward-facing change left for review. The UI is therefore unchanged this turn;
+the gate is met and the migration is recommended.
+
+### Deferred (explicitly out of scope here)
+H₂O/SZA LUT, per-pixel sensitivity correction, RFM cross-check, and a layered
+(non-effective-layer) background profile — separate future stages.

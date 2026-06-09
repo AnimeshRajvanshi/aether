@@ -234,29 +234,86 @@ geometry, forward scaling (`ppm_scaling = 1.0`) and SRF convolution are identica
   (1.46×) without NASA's `k`. So the over-amplitude is a *real MF-implementation
   systematic*, not a NASA-convention artifact (v1's 0.79× was the artifact of the
   missing saturation). The NASA-L2B-anchored flux is **16.0 t/hr**, matching
-  Sprint 2's 16.3 within ~2%. The residual 1.46× vs 1.66× is the effective-layer
-  background / flat-continuum approximation, the next physics refinement.
+  Sprint 2's 16.3 within ~2%. The residual 1.46× vs 1.66× is **hypothesised** to
+  stem from the effective-layer background / flat-continuum approximation (the next
+  physics refinement) — this is a candidate explanation, **not an established
+  cause**; it has not been isolated or confirmed.
 
 **Can claim now:** an independent (HITRAN2020/HAPI, no MODTRAN, NASA file never
 read) saturation-aware `k` that reproduces NASA's target shape (r=0.99) AND
 preserves end-to-end retrieval fidelity vs NASA L2B (Pearson 0.73 ≈ 0.75), with a
 forward-derived scale and the +1.66× over-amplitude independently reproduced
-(~1.46×). **Cannot yet claim:** that the *displayed* dashboard quantification is
-independent — the committed operational result (27.1 t/hr, `stage_a/b_outputs`)
-was computed with NASA's `k`; migrating the operational pipeline to the v2 `k`
-(which would show ~23.4 t/hr ours-cal) is the gated next step.
+(~1.46×). **Now also claimable (post-migration, §9):** the *displayed* dashboard
+quantification is the independent retrieval — the committed operational result is
+re-derived with the v2 `k` (23.4 t/hr ours-cal) and the provenance line is flipped
+honestly. (Before the §9 migration, the displayed result was still NASA-`k`-derived
+and this independence claim did **not** hold.)
 
-### Provenance-line gate — held for review (not flipped this turn)
+### Provenance-line gate — reviewed and EXECUTED (see §9)
 
-Fidelity is now preserved, so the validation gate is met. But the dashboard's
-displayed numbers and `target_spectrum_source` still come from the NASA-`k`
-operational run; relabelling their provenance as "independent HITRAN" without
-re-deriving them would misrepresent what is on screen. The honest prerequisite —
-re-running the operational pipeline with the v2 `k` so the displayed retrieval IS
-the independent one (changing the headline ~27→~23 t/hr ours-cal) — is an
-outward-facing change left for review. The UI is therefore unchanged this turn;
-the gate is met and the migration is recommended.
+The validation gate (fidelity preserved) was met, and at that point the dashboard's
+displayed numbers and `target_spectrum_source` still came from the NASA-`k` run, so
+the provenance line was deliberately left unflipped pending review. **That review
+authorised the operational migration, which has now been executed** — see §9. The
+displayed retrieval IS now the independent v2 `k`, so the provenance line is flipped
+honestly and the headline moved ~27 → ~23 t/hr ours-cal.
 
 ### Deferred (explicitly out of scope here)
 H₂O/SZA LUT, per-pixel sensitivity correction, RFM cross-check, and a layered
 (non-effective-layer) background profile — separate future stages.
+
+## 9. Operational migration (executed — Sprint 6 completion)
+
+The v2 saturation-aware HITRAN `k` is now the **operational** Goturdepe retrieval.
+The committed Stage A/B pipeline was re-run with it (offline, reproducibly) by
+`scripts/run_migration_v2_operational.py`, and every derived artifact regenerated
+from the new outputs.
+
+**What the displayed numbers became (all re-derived, none transcribed):**
+
+| quantity | NASA-`k` (was displayed) | **v2 `k` (now displayed)** |
+|---|---:|---:|
+| Q ours-cal | 27.09 t/hr | **23.40 t/hr** |
+| Q nasa-cal (IME / amplitude ratio) | 16.32 t/hr | **16.03 t/hr** |
+| MF amplitude systematic | 1.66× (hand-carried) | **1.46× (measured this run)** |
+| Pearson vs NASA L2B (bbox) | 0.749 | **0.731** |
+| plume CC label | 1213 | **1143** |
+| scope: fraction of Thorpe cluster | ≈10–17% | **≈10–14%** |
+
+**Uncertainty budget — RE-PROPAGATED, not transcribed (§ task step 2):**
+- **Wind terms unchanged by construction.** The v2 plume centroid (and the upwind
+  source S) fall in the same 0.25° ARCO-ERA5 grid cells as the NASA-`k` run, so the
+  reanalysis returns identical winds; the runner *asserts* the grid-cell identity
+  rather than re-fetching. α₁ = 0.076, U₁₀ = 0.102, combined wind = 0.127 — all
+  bit-identical to the NASA-`k` run.
+- **Mask sensitivity shifted** with the new enhancement map: half-spread over
+  p ∈ {0.01, 0.05, 0.10} moved 0.0195 → 0.0150 (Q spread 0.039 → 0.030).
+- **MF-amplitude systematic** is now the **independently measured** ours/NASA mean
+  ratio over the plume CC, **1.46×**, computed in this run — not the NASA-`k` run's
+  hand-carried 1.66×.
+- Combined symmetric σ moved 0.1287 → 0.1281; Q range [13.97, 26.40] t/hr.
+
+**Provenance flip (honest).** `stage_a_report.target_spectrum_source` now names the
+independent HITRAN2020/HAPI saturation-aware generation (NASA target NOT used,
+shape cross-check only, r = 0.993); the OURS-CAL / NASA-CAL toggle notes and the
+templated brief were updated to match the new meaning (OURS-CAL = the independent
+retrieval ~23.4; NASA-CAL = anchored to NASA L2B amplitude via the measured 1.46×,
+~16.0). Forward scaling stays 1.0 — `k` is in 1/(ppm·m), never reverse-fit.
+
+**History preserved ("alongside, not over").** The NASA-`k` stage outputs,
+hypotheses, and dashboard assets are kept as committed `*.nasa_k.*` siblings (and
+`apps/api/.../assets/<id>/_nasa_k/`); git history is intact; the v1/v2/NASA
+comparison reports under `stage_a_outputs/.../hitran_k/` are untouched. The
+operational canonical filenames now carry the v2 result so the API/dashboard/guard
+tests read and validate the *served* artifacts.
+
+**Guards.** No-fabrication + byte-match guards pass on the regenerated artifacts; a
+new no-staleness suite (`apps/api/tests/test_no_staleness.py`) parses the numbers
+embedded in derived-artifact *prose* (hypotheses, brief, scope %, API notes) and
+asserts each equals its upstream committed source — catching hardcoded literals
+that the byte-match/regenerate guards cannot (it found and fixed stale "~27 t/hr"
+literals in the attribution rationales).
+
+**The 1.46× vs 1.66× residual remains a hypothesis** (effective-layer background /
+flat-continuum approximation), not an established cause — it is unchanged by this
+migration and awaits the deferred physics refinements above.

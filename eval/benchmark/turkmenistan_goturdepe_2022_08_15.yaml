@@ -119,20 +119,38 @@ references:
     doi: "10.5067/EMIT/EMITL2BCH4ENH.002"
     url: "https://www.earthdata.nasa.gov/data/catalog/lpcloud-emitl2bch4enh-002"
   - citation: >-
+      Gordon, I. E., et al. (2022). The HITRAN2020 molecular spectroscopic
+      database. Journal of Quantitative Spectroscopy and Radiative Transfer, 277,
+      107949. Line-by-line CH4 source for our INDEPENDENTLY GENERATED
+      matched-filter unit absorption spectrum k (the operational retrieval since
+      the Sprint 6 migration).
+    doi: "10.1016/j.jqsrt.2021.107949"
+    url: "https://doi.org/10.1016/j.jqsrt.2021.107949"
+  - citation: >-
+      Kochanov, R. V., et al. (2016). HITRAN Application Programming Interface
+      and efficient spectroscopic tools (HAPI). Journal of Quantitative
+      Spectroscopy and Radiative Transfer, 177, 15-30. Computes the Voigt
+      cross-sections used to build our independent k.
+    doi: "10.1016/j.jqsrt.2016.03.005"
+    url: "https://doi.org/10.1016/j.jqsrt.2016.03.005"
+  - citation: >-
       NASA EMIT-Data-Resources tutorial Generating_Methane_Spectral_Fingerprint.ipynb.
       Ships the per-granule methane target spectrum file
-      emit20220815t042838_ch4_target used as our matched-filter unit
-      absorption spectrum k.
+      emit20220815t042838_ch4_target, used as a SPECTRAL-SHAPE CROSS-CHECK ONLY
+      (Pearson r = 0.993 vs our independent HITRAN2020 k) — NOT a pipeline input
+      since the Sprint 6 migration. Our matched filter no longer reads this file.
     url: "https://github.com/nasa/EMIT-Data-Resources/blob/main/python/tutorials/Generating_Methane_Spectral_Fingerprint.ipynb"
 
 notes: |
-  This benchmark validates our matched-filter implementation against NASA's
-  operational EMIT L2B CH4 ENH for the same granule, using NASA's per-granule
-  unit absorption spectrum. The Stage A test is therefore an implementation
-  test (does our code reproduce NASA's algorithm on the same inputs) rather
-  than an independent physics test (which would require us to generate k from
-  HITRAN). The independence limitation is recorded in
-  docs/science/sprint2_validation.md.
+  This benchmark validates our matched-filter retrieval against NASA's
+  operational EMIT L2B CH4 ENH for the same granule (spatial-agreement reference).
+  SPRINT 6 UPDATE: the operational retrieval now generates its own unit absorption
+  spectrum k from HITRAN2020 via HAPI (no MODTRAN, NASA per-granule target NOT read;
+  it is retained only as a spectral-shape cross-check, r = 0.993). The original
+  Sprint 2 framing — an "implementation test" using NASA's per-granule k, which it
+  noted "would require us to generate k from HITRAN" for an independent physics
+  test — has been superseded: that independent k now exists and is operational.
+  See docs/science/sprint6_hitran_independence.md (§9) and docs/science/sprint2_validation.md.
 
   The 163 ± 18 t/hr Thorpe number is a multi-source cluster total across
   Goturdepe and Barsagelmez, attributed to the August 15, 2022 imaging date

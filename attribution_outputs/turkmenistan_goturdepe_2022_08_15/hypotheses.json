@@ -43,7 +43,7 @@
           "name": "spatial_consistency",
           "value": 0.85,
           "weight": 0.6,
-          "rationale": "The back-projected upwind source S sits well inside the BARSAGELMEZ field polygon (point-in-polygon = True; field area 133.0 km^2). S's exact position IS uncertain (the ~20 deg centroid/upwind bearing gap and the speed-derived wedge — the same uncertainty H2 rests on), but because S lies well within such a large field, that wobble is very unlikely to move it across the field boundary. High, not 1.0.",
+          "rationale": "The back-projected upwind source S sits well inside the BARSAGELMEZ field polygon (point-in-polygon = True; field area 133.0 km^2). S's exact position IS uncertain (the ~23 deg centroid/upwind bearing gap and the speed-derived wedge — the same uncertainty H2 rests on), but because S lies well within such a large field, that wobble is very unlikely to move it across the field boundary. High, not 1.0.",
           "contribution": 0.51
         },
         {

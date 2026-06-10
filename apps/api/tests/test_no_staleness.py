@@ -207,3 +207,104 @@ def test_quantification_notes_bias_matches_q(detail: dict, q: dict) -> None:
 def test_mask_geojson_cc_label_matches_q(q: dict) -> None:
     geo = json.loads((config.assets_dir(GOTURDEPE) / "mask.geojson").read_text())
     assert geo["properties"]["cc_label"] == q["plume_cc_label"]
+
+
+# --------------------------------------------------------------------------- #
+# 6. Provenance·References panel — no stale "NASA file is our k" claim
+# --------------------------------------------------------------------------- #
+# The reference list is sourced from the benchmark YAML and rendered verbatim by
+# the inspector. After the Sprint 6 migration it must NOT claim the NASA per-granule
+# target file is used as our matched-filter k, must carry the HITRAN2020/HAPI
+# citations that ARE the k source, and must reposition the NASA file as a
+# cross-check. We check both the API response AND the YAML that feeds it.
+_NASA_TARGET_FILE = "emit20220815t042838_ch4_target"
+_STALE_K_CLAIM = "matched-filter unit\n      absorption spectrum k".replace("\n      ", " ")
+
+
+@pytest.fixture(scope="module")
+def hitran_prov() -> dict:
+    path = (
+        config.data_root()
+        / "packages/detection/aether_detection/resources/hitran/provenance.json"
+    )
+    return json.loads(path.read_text())
+
+
+def _ref_citations(refs: list[dict]) -> list[dict]:
+    return [{"citation": " ".join(r["citation"].split()), "doi": r.get("doi")} for r in refs]
+
+
+def _assert_refs_provenance_fresh(refs: list[dict], hitran_prov: dict, stage_a: dict) -> None:
+    cits = _ref_citations(refs)
+    dois = {c["doi"] for c in cits}
+
+    # (a) the HITRAN2020 + HAPI DOIs that ARE the k source must be cited, and must
+    #     match the committed spectroscopy provenance (no transcription drift).
+    assert hitran_prov["hitran2020_doi"] in dois, "HITRAN2020 citation missing from references"
+    assert hitran_prov["hapi_doi"] in dois, "HAPI citation missing from references"
+
+    # (b) any reference that names the NASA per-granule target file must call it a
+    #     CROSS-CHECK and must NOT claim it is used as our matched-filter k.
+    nasa_refs = [c for c in cits if _NASA_TARGET_FILE in c["citation"]]
+    assert nasa_refs, "expected a reference naming the NASA per-granule target file"
+    for c in nasa_refs:
+        assert _STALE_K_CLAIM not in c["citation"], (
+            f"STALE provenance: a reference still claims the NASA target is our k: "
+            f"{c['citation']!r}"
+        )
+        assert "cross-check" in c["citation"].lower(), (
+            f"NASA target reference must be repositioned as a cross-check: {c['citation']!r}"
+        )
+
+    # (c) consistency with the committed Stage A report: the operational retrieval
+    #     is HITRAN-independent (so the 'used as our k' claim would contradict it).
+    assert stage_a.get("k_nasa_target_used") is False
+    assert "HITRAN" in (stage_a["target_spectrum_source"] or "")
+
+
+def test_references_provenance_not_stale_api(
+    detail: dict, hitran_prov: dict, stage_a: dict
+) -> None:
+    _assert_refs_provenance_fresh(detail["references"], hitran_prov, stage_a)
+
+
+def test_references_provenance_not_stale_source_yaml(hitran_prov: dict, stage_a: dict) -> None:
+    benchmark = yaml.safe_load(config.benchmark_yaml(GOTURDEPE).read_text())
+    _assert_refs_provenance_fresh(benchmark["references"], hitran_prov, stage_a)
+
+
+# --------------------------------------------------------------------------- #
+# 7. Score-component rationales — embedded numerics trace to source
+# --------------------------------------------------------------------------- #
+def test_score_component_numerics_trace(hyp: dict, q: dict, benchmark: dict) -> None:
+    ref_total, _ref_unc, n_sources = _ref(benchmark)
+    h1 = hyp["hypotheses"][0]
+    comps = {c["name"]: c["rationale"] for c in h1["score_components"]}
+
+    # The bearing-gap figure embedded in the spatial_consistency rationale must equal
+    # the one the global assumptions surface (this was the escape: rationale said
+    # ~20 deg while the assumptions said ~23 deg). Derive the truth from the two
+    # bearings quoted in the assumptions, then require the rationale to match it.
+    joined = " ".join(hyp["global_assumptions"])
+    ga = re.search(
+        r"source S \((\d+) deg\) disagrees with the ERA5 upwind azimuth \((\d+) deg\)", joined
+    )
+    assert ga, "bearing clause not found in global assumptions"
+    expected_gap = abs(((int(ga.group(1)) - int(ga.group(2)) + 180) % 360) - 180)
+    rg = re.search(r"~(\d+) deg centroid/upwind bearing gap", comps["spatial_consistency"])
+    assert rg, f"bearing gap not surfaced in spatial rationale: {comps['spatial_consistency']!r}"
+    assert abs(int(rg.group(1)) - expected_gap) <= 1, (
+        f"H1 spatial rationale bearing gap ~{rg.group(1)} deg != assumptions {expected_gap} deg"
+    )
+
+    # The "~Nx the per-source mean" multiplier must equal round(Q / (cluster/N)).
+    mult = re.search(r"~(\d+)x the per-source mean", comps["magnitude_consistency"])
+    assert mult, f"per-source multiplier not found: {comps['magnitude_consistency']!r}"
+    expected_mult = round(q["q_central_t_hr"] / (ref_total / n_sources))
+    assert int(mult.group(1)) == expected_mult, (
+        f"multiplier ~{mult.group(1)}x != round(Q/(ref/N)) = {expected_mult}x"
+    )
+
+    # And the rate quoted in the rationale is round(Q) (covered globally too, but
+    # pinned here at the component level per the escape's lesson).
+    assert f"~{round(q['q_central_t_hr'])} t/hr" in comps["magnitude_consistency"]

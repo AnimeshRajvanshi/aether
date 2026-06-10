@@ -249,8 +249,9 @@ def build_hypothesis_set(root: Path | None = None) -> HypothesisSet:
             SPATIAL_CONTAINED if s_in_bars else 0.5,
             f"The back-projected upwind source S sits well inside the BARSAGELMEZ field polygon "
             f"(point-in-polygon = {s_in_bars}; field area {bars_feat['properties'].get('AREA_KM2')} "
-            f"km^2). S's exact position IS uncertain (the ~20 deg centroid/upwind bearing gap and "
-            f"the speed-derived wedge — the same uncertainty H2 rests on), but because S lies well "
+            f"km^2). S's exact position IS uncertain (the ~{bearing_gap:.0f} deg centroid/upwind "
+            f"bearing gap and the speed-derived wedge — the same uncertainty H2 rests on), but "
+            f"because S lies well "
             f"within such a large field, that wobble is very unlikely to move it across the field "
             f"boundary. High, not 1.0.",
         ),
@@ -263,8 +264,9 @@ def build_hypothesis_set(root: Path | None = None) -> HypothesisSet:
         comp(
             "magnitude_consistency",
             MAGNITUDE_OG,
-            f"~{q_t_hr:.0f} t/hr is within documented O&G super-emitter range and ~2x the "
-            f"per-source mean of the Thorpe {inp.ref_value:.0f} t/hr / {inp.ref_sources}-source cluster.",
+            f"~{q_t_hr:.0f} t/hr is within documented O&G super-emitter range and "
+            f"~{q_t_hr / (inp.ref_value / inp.ref_sources):.0f}x the per-source mean of the "
+            f"Thorpe {inp.ref_value:.0f} t/hr / {inp.ref_sources}-source cluster.",
         ),
     ]
     h1_score = round(sum(c.value * c.weight for c in h1_components), 4)

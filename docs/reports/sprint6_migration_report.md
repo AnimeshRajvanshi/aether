@@ -168,3 +168,60 @@ cd apps/web && pnpm dev      # http://localhost:3000
 
 If you'd like, I can install Playwright and attempt a headless capture (best-effort
 given the WebGL constraint) — say the word.
+
+---
+
+## Addendum (2026-06-10) — two staleness escapes caught in review, fixed
+
+Migration review found two stale numbers that survived the first pass — both in
+rendered UI surfaces the original guards did not parse. Both are fixed, and the
+no-staleness suite is extended so each would now fail tests.
+
+**Escape #1 — Provenance·References panel not flipped.** The inspector's
+references list is sourced from the benchmark YAML (`eval/benchmark/<id>.yaml`,
+rendered by `loaders._references`), *not* from `stage_a_report.target_spectrum_source`
+— so the provenance flip missed it. One reference still claimed the NASA per-granule
+file `emit20220815t042838_ch4_target` was "used as our matched-filter unit absorption
+spectrum k" — now false, and contradicting the brief panel above it.
+- **Fix:** rewrote that entry to reposition the NASA file as a **spectral-shape
+  cross-check only (r = 0.993), NOT a pipeline input**, and added the two citations
+  that ARE the k source — **HITRAN2020 (Gordon et al. 2022, JQSRT 277, 107949,
+  doi:10.1016/j.jqsrt.2021.107949)** and **HAPI (Kochanov et al. 2016, JQSRT 177,
+  15–30, doi:10.1016/j.jqsrt.2016.03.005)** — both DOIs verified against the
+  committed `resources/hitran/provenance.json`. Updated the YAML `notes` block too.
+- **Guard:** `test_references_provenance_not_stale_api` + `_source_yaml` parse both
+  the API references and the YAML that feeds them; they assert no "used as our k"
+  claim survives, the HITRAN2020/HAPI DOIs are present and match the committed
+  spectroscopy provenance, the NASA-target entry says "cross-check", and the claim is
+  consistent with `stage_a_report.k_nasa_target_used == false`.
+
+**Escape #2 — H1 internal inconsistency.** H1's `spatial_consistency` rationale
+hardcoded "~20 deg centroid/upwind bearing gap" while the regenerated global
+assumptions correctly said ~23 deg (bearing 99 vs 76) — a literal that didn't
+re-derive on regeneration.
+- **Fix:** templated the figure from the computed `bearing_gap` (now ~23 deg); also
+  templated the "~2x the per-source mean" multiplier from `q / (cluster/N)`.
+  Regenerated `hypotheses.{json,md}`; swept the artifacts for the old geometry
+  (S 39.3433/53.9863, bearing 96.9/97, "~20 deg") — none survive.
+- **Guard:** `test_score_component_numerics_trace` derives the expected bearing gap
+  from the two bearings the assumptions quote and requires H1's spatial rationale to
+  match it, and checks the per-source multiplier == round(Q/(cluster/N)). Negative
+  control verified for both new guards (a reintroduced "~20 deg" / "used as our k"
+  fails).
+
+**Lint debt logged.** The 72 pre-existing `ruff` errors are now tracked in
+`docs/debt.md` (by rule + by file, with a paydown plan) so "pre-existing" is a dated
+snapshot, not a standing policy.
+
+**Verification after fixes:** `uv run pytest -> 189 passed` (+3 guards: 2 references,
+1 score-component); all touched files lint clean; YAML valid; `aether-eval` baseline
+unchanged.
+
+**Screenshot.** `docs/reports/screenshots/provenance_panel_fixed.png` — a real
+Chrome (Playwright, system Chrome channel) render of the fixed Provenance·References
+panel + the Brief above it, using the app's actual `globals.css` and the **live API
+data**. It is a genuine browser screenshot of the real panel markup + styling, not a
+hand-drawn mock; it is not a capture of the full Cesium-driven app (the chromium
+bundle download is network-blocked here and the globe needs WebGL, so I rendered the
+panel in isolation against the real stylesheet). The fixed entries are visible: NASA
+file = cross-check, HITRAN2020 + HAPI cited, no "used as our k" claim.

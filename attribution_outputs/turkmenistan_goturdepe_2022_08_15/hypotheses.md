@@ -36,7 +36,7 @@ _Heuristic score 0.87 (band high) CAPPED to moderate: facility-level attribution
 
 | component | value | weight | contribution | rationale |
 |---|---:|---:|---:|---|
-| spatial_consistency | 0.85 | 0.60 | 0.510 | The back-projected upwind source S sits well inside the BARSAGELMEZ field polygon (point-in-polygon = True; field area 133.0 km^2). S's exact position IS uncertain (the ~20 deg centroid/upwind bearing gap and the speed-derived wedge — the same uncertainty H2 rests on), but because S lies well within such a large field, that wobble is very unlikely to move it across the field boundary. High, not 1.0. |
+| spatial_consistency | 0.85 | 0.60 | 0.510 | The back-projected upwind source S sits well inside the BARSAGELMEZ field polygon (point-in-polygon = True; field area 133.0 km^2). S's exact position IS uncertain (the ~23 deg centroid/upwind bearing gap and the speed-derived wedge — the same uncertainty H2 rests on), but because S lies well within such a large field, that wobble is very unlikely to move it across the field boundary. High, not 1.0. |
 | type_prior | 0.90 | 0.25 | 0.225 | Active oil & gas field; ~23 t/hr point sources here are characteristically O&G (Thorpe 2023 attributes this cluster to O&G). |
 | magnitude_consistency | 0.90 | 0.15 | 0.135 | ~23 t/hr is within documented O&G super-emitter range and ~2x the per-source mean of the Thorpe 163 t/hr / 12-source cluster. |
 | **score** | | | **0.87** | weighted sum |

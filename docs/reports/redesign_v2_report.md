@@ -28,10 +28,13 @@ exactly what it is. Every choice below was filtered through the governing
 principle: legibility, data density, and credibility with skeptical domain
 scientists. Atmosphere kept; theater removed.
 
-What did **not** change: the Chakra Petch / IBM Plex Mono / IBM Plex Sans stack,
-the amber–cyan duotone on deep near-black, the photoreal Cesium globe, the
-AETHER wordmark with amber underline, the synchronized camera-flight/panel-slide
-motion system (`lib/motion.ts` untouched), and every honesty element (§4).
+What did **not** change: the amber–cyan duotone on deep near-black, the
+photoreal Cesium globe, the AETHER wordmark with amber underline, the
+synchronized camera-flight/panel-slide motion system (`lib/motion.ts`
+untouched), and every honesty element (§4). The type stack was unchanged in
+this first pass; the subsequent directed **typography pass (§8)** then evolved
+it — Archivo joined as the UI grotesque and Chakra Petch was demoted to a
+brand accent.
 
 ## 2. Deliberate evolutions of the locked identity
 
@@ -67,9 +70,10 @@ principle. Nothing else about the identity moved.
    NO LIVE TELEMETRY`. The no-live-feed honesty rule is now permanent chrome,
    visible in every screen and state. *(IMG_3370's departmental footer line.)*
 8. **Headline numerals: mono → display face.** The big emission rate (and the
-   meter numeral) moved from Plex Mono to Chakra Petch semibold — the references'
-   "big confident numeral". Plex Mono remains the face for *all* tabular data,
-   ranges, coordinates, and codes.
+   meter numeral) moved from Plex Mono to the display face — the references'
+   "big confident numeral" (initially Chakra Petch semibold; **superseded by
+   §8**: now Archivo 700, tight-tracked, tabular numerals). Plex Mono remains
+   the face for *all* tabular data, ranges, coordinates, and codes.
 9. **Neutrals: blue-cool → graphite-neutral.** Backgrounds nudged from blue-tinted
    (`#06080c/#10141b`) to near-neutral graphite (`#050708/#0e1114`); primary text
    warmed slightly toward the references' cream (`#e8edf2 → #e9eae4`). The duotone
@@ -134,9 +138,13 @@ principle. Nothing else about the identity moved.
 
 ## 5. Imported resources & licenses
 
-**None imported.** No new fonts, icon sets, textures, images, or dependencies.
-- Fonts: the pre-existing Chakra Petch, IBM Plex Mono, IBM Plex Sans, self-hosted
-  via `next/font/google` (all SIL Open Font License 1.1) — unchanged from v1.
+**First pass: none imported.** No new icon sets, textures, images, or
+dependencies. **Typography pass (§8) added exactly one face: Archivo**
+(SIL OFL 1.1, Omnibus-Type, via Google Fonts, self-hosted at build through
+`next/font/google`) — full ledger in §8.1.
+- Fonts: Chakra Petch, IBM Plex Mono, IBM Plex Sans (all SIL OFL 1.1),
+  self-hosted via `next/font/google` — carried over from v1; roles re-assigned
+  in §8.
 - All new texture/ornament (hatch, dot grid, crosses, frames) is hand-written CSS.
 - Globe imagery providers unchanged (Cesium ion token / ESRI World Imagery
   fallback); the imagery credit remains visible in all states (§2.15).
@@ -243,3 +251,101 @@ check spacing rhythm, hairline alignment, type hierarchy, and that nothing reads
 
 **Merge/revert gate:** you capture and review; `main` is untouched until you
 merge. Revert = delete the branch.
+
+## 8. Typography pass (directed refinement, post-approval)
+
+A second look at the references with a typographic eye shows a **two-voice
+system**: one industrial grotesque doing *both* the wide-tracked uppercase
+labels and the heavy, tight display numerals across weights (IMG_3364's stat
+blocks; IMG_3370's `RANGE`/`95.6%`), plus a squared techno-display face reserved
+for brand moments only (IMG_3372's `ISC`/`PGE`/`24:B`). v2's first pass kept
+Chakra Petch — a techno face — on *every* label, which at 8–9 px reads
+decorative rather than instrumental. This pass aligns the whole app to the
+references' structure.
+
+**Licensing.** The references' actual faces (game-UI faces in particular) are
+proprietary and were neither obtained nor imitated by name. Faces below were
+chosen by *character class* (industrial grotesque, fixed-width data face, etc.),
+are all **SIL Open Font License 1.1**, sourced from Google Fonts, and
+**self-hosted** via `next/font/google` (downloaded at build, served first-party
+— no runtime Google request).
+
+### 8.1 The stack (what replaced what, and why)
+
+| Role | Face (license, foundry) | Replaces | Why |
+|---|---|---|---|
+| UI grotesque — all labels, buttons, chips, badges, section headers, **display numerals** | **Archivo** (OFL 1.1, Omnibus-Type) 400/500/600/700 — *new* | Chakra Petch in all UI-label/display roles | The references set wayfinding and numerals in a neutral industrial grotesque, not a techno face; Archivo is the closest OFL Helvetica-class grotesque with the full weight range, and it stays legible at 8.5 px caps |
+| Data values, codes, tables | **IBM Plex Mono** (OFL 1.1, IBM) — *kept* | — | Hard rule: data stays monospaced (inherently tabular) |
+| Prose + honesty text | **IBM Plex Sans** (OFL 1.1, IBM) — *kept* | — | Hard rule: honesty blocks are the most readable text on screen |
+| Brand accent ONLY — AETHER wordmark, planetary watermark (`MOON`/`MARS`) | **Chakra Petch** (OFL 1.1, Cadson Demak) 700 — *demoted* | itself, everywhere else | Mirrors IMG_3372: the techno voice appears only at reserved display moments; identity continuity for the wordmark |
+
+CSS variables: `--font-label` (Archivo), `--font-mono`, `--font-sans`,
+`--font-brand` (Chakra; the old `--font-hud` is gone). Chakra's loaded weights
+trimmed to 700 (its only remaining uses), so the font payload stays flat.
+
+### 8.2 The scale + tracking system
+
+Em-based tracking tokens in `:root` — the references' rule is *caps run wider as
+they get smaller; display numerals run tight*:
+
+- `--track-tight: -0.01em` — display numerals ≥ 28 px (emission rate, Pearson),
+  Archivo 700, plus `font-variant-numeric: tabular-nums` (no width jitter when
+  toggling OURS-CAL/NASA-CAL).
+- `--track-ui: 0.12em` — interactive caps + badges/chips (buttons, toggles,
+  tier badges, marker labels), Archivo 500–600.
+- `--track-label: 0.18em` — non-interactive micro labels (section headers,
+  readout keys, evidence kinds, caveat headers), Archivo 600.
+- `--track-wide: 0.28em` — frame microtype (spine, status bar, wordmark
+  sub-line, NO-DATA plate) — IMG_3372's sidebar-strip language.
+- Two deliberate exceptions: the wordmark keeps its locked 6 px tracking; the
+  event name uses 0.04em (19 px caps need a little air, not label tracking).
+- Mono *values* are now untracked (readout values, marker rates, hint) —
+  tracking belongs to labels, never to data; mono *codes* keep a slight 0.08em.
+
+### 8.3 Legibility floor + honesty-text bumps (type-forced adjustments)
+
+- Smallest type floor raised to **8.5 px** (topbar labels 8→8.5, marker tier
+  badge 8→8.5); everything ≤ 9.5 px is either Archivo 500+ or Plex Mono.
+- **Scoring disclaimer** de-stylized: was 10 px italic mono fine-print → now
+  11 px IBM Plex Sans regular at brighter `--text-2`. (Both appearances.)
+- **Scope/pending caveat body** 11.5→12 px, line-height 1.6; **tier explainer**
+  11.5→12 px; **validation note** 11→11.5 px; **confidence rationale** (carries
+  the CAPPED reasoning) 10→10.5 px and `--text-3`→`--text-2`; **calibration
+  note** brightened to `--text-2`. Net: every honesty element is *more*
+  readable than before this pass; none was stylized into texture.
+- Label/value hierarchy sharpened reference-style: labels are now bold-ish
+  (Archivo 600) caps vs plain mono values — IMG_3370's bold-label grammar.
+
+### 8.4 Verification (re-run after the pass)
+
+`tsc --noEmit` clean · `next build` ✓ (Archivo self-hosted at build) ·
+`uv run pytest` **235 passed**, 7 deselected · `ruff` 0 · committed artifacts
+`git diff` = **0 lines**. Scope: `globals.css`, `layout.tsx`, this report —
+nothing else moved.
+
+### 8.5 Re-capture shot list (typography-affected surfaces)
+
+Same two-terminal setup as §7. Priority shots where type changed most:
+
+1. `t1-globe-chrome.png` — globe overview: topbar (Chakra wordmark vs Archivo
+   `BODY` label), body selector + readout (Archivo 600 keys, untracked mono
+   values), spine + status bar at `--track-wide`.
+2. `t2-marker-labels.png` — hovered Goturdepe marker: Archivo 600 label plate +
+   8.5 px tier badge; mono rate untracked.
+3. `t3-inspector-top.png` — header + section 01: event name (Archivo 700,
+   0.04em), chips/badge at `--track-ui`, the 50 px Archivo 700 emission numeral
+   (capture both OURS-CAL/NASA-CAL — no width jitter), section header
+   label weight.
+4. `t4-honesty-blocks.png` — scope caveat (12 px body) + uncertainty labels:
+   confirm the caveat is visibly among the most readable text on the panel.
+5. `t5-validation-meter.png` — Pearson numeral (Archivo 700 tight) + meter cap
+   label + data rows.
+6. `t6-attribution-type.png` — attribution panel: de-italicized 11 px sans
+   scoring disclaimer (both appearances), hypothesis descriptor (Archivo 500),
+   brighter 10.5 px rationale with `· CAPPED`, evidence kind labels at
+   `--track-label`, temporal caveat tag.
+7. `t7-references-pending.png` — references/DOIs (unchanged mono, for contrast)
+   + the pending badge; plus `MOON` empty state (Chakra brand watermark vs
+   Archivo `NO DATA` plate).
+8. `t8-smallest-type.png` — close crop of the densest small type (evidence
+   source locators, readout, evt-code) to judge the 8.5 px floor.

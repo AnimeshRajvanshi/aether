@@ -6,8 +6,10 @@ flies in, the real EMIT enhancement raster drapes on the globe at its true
 coordinates, and the inspector slides in with the Stage B result. Next.js (App
 Router) + React + TypeScript.
 
-Visual target: `docs/design/aether_photoreal_mockup.html`. All displayed values
-come from `apps/api` — nothing is hardcoded in the UI.
+Visual direction: the redesign/v2 "instrument data-plate" system — see
+`docs/reports/redesign_v2_report.md` (reference set in `docs/design/references/`;
+the original v1 target `docs/design/aether_photoreal_mockup.html` is historical).
+All displayed values come from `apps/api` — nothing is hardcoded in the UI.
 
 ## Prerequisites
 

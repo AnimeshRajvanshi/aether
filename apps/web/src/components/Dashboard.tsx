@@ -156,16 +156,28 @@ export default function Dashboard() {
       </div>
 
       <div className="main">
-        <div className="rail">
-          <div className="ico active" title="Globe">◎</div>
-          <div className="ico" title="Layers">▤</div>
-          <div className="ico" title="Spectra">∿</div>
-          <div className="ico" title="Catalog">≣</div>
-          <div className="gap" />
-          <div className="ico" title="Settings">⚙</div>
+        {/* Vertical data spine. Replaces the v1 icon rail: that rail was four
+            non-functional nav buttons (Layers/Spectra/Catalog/Settings) — fake
+            affordances. The spine carries only real state. */}
+        <div className="spine">
+          <div className="cross">+</div>
+          <div className="spine-label">
+            SUPER-EMITTER EVENT RECONSTRUCTION&ensp;//&ensp;
+            <b>DETECTION · QUANTIFICATION · ATTRIBUTION · BRIEF</b>
+          </div>
+          <div className="cross">+</div>
         </div>
 
-        <div className="stage">
+        <div
+          className="stage"
+          style={
+            {
+              "--fly-duration": `${FLY_DURATION_S}s`,
+              "--fly-easing": FLY_EASING_CSS,
+              "--panel-width": `${panelWidth}px`,
+            } as CSSProperties
+          }
+        >
           <CesiumGlobe
             events={events}
             body={body}
@@ -189,13 +201,21 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <div className={`scan-readout ${phase !== "globe" ? "fade-out" : ""}`}>
-            <div>
-              {activeEvents.length} {activeEvents.length === 1 ? "EVENT" : "EVENTS"} ·{" "}
-              {pendingCount} PENDING
+          <div className={`readout ${phase !== "globe" ? "fade-out" : ""}`}>
+            <div className="ro-row">
+              <span className="ro-k">Signals</span>
+              <span className="ro-v">
+                {activeEvents.length} ACTIVE · {pendingCount} PENDING
+              </span>
             </div>
-            <div>CH₄ · HYPERSPECTRAL</div>
-            <div>EMIT · L2B CH4ENH</div>
+            <div className="ro-row">
+              <span className="ro-k">Species</span>
+              <span className="ro-v">CH₄ · HYPERSPECTRAL</span>
+            </div>
+            <div className="ro-row">
+              <span className="ro-k">Product</span>
+              <span className="ro-v">EMIT · L2B CH4ENH</span>
+            </div>
           </div>
 
           <div className={`stage-hint ${phase !== "globe" ? "fade-out" : ""}`}>
@@ -214,20 +234,13 @@ export default function Dashboard() {
 
           {error && (
             <div className="loading" style={{ color: "var(--alert)" }}>
-              API UNREACHABLE — start apps/api (uvicorn :8000)
+              <div className="err-plate">API UNREACHABLE — start apps/api (uvicorn :8000)</div>
             </div>
           )}
 
-          {/* ----- detail overlay (HUD + inspector) ----- */}
+          {/* ----- detail overlay (HUD + inspector); motion vars live on .stage ----- */}
           <div
             className={`detail ${detailMounted ? "mounted" : ""} ${detailShown ? "show" : ""}`}
-            style={
-              {
-                "--fly-duration": `${FLY_DURATION_S}s`,
-                "--fly-easing": FLY_EASING_CSS,
-                "--panel-width": `${panelWidth}px`,
-              } as CSSProperties
-            }
           >
             <div className="plume-hud">
               <div className="bracket b1" />
@@ -280,6 +293,15 @@ export default function Dashboard() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Persistent provenance declaration: this dashboard renders committed,
+          reviewed artifacts — there is no live feed, and the chrome says so. */}
+      <div className="statusbar">
+        <span>AETHER · PLANETARY ENGINE</span>
+        <span className="sb-honesty">
+          ALL VALUES FROM COMMITTED, REVIEWED ARTIFACTS · NO LIVE TELEMETRY
+        </span>
       </div>
     </div>
   );

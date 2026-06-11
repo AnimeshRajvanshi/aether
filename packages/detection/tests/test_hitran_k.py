@@ -14,11 +14,45 @@ from __future__ import annotations
 
 import builtins
 import json
+import platform
+import sys
 from pathlib import Path
 
 import numpy as np
 import pytest
 from aether_detection import hitran_k
+
+# The committed k artifacts were generated on macOS/arm64. The line-by-line
+# Voigt computation is deterministic but NOT bitwise-portable: on Linux/x86-64
+# (the CI runner) libm/SIMD differences shift results by a few ULPs. Measured
+# on linux/amd64 with the exact locked numpy/scipy/hapi versions (Sprint 8 CI
+# fix): max relative deviation 2.45e-16 (linear k) / 2.29e-15 (saturation k),
+# zero masks identical. So bitwise equality is asserted only on the generation
+# platform; everywhere else the guard still runs and asserts identical zero
+# masks + agreement within 1e-12 relative (three orders above the worst
+# measured drift, far below any real code/physics/data change).
+_ON_GENERATION_PLATFORM = sys.platform == "darwin" and platform.machine() == "arm64"
+_CROSS_PLATFORM_RTOL = 1e-12
+
+
+def _assert_k_reproduced(fresh: np.ndarray, committed: np.ndarray, what: str) -> None:
+    """The reproducibility guard, honest about platform: exact where exactness
+    is defined (the artifact's generation platform), tight-numerical elsewhere."""
+    assert np.array_equal(fresh == 0.0, committed == 0.0), (
+        f"{what}: zero mask (in-window band set) differs from the committed artifact"
+    )
+    nz = committed != 0.0
+    rel = np.abs(fresh[nz] - committed[nz]) / np.abs(committed[nz])
+    assert float(rel.max()) <= _CROSS_PLATFORM_RTOL, (
+        f"{what}: max relative deviation {rel.max():.3e} exceeds the cross-platform "
+        f"bound {_CROSS_PLATFORM_RTOL:.0e} — this is a real change, not float drift"
+    )
+    if _ON_GENERATION_PLATFORM:
+        assert np.array_equal(fresh, committed), (
+            f"{what}: not bitwise-identical on the artifact's generation platform "
+            "(macOS/arm64) — regeneration is no longer exactly reproducible"
+        )
+
 
 _ROOT = Path(__file__).resolve().parents[3]
 _KDIR = _ROOT / "stage_a_outputs" / "turkmenistan_goturdepe_2022_08_15" / "hitran_k"
@@ -67,8 +101,9 @@ def regenerated() -> tuple[np.ndarray, np.ndarray, list[str]]:
 
 def test_k_is_reproducible(regenerated: tuple[np.ndarray, np.ndarray, list[str]]) -> None:
     fresh, committed, _ = regenerated
-    # deterministic line-by-line computation -> exact agreement with the artifact
-    assert np.array_equal(fresh, committed), "regenerated k differs from committed hitran_k.npz"
+    # deterministic line-by-line computation -> exact agreement on the generation
+    # platform; tight-numerical (measured-drift bound) cross-platform.
+    _assert_k_reproduced(fresh, committed, "regenerated k vs committed hitran_k.json")
 
 
 def test_k_generation_reads_no_nasa_file(
@@ -156,7 +191,7 @@ def regenerated_sat() -> tuple[np.ndarray, np.ndarray, list[str]]:
 
 def test_sat_k_is_reproducible(regenerated_sat: tuple[np.ndarray, np.ndarray, list[str]]) -> None:
     fresh, committed, _ = regenerated_sat
-    assert np.array_equal(fresh, committed), "regenerated saturation k != committed sat json"
+    _assert_k_reproduced(fresh, committed, "regenerated saturation k vs committed sat json")
 
 
 def test_sat_k_reads_no_nasa_file(

@@ -35,6 +35,7 @@ class ConfidenceTier(StrEnum):
 
 class CandidateKind(StrEnum):
     OGIM_FIELD = "ogim_field"  # a named OGIM field polygon (real record)
+    OGIM_FACILITY = "ogim_facility"  # a named OGIM facility/well point (real record)
     SECTOR = "sector"  # a sector-level descriptor (no OGIM point record)
 
 

@@ -202,7 +202,15 @@ def get_hypotheses(event_id: str) -> HypothesisSet | None:
 
     Validated through aether_causal's own HypothesisSet (extra="forbid"), so the
     API can neither add nor drop a field relative to the committed JSON.
+
+    Gated on activation: a committed attribution artifact is only SERVED once the
+    event is live (Stage D). Permian's Stage C hypotheses.json exists on disk (for
+    the no-fabrication guard and for Stage D to consume), but until its UI assets
+    land the event is PENDING and the API surfaces no hypotheses — never fabricated,
+    and not prematurely exposed ahead of the UI gate.
     """
+    if not _is_active(event_id):
+        return None
     path = config.hypotheses_json(event_id)
     if not path.exists():
         return None

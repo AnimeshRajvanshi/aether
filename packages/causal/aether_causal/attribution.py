@@ -558,3 +558,453 @@ def build_hypothesis_set(root: Path | None = None) -> HypothesisSet:
             "thorpe_reference": "Thorpe et al. 2023, Sci. Adv. 9 eadh2391, doi:10.1126/sciadv.adh2391",
         },
     )
+
+
+# =========================================================================== #
+# Sprint 7 — facility-level attribution for DENSE-coverage events.
+#
+# Goturdepe (above) had ZERO OGIM point infrastructure -> field/sector-level only.
+# The Permian has dense facility coverage (10,744 wells in the regional subset),
+# so the engine can attempt facility-level attribution for the FIRST TIME. This is
+# a NEW capability of the SAME engine (shared schema, wedge, scoring primitives,
+# render, no-fabrication guard) — selected by what the OGIM data contains, NOT a
+# per-event fork. build_hypothesis_set (Goturdepe) is untouched + byte-identical.
+#
+# The honesty challenge here is the OPPOSITE of Goturdepe's: not "no data" but
+# "too much, spatially ambiguous data". Confidence reflects DISCRIMINATION POWER,
+# never proximity alone; no facility reaches HIGH unless the evidence isolates it.
+# =========================================================================== #
+
+
+@dataclass(frozen=True)
+class FacilityEvent:
+    """Per-event config for facility-level attribution — paths + plume-scale radius."""
+
+    event_id: str
+    subset_rel: str
+    region_label: str
+    # Search radius appropriate to the plume scale: the source of a compact plume
+    # sits at S +/- the localization error, NOT tens of km upwind. Documented.
+    search_radius_km: float
+    phenomenon: str
+    # localization provenance note (Permian's S is NASA-footprint-anchored).
+    localization_note: str
+
+
+FACILITY_EVENTS: dict[str, FacilityEvent] = {
+    "permian_basin_2022": FacilityEvent(
+        event_id="permian_basin_2022",
+        subset_rel="packages/causal/aether_causal/resources/ogim/ogim_v2.7_permian_basin_region.geojson",
+        region_label="Permian Basin / Carlsbad NM",
+        # ~3.3 km plume; S localized to ~+/-1 km (centroid->S back-projection was 0.9 km).
+        search_radius_km=2.0,
+        phenomenon="Permian/Carlsbad methane plume (EMIT 2022-08-26)",
+        localization_note=(
+            "SEGMENTATION-DEPENDENCE: the source point S is derived from a "
+            "NASA-anchored plume footprint (NASA L2B CH4PLM complex 000524), NOT a "
+            "fully self-derived localization. Goturdepe's S came end-to-end from our "
+            "own retrieval; this attribution inherits NASA's plume location. Treat the "
+            "apex accordingly."
+        ),
+    ),
+}
+
+# --- Moderate-source priors (documented; re-derived for the ~0.85 t/hr regime) ---
+# Goturdepe's priors were built for a ~27 t/hr SUPER-emitter. The Permian retrieval
+# is ~0.85 t/hr [0.57-1.15] — a MODERATE point source. Basis:
+#   * Duren et al. 2019, Nature 575, 180-184, doi:10.1038/s41586-019-1720-3 — O&G
+#     point-source emission rates are strongly heavy-tailed; the great majority of
+#     detected sources sit far below the super-emitter scale.
+#   * Cusworth et al. 2021, ES&T Lett 8, 567-573, doi:10.1021/acs.estlett.1c00173 —
+#     Permian point sources resolved at facility scale, and strongly intermittent.
+# A ~0.85 t/hr (850 kg/hr) source is therefore plausibly a SINGLE well (tank/casing
+# venting, an unlit/under-performing flare, a liquids-unloading event), a small
+# equipment leak, or a tank battery — it does NOT require a large compressor or
+# processing plant. Consequence: facility-TYPE barely discriminates among the well
+# candidates, which is itself a discrimination-limiting finding.
+FAC_SECTOR_PRIOR_OG = 0.90  # the SECTOR is overwhelmingly O&G (dense active basin)
+FAC_TYPE_WELL = 0.85  # a well is a fully plausible moderate-source emitter
+FAC_MAGNITUDE_MODERATE = 0.80  # 0.85 t/hr squarely in the moderate point-source regime
+FAC_TYPE_NON_OG = 0.08
+FAC_MAGNITUDE_NON_OG = 0.30
+# Spatial values reflect that even the NEAREST-centerline candidate is not isolated
+# (wide speed-derived wedge + NASA-anchored S + multi-well pads).
+FAC_SPATIAL_NEAREST = 0.70  # favored, but capped by the wide wedge / anchored S
+FAC_SPATIAL_OTHER = 0.30  # an alternative in-wedge well; cannot be excluded
+FAC_SPATIAL_NEUTRAL = 0.50  # location does not discriminate sector (for non-O&G)
+
+_WELL_LAYER = "Oil_and_Natural_Gas_Wells"
+_RENDER_CAP = 8  # cap the rendered ranked candidate list; total is always stated
+
+
+def _facility_candidates(
+    subset: list[dict[str, Any]], wedge: BackProjectionWedge
+) -> tuple[list[dict[str, Any]], int, int]:
+    """Wells within the 2-sigma wedge, ranked by (angular dev, distance).
+
+    Returns (ranked_candidates, n_within_2sigma, n_within_1sigma). Each ranked
+    entry carries its real OGIM properties + the geometric relation — nothing
+    invented.
+    """
+    ranked: list[dict[str, Any]] = []
+    n1 = 0
+    for f in _features(subset, _WELL_LAYER):
+        pt = shape(f["geometry"]).representative_point()
+        rel = wedge.relate(pt.y, pt.x)
+        if not rel.within_wedge_2sigma:
+            continue
+        if rel.within_wedge_1sigma:
+            n1 += 1
+        ranked.append({
+            "props": f["properties"],
+            "dev": rel.angular_dev_from_upwind_deg,
+            "dist_km": rel.distance_km,
+        })
+    ranked.sort(key=lambda c: (c["dev"], c["dist_km"]))
+    return ranked, len(ranked), n1
+
+
+def build_facility_hypothesis_set(event_id: str, root: Path | None = None) -> HypothesisSet:
+    """Facility-level, discrimination-honest attribution for a dense-coverage event.
+
+    Deterministic; reads only committed inputs; names only real OGIM records.
+    """
+    if event_id not in FACILITY_EVENTS:
+        raise KeyError(f"no facility-attribution config for {event_id!r}")
+    cfg = FACILITY_EVENTS[event_id]
+    root = root or _REPO_ROOT
+
+    q = json.loads((root / f"stage_b_outputs/{event_id}/q_estimate.json").read_text())
+    wind = json.loads((root / f"stage_b_outputs/{event_id}/wind_location_check.json").read_text())
+    stage_a = json.loads((root / f"stage_a_outputs/{event_id}/stage_a_report.json").read_text())
+    subset = json.loads((root / cfg.subset_rel).read_text())["features"]
+    acq_date = stage_a["acquisition_utc"][:10]
+    q_t_hr = float(q["q_central_t_hr"])
+    q_lo, q_hi = float(q["q_low_t_hr"]), float(q["q_high_t_hr"])
+
+    wedge = build_wedge(q, wind, search_radius_km=cfg.search_radius_km)
+    ranked, n_2sigma, n_1sigma = _facility_candidates(subset, wedge)
+    if not ranked:
+        raise RuntimeError(f"{event_id}: no facility candidates in the wedge — unexpected")
+
+    top = ranked[0]
+    top_props = top["props"]
+    top_id = int(top_props["OGIM_ID"])
+    top_name = str(top_props.get("FAC_NAME"))  # exact OGIM record name (verifiable)
+    top_operator = str(top_props.get("OPERATOR"))
+
+    # The pad/lease is the FAC_NAME prefix before the well-number suffix (" #..."):
+    # OGIM lists each completion as its own record ("LEASE NAME #224H", "... #1"),
+    # so wells on one lease/pad share this prefix. Group by lease prefix + operator
+    # so the "pad holds N co-located completions" claim is honest (not 1-per-name).
+    def _lease(props: dict[str, Any]) -> str:
+        return str(props.get("FAC_NAME", "")).split(" #")[0].strip()
+
+    lease_name = _lease(top_props)
+    pad_members = [
+        c for c in ranked
+        if _lease(c["props"]) == lease_name and str(c["props"].get("OPERATOR")) == top_operator
+    ]
+    n_pad = len(pad_members)
+
+    # nearest VIIRS flaring detection in the wedge (corroboration only; dated)
+    flare_ev = None
+    for f in _features(subset, "Natural_Gas_Flaring_Detections"):
+        c = shape(f["geometry"]).representative_point()
+        rel = wedge.relate(c.y, c.x)
+        if rel.within_wedge_2sigma:
+            fid = int(f["properties"]["OGIM_ID"])
+            fdate = str(f["properties"].get("SRC_DATE"))
+            fmonths = _months_between(acq_date, fdate)
+            flare_ev = EvidenceItem(
+                kind="flaring_corroboration",
+                statement=(
+                    f"A VIIRS flaring detection (OGIM_ID {fid}) lies {rel.distance_km:.1f} km from S "
+                    f"within the wedge, corroborating active O&G in the area."
+                ),
+                source=SourceRef(dataset=cfg.subset_rel, locator=f"ogim_id={fid} flaring",
+                                 ogim_id=fid, ogim_layer="Natural_Gas_Flaring_Detections"),
+                temporal_caveat=(
+                    f"This detection is dated {fdate}, ~{fmonths} months AFTER the {acq_date} "
+                    f"overpass — evidence of PERSISTENT activity, NOT about this plume, and NOT the "
+                    f"located source. (Permian large emitters are intermittent: Cusworth et al. 2021, "
+                    f"doi:10.1021/acs.estlett.1c00173.)"
+                ),
+            )
+            break
+
+    q_ref = SourceRef(dataset=f"stage_b_outputs/{event_id}/q_estimate.json",
+                      locator=f"q_central_t_hr={q_t_hr:.3f}")
+    subset_ref = SourceRef(dataset=cfg.subset_rel, locator=f"within-wedge well count (n={n_2sigma})")
+
+    half_angle_assumption = (
+        f"WEAKEST LINK: the wedge half-angle ({wedge.half_angle_1sigma_deg:.1f} deg at 1-sigma, "
+        f"{wedge.half_angle_2sigma_deg:.1f} deg at 2-sigma) is approximated from the ERA5 wind SPEED "
+        f"1-sigma ({wedge.u10_sigma_ms:.2f} m/s at |U10| {wedge.wind_speed_ms:.2f} m/s) treated as an "
+        f"isotropic wind-vector uncertainty — NOT a measured wind-direction variance. The low wind "
+        f"speed makes this wedge WIDE, which is the core reason facility-level isolation fails."
+    )
+    moderate_regime_assumption = (
+        f"MODERATE-SOURCE REGIME: the retrieved rate (~{q_t_hr:.2f} t/hr [{q_lo:.2f}-{q_hi:.2f}]) is a "
+        f"moderate point source, consistent with a SINGLE well, small equipment, or a tank battery — "
+        f"not necessarily a large facility (Duren et al. 2019, doi:10.1038/s41586-019-1720-3; Cusworth "
+        f"et al. 2021, doi:10.1021/acs.estlett.1c00173). So facility TYPE barely discriminates among "
+        f"the well candidates; spatial proximity is the only real discriminator, and it is weak here."
+    )
+    global_assumptions = [
+        f"Steady ERA5 wind over the ~{wedge.transit_time_s / 3600:.2f} h plume transit.",
+        half_angle_assumption,
+        cfg.localization_note,
+        f"Plume-scale search radius {cfg.search_radius_km:.0f} km (the source of a compact ~3.3 km "
+        f"plume sits at S +/- ~1 km, not tens of km upwind); wells beyond it are not candidates for "
+        f"THIS plume.",
+        moderate_regime_assumption,
+        f"HEADLINE (dense-coverage discrimination): {n_2sigma} O&G wells fall within the plume-scale "
+        f"2-sigma wedge ({n_1sigma} within 1-sigma). The nearest-centerline candidate (the {lease_name} "
+        f"lease/pad, {n_pad} co-located completions in the wedge) is FAVORED but NOT isolated — the data "
+        f"cannot pick the specific well, and cannot exclude the other {n_2sigma - n_pad} wells. No "
+        f"facility reaches HIGH; this is the dense-coverage analogue of Goturdepe's sparse finding.",
+    ]
+
+    def comp(name: str, value: float, rationale: str) -> ScoreComponent:
+        return ScoreComponent(name=name, value=value, weight=WEIGHTS[name], rationale=rationale)
+
+    hyps: list[SourceHypothesis] = []
+
+    # ---------------- H1: nearest-centerline well pad (favored, not isolated) -------
+    h1_components = [
+        comp("spatial_consistency", FAC_SPATIAL_NEAREST,
+             f"The {lease_name} lease/pad is the nearest-centerline candidate: {top['dist_km']:.1f} km from S, "
+             f"{top['dev']:.1f} deg off the upwind azimuth — closer in BOTH distance and angle than any "
+             f"other in-wedge well. But the wedge is wide ({wedge.half_angle_2sigma_deg:.0f} deg at "
+             f"2-sigma), S is NASA-anchored, and the pad holds {n_pad} co-located completions, so this "
+             f"is favored, NOT isolated — capped well below certainty."),
+        comp("type_prior", FAC_TYPE_WELL,
+             "An active O&G well in a dense producing basin; a plausible moderate-source emitter. "
+             "Type barely discriminates at this magnitude (see assumptions)."),
+        comp("magnitude_consistency", FAC_MAGNITUDE_MODERATE,
+             f"~{q_t_hr:.2f} t/hr is squarely in the moderate point-source regime — consistent with "
+             f"single-well venting/leak (Duren 2019; Cusworth 2021), neither too small nor "
+             f"super-emitter scale."),
+    ]
+    h1_score = round(sum(c.value * c.weight for c in h1_components), 4)
+    h1_tier, h1_capped = _capped_tier(h1_score)
+    pad_id_list = ", ".join(str(int(c["props"]["OGIM_ID"])) for c in pad_members[:6])
+    hyps.append(SourceHypothesis(
+        id="H1", rank=1,
+        candidate=Candidate(
+            kind=CandidateKind.OGIM_FACILITY,
+            descriptor=f"The {lease_name} lease/pad (operator {top_operator}; nearest completion OGIM_ID {top_id}) — nearest-centerline candidate",
+            ogim_layer=_WELL_LAYER, ogim_id=top_id, ogim_name=top_name, operator=top_operator,
+        ),
+        claim=(
+            f"The ~{q_t_hr:.2f} t/hr plume's nearest-centerline candidate is the {lease_name} lease/pad "
+            f"({top_operator}), ~{top['dist_km']:.1f} km from the back-projected source S and "
+            f"~{top['dev']:.1f} deg off the wind azimuth. Pad/operator-level only: the pad holds "
+            f"{n_pad} co-located completions and the specific well CANNOT be isolated, nor can the "
+            f"other {n_2sigma - n_pad} in-wedge wells be excluded."
+        ),
+        confidence_tier=h1_tier,
+        confidence_rationale=(
+            f"Heuristic score {h1_score:.2f} (band {_band(h1_score).value})"
+            + (f" CAPPED to {h1_tier.value}: even the nearest-centerline candidate is not isolated "
+               f"(wide wedge + NASA-anchored S + multi-well pad), so MODERATE pad/operator-level is the "
+               f"highest defensible tier — NOT HIGH facility attribution." if h1_capped
+               else ": favored pad/operator-level candidate, but NOT HIGH — the evidence does not "
+                    "isolate a single facility.")
+        ),
+        score=h1_score, score_components=h1_components,
+        evidence=[
+            EvidenceItem(
+                kind="spatial_proximity",
+                statement=(
+                    f"The {lease_name} lease/pad's nearest completion (OGIM_ID {top_id}, FAC_TYPE "
+                    f"{top_props.get('FAC_TYPE')}, status {top_props.get('OGIM_STATUS')}) is "
+                    f"{top['dist_km']:.1f} km from S at {top['dev']:.1f} deg off-centerline."
+                ),
+                source=SourceRef(dataset=cfg.subset_rel, locator=f"ogim_id={top_id} {top_name}",
+                                 ogim_id=top_id, ogim_layer=_WELL_LAYER),
+            ),
+            EvidenceItem(
+                kind="pad_multiplicity",
+                statement=(
+                    f"The {lease_name} lease/pad has {n_pad} co-located completions inside the wedge "
+                    f"(OGIM_IDs {pad_id_list}{'...' if n_pad > 6 else ''}, operator {top_operator}); "
+                    f"a single overpass cannot resolve which one emits."
+                ),
+                source=SourceRef(dataset=cfg.subset_rel, locator=f"ogim_id={top_id} pad",
+                                 ogim_id=top_id, ogim_layer=_WELL_LAYER),
+            ),
+            EvidenceItem(
+                kind="magnitude_range",
+                statement=(
+                    f"Emission rate {q_t_hr:.2f} t/hr [{q_lo:.2f}-{q_hi:.2f}] (NASA-footprint-anchored) "
+                    f"is a moderate single-source magnitude, well below super-emitter scale."
+                ),
+                source=q_ref,
+            ),
+            *( [flare_ev] if flare_ev else [] ),
+        ],
+        assumptions=[
+            "Wind back-projection places the source upwind; S (NASA-footprint-anchored upwind tip) is "
+            "the best source estimate.",
+            half_angle_assumption,
+            cfg.localization_note,
+        ],
+        counter_considerations=[
+            f"{n_2sigma - n_pad} other O&G wells fall within the same wedge and cannot be excluded; "
+            f"proximity ranks the pad first but does not isolate it.",
+            "The specific emitting well on the pad is unresolved; even pad-level rests on a wide, "
+            "speed-derived wedge and a NASA-anchored source point.",
+        ],
+        falsification=(
+            "A facility-resolved overpass (or measured wind-direction variance tightening the wedge) "
+            "placing the source on a different pad/well, or off this pad entirely, would falsify this."
+        ),
+        generation_method=GENERATION_METHOD,
+    ))
+
+    # ---------------- H2: the non-pad in-wedge wells (indistinguishable) ---
+    non_pad = [c for c in ranked if c not in pad_members]
+    n_other = len(non_pad)
+    alt = non_pad[: _RENDER_CAP]
+    alt_lines = "; ".join(
+        f"{c['props'].get('FAC_NAME')} (OGIM_ID {int(c['props']['OGIM_ID'])}, "
+        f"{c['dist_km']:.1f} km, {c['dev']:.0f} deg)" for c in alt
+    )
+    h2_components = [
+        comp("spatial_consistency", FAC_SPATIAL_OTHER,
+             f"Any of the {n_other} in-wedge wells NOT on the {lease_name} lease/pad could be the source; "
+             f"each is individually off-centerline or farther than the pad, but the wide wedge keeps them "
+             f"all non-excludable."),
+        comp("type_prior", FAC_TYPE_WELL, "Same O&G well prior as H1."),
+        comp("magnitude_consistency", FAC_MAGNITUDE_MODERATE, "Same moderate-source magnitude as H1."),
+    ]
+    h2_score = round(sum(c.value * c.weight for c in h2_components), 4)
+    h2_tier, _ = _capped_tier(h2_score)
+    hyps.append(SourceHypothesis(
+        id="H2", rank=2,
+        candidate=Candidate(
+            kind=CandidateKind.SECTOR,
+            descriptor=f"One of the {n_other} O&G wells in the wedge NOT on the {lease_name} lease/pad",
+        ),
+        claim=(
+            f"The source may be any of the {n_other} in-wedge O&G wells that are NOT on the {lease_name} "
+            f"lease/pad (and, within the pad, any of its {n_pad} completions) — alternatives the wide, "
+            f"speed-derived wedge and NASA-anchored S cannot exclude. This non-discrimination IS the "
+            f"dense-coverage finding."
+        ),
+        confidence_tier=h2_tier,
+        confidence_rationale=(
+            f"Heuristic score {h2_score:.2f}, band {_band(h2_score).value}: the indistinguishable-"
+            f"alternatives hypothesis — first-class, because dense coverage makes it real."
+        ),
+        score=h2_score, score_components=h2_components,
+        evidence=[
+            EvidenceItem(
+                kind="candidate_inventory",
+                statement=(
+                    f"{n_2sigma} O&G wells fall within the plume-scale 2-sigma wedge ({n_1sigma} within "
+                    f"1-sigma). Rendered top {len(alt)} non-pad alternatives (cutoff at {_RENDER_CAP}; "
+                    f"all {n_2sigma} are real OGIM records): {alt_lines}."
+                ),
+                source=subset_ref,
+            ),
+        ],
+        assumptions=[half_angle_assumption, cfg.localization_note],
+        counter_considerations=[
+            f"The {lease_name} lease/pad is spatially favored (H1); these alternatives are ranked below it but "
+            f"not excluded.",
+        ],
+        falsification=(
+            "Tighter localization (measured wind-direction variance, or a plume-resolved inversion) "
+            "collapsing the candidate set to one pad would demote this."
+        ),
+        generation_method=GENERATION_METHOD,
+    ))
+
+    # ---------------- H3: non-O&G (completeness) ----------------
+    h3_components = [
+        comp("spatial_consistency", FAC_SPATIAL_NEUTRAL,
+             "Location does not discriminate sector; the discriminator against non-O&G is the type prior."),
+        comp("type_prior", FAC_TYPE_NON_OG,
+             "A ~0.85 t/hr point source coincident with a dense active O&G basin is overwhelmingly O&G; "
+             "a non-O&G origin (natural seep, other sector) is a very low prior but not excluded."),
+        comp("magnitude_consistency", FAC_MAGNITUDE_NON_OG,
+             "A moderate point source is not characteristic of a natural seep here; magnitude disfavors it."),
+    ]
+    h3_score = round(sum(c.value * c.weight for c in h3_components), 4)
+    h3_tier, _ = _capped_tier(h3_score)
+    hyps.append(SourceHypothesis(
+        id="H3", rank=3,
+        candidate=Candidate(kind=CandidateKind.SECTOR,
+                            descriptor="Non-O&G source (natural geologic seep or other sector)"),
+        claim=("A non-O&G origin is possible but unlikely in a dense active O&G basin; stated for "
+               "completeness, not because of positive evidence."),
+        confidence_tier=h3_tier,
+        confidence_rationale=(
+            f"Heuristic score {h3_score:.2f}, band {_band(h3_score).value}: the active-basin context "
+            f"strongly disfavors a non-O&G origin but does not exclude it."
+        ),
+        score=h3_score, score_components=h3_components,
+        evidence=[EvidenceItem(
+            kind="sector_context",
+            statement=("The wedge lies in a dense active O&G basin (thousands of wells), which argues "
+                       "against a non-O&G origin; no in-situ measurement excludes a natural seep."),
+            source=subset_ref,
+        )],
+        assumptions=["Sector priors are heuristic, not site-measured; isotopic/in-situ confirmation "
+                     "would be needed to exclude a natural seep."],
+        counter_considerations=["No committed dataset evidences a natural seep here; included for honesty."],
+        falsification="Isotopic (delta-13C) or in-situ sampling indicating non-thermogenic origin would resolve sector.",
+        generation_method=GENERATION_METHOD,
+    ))
+
+    return HypothesisSet(
+        event_id=event_id,
+        phenomenon=cfg.phenomenon,
+        generated_method=GENERATION_METHOD,
+        headline_finding=(
+            f"DENSE-COVERAGE DISCRIMINATION: {n_2sigma} O&G wells fall within the plume-scale "
+            f"back-projection wedge ({n_1sigma} within 1-sigma). The nearest-centerline candidate is "
+            f"the {lease_name} lease/pad ({top_operator}, {n_pad} co-located completions, ~{top['dist_km']:.1f} "
+            f"km from S), but it CANNOT be isolated — the wedge is wide, the source point S is inherited "
+            f"from NASA's plume footprint (not self-derived), and the specific well is unresolved. No "
+            f"facility reaches HIGH. This is the dense-coverage analogue of Goturdepe's sparse-data "
+            f"finding, and gets the same first-class treatment."
+        ),
+        scoring_disclaimer=(
+            "Scores are a documented additive heuristic (weighted components shown), NOT calibrated "
+            "probabilities. Confidence reflects DISCRIMINATION POWER, not proximity alone; rely on the "
+            "qualitative tiers and the visible component rationales."
+        ),
+        confidence_cap=(
+            f"No hypothesis exceeds {CEILING.value.upper()}: dense but spatially-ambiguous coverage plus "
+            f"a NASA-anchored source localization cannot isolate a single facility. The nearest pad is "
+            f"MODERATE, not HIGH."
+        ),
+        plume_summary={
+            "emission_rate_ours_cal_t_hr": f"{q_t_hr:.3f}",
+            "emission_rate_regime": "moderate point source (sub-super-emitter)",
+            "upwind_source_S": f"{wedge.apex_lat:.5f} N, {wedge.apex_lon:.5f} E",
+            "source_localization": "NASA-footprint-anchored (complex 000524), not self-derived",
+            "upwind_azimuth_deg": f"{wedge.upwind_azimuth_deg:.1f}",
+            "wedge_half_angle_1sigma_deg": f"{wedge.half_angle_1sigma_deg:.1f}",
+            "wedge_half_angle_2sigma_deg": f"{wedge.half_angle_2sigma_deg:.1f}",
+            "search_radius_km": f"{wedge.search_radius_km:.0f}",
+            "wells_in_wedge_2sigma": str(n_2sigma),
+            "wells_in_wedge_1sigma": str(n_1sigma),
+            "nearest_candidate": f"{lease_name} lease/pad ({top_operator})",
+        },
+        global_assumptions=global_assumptions,
+        hypotheses=hyps,
+        provenance={
+            "ogim_subset": cfg.subset_rel,
+            "ogim_doi": "10.5281/zenodo.15103476",
+            "q_estimate": f"stage_b_outputs/{event_id}/q_estimate.json",
+            "wind_location": f"stage_b_outputs/{event_id}/wind_location_check.json",
+            "benchmark": f"eval/benchmark/{event_id}.yaml",
+            "magnitude_prior_basis_1": "Duren et al. 2019, Nature 575, doi:10.1038/s41586-019-1720-3",
+            "magnitude_prior_basis_2": "Cusworth et al. 2021, ES&T Lett 8, doi:10.1021/acs.estlett.1c00173",
+        },
+    )

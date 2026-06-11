@@ -1,0 +1,24 @@
+{
+  "event_id": "permian_basin_2022",
+  "crs": "EPSG:4326",
+  "bounds": {
+    "west": -104.11705357954752,
+    "east": -104.05307014215728,
+    "south": 32.337339288931574,
+    "north": 32.369331007626705
+  },
+  "colormap": {
+    "name": "inferno",
+    "vmin_ppm_m": 0.0,
+    "vmax_ppm_m": 988.8523452362455
+  },
+  "diff_colormap": {
+    "name": "RdBu_r",
+    "abs_limit_ppm_m": 778.213234970335
+  },
+  "rendering": "Mask = NASA's published plume footprint (L2B > 200 ppm\u00b7m inside complex 000524's bbox), the same footprint the flux was integrated over (CROSS-CHECKED; our own self-segmentation could not isolate this weak plume \u2014 see Stage C). In-mask pixels floored to 0.92 opacity, off-mask scaled to 0.55. Real pixels throughout.",
+  "source": {
+    "ours": "stage_a_outputs/permian_basin_2022/our_enhancement_ortho.npz (enhancement_ppm_m)",
+    "nasa": "EMIT_L2B_CH4ENH_002_20220826T174642_2223812_024.tif"
+  }
+}

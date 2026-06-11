@@ -38,6 +38,9 @@ class EventSummary(_Base):
     lon: float
     status: EventStatus
     sensor: str
+    validation_tier: str | None = Field(
+        None, description="VALIDATED | CROSS-CHECKED | DEMONSTRATION — None for pending"
+    )
     headline: str | None = Field(None, description="e.g. 'CH₄ · 27.1 t/hr' or 'pending'")
     acquisition_utc: str | None = Field(
         None,
@@ -108,6 +111,11 @@ class Validation(_Base):
     n_pixels_bbox: int
     reference_product: str
     note: str
+    # CROSS-CHECKED events (e.g. Permian) carry BOTH cross-check facts: the
+    # integrated-mass ratio over the published footprint (≈agreement) AND the weak
+    # pixel-level Pearson. None for events without a footprint-anchored cross-check.
+    integrated_mass_ratio: float | None = None
+    pixel_pearson: float | None = None
 
 
 class ScopeCaveat(_Base):
@@ -147,6 +155,9 @@ class Provenance(_Base):
     l2b_ch4_granule_ur: str | None = None
     target_spectrum_source: str | None = None
     bands_used: int | None = None
+    # How the plume's source point was localized — distinguishes Permian's
+    # NASA-footprint-anchored S from Goturdepe's end-to-end self-derived S.
+    localization: str | None = None
 
 
 class RasterBounds(_Base):
@@ -179,6 +190,8 @@ class EventDetail(_Base):
     status: EventStatus
     location_label: str
     chips: list[str]
+    validation_tier: str | None = None  # VALIDATED | CROSS-CHECKED | DEMONSTRATION
+    tier_explainer: str | None = None  # what the tier means for THIS event + its limits
 
     quantification: Quantification | None = None
     uncertainty_budget: list[UncertaintyTerm] = Field(default_factory=list)

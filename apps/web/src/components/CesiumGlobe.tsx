@@ -319,6 +319,13 @@ export default function CesiumGlobe({
                 <div className="dot" />
                 <div className="lab">
                   {e.short_name}
+                  {e.validation_tier && (
+                    <span
+                      className={`tier-badge tier-${e.validation_tier.toLowerCase().replace(/[^a-z]/g, "-")}`}
+                    >
+                      {e.validation_tier}
+                    </span>
+                  )}
                   <span className="sub">{e.headline}</span>
                 </div>
               </div>

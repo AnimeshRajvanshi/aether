@@ -42,14 +42,18 @@ def test_health() -> None:
     assert client.get("/api/health").json()["status"] == "ok"
 
 
-def test_events_list_two_events_one_pending() -> None:
+def test_events_list_two_active_events_with_tiers() -> None:
+    # Stage D: both events are now active, each carrying its validation tier.
     events = client.get("/api/events").json()
     by_id = {e["event_id"]: e for e in events}
     assert set(by_id) == {GOTURDEPE, PERMIAN}
     assert by_id[GOTURDEPE]["status"] == "active"
-    assert by_id[PERMIAN]["status"] == "pending"
-    # Permian must NOT carry an invented rate.
-    assert by_id[PERMIAN]["headline"] == "pending"
+    assert by_id[PERMIAN]["status"] == "active"
+    assert by_id[GOTURDEPE]["validation_tier"] == "VALIDATED"
+    assert by_id[PERMIAN]["validation_tier"] == "CROSS-CHECKED"
+    # Headlines are the real OURS-CAL rates, never invented.
+    permian_q = json.loads((config.stage_b_dir(PERMIAN) / "q_estimate.json").read_text())
+    assert by_id[PERMIAN]["headline"] == f"CH₄ · {permian_q['q_central_t_hr']:.1f} t/hr"
 
 
 def test_marker_sits_on_real_centroid(q: dict) -> None:
@@ -60,10 +64,10 @@ def test_marker_sits_on_real_centroid(q: dict) -> None:
 
 def test_summary_acquisition_traces_to_stage_a(stage_a: dict) -> None:
     by_id = {e["event_id"]: e for e in client.get("/api/events").json()}
-    # Active event's acquisition timestamp must equal the committed Stage A file.
+    # Each active event's acquisition timestamp must equal its committed Stage A file.
     assert by_id[GOTURDEPE]["acquisition_utc"] == stage_a["acquisition_utc"]
-    # Pending event has no processed overpass — we must not imply one.
-    assert by_id[PERMIAN]["acquisition_utc"] is None
+    permian_a = json.loads((config.stage_a_dir(PERMIAN) / "stage_a_report.json").read_text())
+    assert by_id[PERMIAN]["acquisition_utc"] == permian_a["acquisition_utc"]
 
 
 def test_quantification_matches_q_estimate(q: dict) -> None:
@@ -141,14 +145,55 @@ def test_raster_assets_served() -> None:
     assert set(bounds["bounds"]) == {"west", "south", "east", "north"}
 
 
-def test_pending_event_has_no_quantification() -> None:
+def test_permian_active_tier_and_crosscheck_facts() -> None:
+    """Stage D: Permian is active, CROSS-CHECKED, with BOTH cross-check facts and an
+    honest context-only scope block (no Thorpe cluster)."""
     d = client.get(f"/api/events/{PERMIAN}").json()
-    assert d["status"] == "pending"
-    assert d["quantification"] is None
-    assert d["geometry"] is None
-    assert d["pending_reason"]
-    # References are still real.
+    q = json.loads((config.stage_b_dir(PERMIAN) / "q_estimate.json").read_text())
+    diag = json.loads((config.stage_b_dir(PERMIAN) / "diagnostics.json").read_text())
+    assert d["status"] == "active"
+    assert d["validation_tier"] == "CROSS-CHECKED"
+    assert "CROSS-CHECKED" in d["tier_explainer"]
+    # Both cross-check facts are surfaced, traced to committed files.
+    val = d["validation"]
+    assert val["integrated_mass_ratio"] == pytest.approx(q["enhancement_bias_factor"])
+    assert val["pixel_pearson"] == pytest.approx(
+        diag["pixelwise_pearson_on_footprint_ours_vs_nasa"]
+    )
+    # Context-only scope: no Thorpe cluster, frames 18.3 as context.
+    assert d["scope_caveat"]["kind"] == "context_only"
+    assert d["scope_caveat"]["n_sources"] is None
+    assert "press-release" in d["scope_caveat"]["text"].lower()
+    # Provenance distinguishes NASA-anchored localization.
+    assert "NASA-footprint-anchored" in d["provenance"]["localization"]
+    # Quantification note is honest about direction: for bias < 1 it must say ours is
+    # BELOW NASA and that the +1.46× Goturdepe over-amplitude does NOT transfer — never
+    # call Permian itself an over-amplitude.
+    if q["enhancement_bias_factor"] < 1.0:
+        note = d["quantification"]["ours_cal"]["note"].lower()
+        assert "below" in note and "does not transfer" in note
+
+
+def test_permian_active_quantification_traces_to_q() -> None:
+    d = client.get(f"/api/events/{PERMIAN}").json()
+    q = json.loads((config.stage_b_dir(PERMIAN) / "q_estimate.json").read_text())
+    assert d["quantification"]["ours_cal"]["value_t_hr"] == pytest.approx(q["q_central_t_hr"])
+    assert d["geometry"]["ime_t"] == pytest.approx(q["ime_central_kg"] / 1000)
     assert any("nasa.gov" in (r.get("url") or "") for r in d["references"])
+
+
+def test_permian_brief_numbers_trace_upstream() -> None:
+    """No-staleness: the Permian brief's quoted rate + 18.3 context trace to source."""
+    import re
+
+    d = client.get(f"/api/events/{PERMIAN}").json()
+    q = json.loads((config.stage_b_dir(PERMIAN) / "q_estimate.json").read_text())
+    brief = d["brief"]
+    m = re.search(r"(\d+\.\d{2}) t CH₄/hr", brief)
+    assert m and m.group(1) == f"{q['q_central_t_hr']:.2f}", "Permian brief rate is stale"
+    # 18.3 framed as press-release context, never a validation target.
+    assert "18.3" in brief and "press-release" in brief.lower()
+    assert "CROSS-CHECKED" in brief
 
 
 def test_hypotheses_equals_committed_artifact() -> None:
@@ -173,11 +218,16 @@ def test_hypotheses_preserve_the_caveats() -> None:
     assert "not calibrated" in api["scoring_disclaimer"].lower()
 
 
-def test_pending_event_hypotheses_absent_not_fabricated() -> None:
-    r = client.get(f"/api/events/{PERMIAN}/hypotheses")
-    assert r.status_code == 200
-    body = r.json()
-    assert body == {"hypotheses": None, "status": "pending"}
+def test_permian_active_serves_committed_hypotheses() -> None:
+    """Stage D: now that Permian is active (UI assets exist), its committed Stage C
+    attribution is served verbatim (it was gated to pending before)."""
+    committed = json.loads(
+        (config.data_root() / "attribution_outputs" / PERMIAN / "hypotheses.json").read_text()
+    )
+    api = client.get(f"/api/events/{PERMIAN}/hypotheses").json()
+    assert api == committed
+    # No facility exceeds LOW (dense-coverage discrimination cap survives the API).
+    assert all(h["confidence_tier"] in {"low", "insufficient"} for h in api["hypotheses"])
 
 
 def test_hypotheses_unknown_event_404() -> None:

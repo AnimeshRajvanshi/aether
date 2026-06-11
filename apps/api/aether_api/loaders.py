@@ -86,6 +86,50 @@ def _is_active(event_id: str) -> bool:
     return q_path.exists() and bounds_path.exists()
 
 
+# Validation tier per event. Read from the committed stage_a_report.json when present
+# (the Sprint 7 runner records it); Goturdepe's Sprint-6 report predates the field, so
+# it falls back to this map. NOT a scientific value invented here — the tier was
+# decided by each event's probe evidence (see the gate reports).
+_TIER_DEFAULT: dict[str, str] = {"turkmenistan_goturdepe_2022_08_15": "VALIDATED"}
+
+
+def _validation_tier(event_id: str, stage_a: dict[str, Any]) -> str:
+    return str(stage_a.get("validation_tier") or _TIER_DEFAULT.get(event_id, "DEMONSTRATION"))
+
+
+def _tier_explainer(tier: str, val: Validation, ours_central: float) -> str:
+    """First-class explainer of what the tier means for THIS event, with its limits."""
+    if tier == "VALIDATED":
+        return (
+            "VALIDATED — our independent retrieval reproduces NASA's L2B CH4ENH over the "
+            f"plume (Pearson r = {val.pearson_in_bbox:.2f}) and the IME/Q chain is anchored "
+            "to that reference. LIMIT: still a single event, NASA-L2B-anchored — not an "
+            "in-situ flux measurement."
+        )
+    if tier == "CROSS-CHECKED":
+        facts = (
+            f"integrated mass over NASA's published footprint agrees to "
+            f"{val.integrated_mass_ratio:.2f}× (ours/NASA)"
+            if val.integrated_mass_ratio is not None
+            else f"spatial Pearson r = {val.pearson_in_bbox:.2f}"
+        )
+        pixel = (
+            f", BUT pixel-level agreement is weak (r = {val.pixel_pearson:.2f})"
+            if val.pixel_pearson is not None
+            else ""
+        )
+        return (
+            f"CROSS-CHECKED — a NASA L2B raster exists, so our retrieval is checked against "
+            f"it: {facts}{pixel}. NOT VALIDATED: no peer-reviewed per-source flux, the source "
+            f"localization is inherited from NASA's plume footprint, and the published "
+            f"18.3 t/hr is press-release context only — not a comparison target."
+        )
+    return (
+        "DEMONSTRATION — no independent reference raster exists for this granule, so the "
+        f"~{ours_central:.1f} t/hr retrieval is internally consistent but UNVALIDATED."
+    )
+
+
 def _emission_measurement(event: BenchmarkEvent) -> Measurement | None:
     """The reference emission-rate measurement (cluster total) from the YAML."""
     return event.known_measurements.get("emission_rate_metric_tonnes_per_hr")
@@ -175,6 +219,7 @@ def _summary(event_id: str) -> EventSummary:
             lon=q["plume_centroid_lon"],
             status=EventStatus.ACTIVE,
             sensor=sensor_name,
+            validation_tier=_validation_tier(event_id, stage_a),
             headline=f"CH₄ · {q['q_central_t_hr']:.1f} t/hr",
             acquisition_utc=stage_a.get("acquisition_utc"),
         )
@@ -254,6 +299,7 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
     # is valid — it yields a context_only scope block, not a cluster fraction. The
     # earlier `assert meas.uncertainty is not None` was a Goturdepe-shaped assumption.
 
+    is_context = meas.uncertainty is None  # press-release reference (Permian) vs cluster
     bias = q["enhancement_bias_factor"]
     sigma = q["q_total_fractional_sigma"]
     ours_central = q["q_central_t_hr"]
@@ -262,6 +308,30 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
     # NASA-cal range = ours range / bias (both calibrations share one fractional
     # window; dividing the IME by the MF amplitude bias shifts the whole interval).
     nasa_low, nasa_high = ours_low / bias, ours_high / bias
+
+    # The MF-amplitude phrasing must be honest about direction: Goturdepe is an
+    # OVER-amplitude (bias > 1); Permian is BELOW NASA (bias < 1, and the +1.46×
+    # Goturdepe systematic does not transfer).
+    if bias >= 1.0:
+        ours_amp = (
+            f"The +{bias:.2f}× MF over-amplitude vs NASA L2B is reproduced independently — "
+            "a real MF systematic, not a NASA-convention artifact — and carried one-sided."
+        )
+        nasa_amp = (
+            f"Our IME divided by the independently-measured {bias:.2f}× MF amplitude ratio "
+            "vs NASA L2B (ours/NASA over the plume mask), anchoring the rate to NASA's "
+            "enhancement amplitude for direct comparison to NASA-derived rates."
+        )
+    else:
+        ours_amp = (
+            f"Over the plume footprint our MF amplitude is {bias:.2f}× NASA's L2B (ours BELOW "
+            "NASA) — the +1.46× over-amplitude measured on Goturdepe does NOT transfer to "
+            "this scene."
+        )
+        nasa_amp = (
+            f"Our IME divided by the measured {bias:.2f}× ours/NASA amplitude ratio over "
+            "NASA's published footprint — i.e. anchored to NASA's own L2B enhancement there."
+        )
 
     quantification = Quantification(
         ours_cal=CalibratedRate(
@@ -273,9 +343,7 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
             note=(
                 "Central estimate from our INDEPENDENT retrieval — matched filter on a "
                 "methane absorption spectrum generated from HITRAN2020 via HAPI (NASA's "
-                f"per-granule target is not used). The +{bias:.2f}× MF over-amplitude vs NASA "
-                "L2B is now reproduced independently — a real MF systematic, not a "
-                "NASA-convention artifact — and carried one-sided."
+                f"per-granule target is not used). {ours_amp}"
             ),
         ),
         nasa_cal=CalibratedRate(
@@ -284,11 +352,7 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
             range_low_t_hr=nasa_low,
             range_high_t_hr=nasa_high,
             sigma_fractional=sigma,
-            note=(
-                f"Our IME divided by the independently-measured {bias:.2f}× MF amplitude ratio "
-                "vs NASA L2B (ours/NASA over the plume CC), anchoring the rate to NASA's "
-                "enhancement amplitude for direct comparison to NASA-derived rates."
-            ),
+            note=nasa_amp,
         ),
         enhancement_bias_factor=bias,
         central_p_value=q["central_p_value"],
@@ -352,21 +416,51 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
         era5_nearest_hour_utc=q["era5_nearest_hour_utc"],
     )
 
+    # CROSS-CHECKED events carry the dual cross-check facts: the integrated-mass
+    # ratio over NASA's published footprint AND the (weak) pixel-level Pearson.
+    diag_path = config.stage_b_dir(event_id) / "diagnostics.json"
+    diag = _read_json(diag_path) if diag_path.exists() else {}
+    pixel_pearson = diag.get("pixelwise_pearson_on_footprint_ours_vs_nasa")
+    if is_context:
+        pixel_r = pixel_pearson if pixel_pearson is not None else float("nan")
+        val_note = (
+            "TWO cross-check facts vs NASA L2B over the published plume footprint: the "
+            f"integrated mass agrees to {bias:.2f}× (ours/NASA), but the pixel-level "
+            f"agreement is weak (r = {pixel_r:.2f}) — the masses match even though pixel "
+            f"co-registration does not. Full-scene Pearson r = {a['pearson_full_scene']:.2f}."
+        )
+        integrated_mass_ratio = bias
+    else:
+        val_note = (
+            "Spatial agreement of our enhancement with NASA L2B CH4ENH, "
+            "orthorectified, unsmoothed, over the plume bbox."
+        )
+        integrated_mass_ratio = None
+        pixel_pearson = None
+
     validation = Validation(
         pearson_in_bbox=a["pearson_in_bbox"],
         pearson_full_scene=a["pearson_full_scene"],
         n_pixels_bbox=a["n_pixels_compared_bbox"],
         reference_product="NASA L2B CH4ENH",
-        note=(
-            "Spatial agreement of our enhancement with NASA L2B CH4ENH, "
-            "orthorectified, unsmoothed, over the plume bbox."
-        ),
+        note=val_note,
+        integrated_mass_ratio=integrated_mass_ratio,
+        pixel_pearson=pixel_pearson,
     )
 
     scope = _scope_caveat(event, meas, ours_central, nasa_central)
     ref_total = meas.value
     n_sources = meas.n_sources or 0
 
+    # Source-localization provenance: distinguishes Permian's NASA-footprint-anchored
+    # S from Goturdepe's end-to-end self-derived S (Stage D requirement).
+    localization = (
+        "NASA-footprint-anchored — the source point S derives from NASA's published L2B "
+        "plume footprint (CH4PLM complex), not a fully self-derived localization."
+        if is_context
+        else "End-to-end independent — S is self-derived from our own retrieval (top-5% "
+        "upwind plume pixels), no NASA plume product used to locate it."
+    )
     provenance = Provenance(
         acquisition_utc=a["acquisition_utc"],
         l1b_granule_ur=a.get("l1b_granule_ur"),
@@ -374,6 +468,7 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
         l2b_ch4_granule_ur=a.get("l2b_ch4_granule_ur"),
         target_spectrum_source=a.get("target_spectrum_source"),
         bands_used=a.get("bands_used"),
+        localization=localization,
     )
 
     cmap = bounds["colormap"]
@@ -385,18 +480,41 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
         layers=["enhancement", "nasa", "diff"],
     )
 
-    # Deterministic brief assembled entirely from the real values above.
+    # Deterministic brief assembled entirely from the real values above. Event-aware:
+    # a cluster event closes on the Thorpe fraction; a context-only event closes on the
+    # NASA-footprint cross-check and frames 18.3 t/hr as press-release context.
     acq_date = a["acquisition_utc"][:10]
-    brief = (
-        f"EMIT imaged a coherent methane plume over the {disp['short_name'].split('–')[0].title()} "
-        f"gas field on {acq_date}. Our independent retrieval — a matched filter on a methane "
-        f"absorption spectrum generated from HITRAN2020 via HAPI, with no NASA per-granule "
-        f"target — reproduces NASA's L2B enhancement at r = {validation.pearson_in_bbox:.2f} and "
-        f"yields {geometry.ime_t:.1f} t integrated mass over a {geometry.area_km2:.1f} km² mask. "
-        f"With a {atmosphere.u10_speed_ms:.1f} m/s wind this implies ≈{ours_central:.0f} t CH₄/hr "
-        f"from this single source — one of {n_sources} Thorpe et al. quantify at "
-        f"{ref_total:g} ± {meas.uncertainty:g} t/hr."
-    )
+    tier = _validation_tier(event_id, a)
+    if is_context:
+        nasa_fp = q.get("q_nasa_l2b_same_footprint_t_hr")
+        nasa_fp_clause = (
+            f" — agreeing with NASA's own L2B through the same method ({nasa_fp:.2f} t/hr) "
+            f"to {bias:.2f}×"
+            if nasa_fp is not None
+            else ""
+        )
+        brief = (
+            f"EMIT imaged a methane plume near {disp['region']} on {acq_date}. Our independent "
+            f"retrieval — a matched filter on a HITRAN2020/HAPI absorption spectrum, with no "
+            f"NASA per-granule target — reproduces NASA's L2B structure at r = "
+            f"{validation.pearson_full_scene:.2f} (full scene) and, over NASA's published plume "
+            f"footprint, yields {ours_central:.2f} t CH₄/hr{nasa_fp_clause}. This is "
+            f"{tier} (NASA-L2B-anchored), not a peer-reviewed flux validation. The only "
+            f"published figure, {ref_total:g} t/hr, is a press-release value with no date, "
+            f"method, or uncertainty — context for the site, not a comparison target."
+        )
+    else:
+        brief = (
+            f"EMIT imaged a coherent methane plume over the "
+            f"{disp['short_name'].split('–')[0].title()} "
+            f"gas field on {acq_date}. Our independent retrieval — a matched filter on a methane "
+            f"absorption spectrum generated from HITRAN2020 via HAPI, with no NASA per-granule "
+            f"target — reproduces NASA's L2B enhancement at r = {validation.pearson_in_bbox:.2f} "
+            f"and yields {geometry.ime_t:.1f} t integrated mass over a {geometry.area_km2:.1f} "
+            f"km² mask. With a {atmosphere.u10_speed_ms:.1f} m/s wind this implies "
+            f"≈{ours_central:.0f} t CH₄/hr from this single source — one of {n_sources} Thorpe "
+            f"et al. quantify at {ref_total:g} ± {meas.uncertainty:g} t/hr."
+        )
 
     return EventDetail(
         event_id=event_id,
@@ -408,9 +526,13 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
         lon=q["plume_centroid_lon"],
         status=EventStatus.ACTIVE,
         location_label=(
-            f"{disp['region']} · {geometry.centroid_lat:.2f}°N {geometry.centroid_lon:.2f}°E"
+            f"{disp['region']} · {abs(geometry.centroid_lat):.2f}°"
+            f"{'N' if geometry.centroid_lat >= 0 else 'S'} "
+            f"{abs(geometry.centroid_lon):.2f}°{'E' if geometry.centroid_lon >= 0 else 'W'}"
         ),
         chips=_chips(event),
+        validation_tier=tier,
+        tier_explainer=_tier_explainer(tier, validation, ours_central),
         quantification=quantification,
         uncertainty_budget=budget,
         geometry=geometry,

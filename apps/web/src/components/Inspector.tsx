@@ -39,8 +39,18 @@ export default function Inspector({
                 {c}
               </span>
             ))}
+            {detail.validation_tier && (
+              <span
+                className={`tier-badge tier-${detail.validation_tier.toLowerCase().replace(/[^a-z]/g, "-")}`}
+                title="Validation tier"
+              >
+                {detail.validation_tier}
+              </span>
+            )}
             {detail.status === "pending" && <span className="pending-badge">Pending</span>}
           </div>
+          {/* First-class tier explainer: what this tier means for THIS event + limits. */}
+          {detail.tier_explainer && <p className="tier-explainer">{detail.tier_explainer}</p>}
         </div>
 
         {detail.status === "pending"
@@ -57,6 +67,11 @@ export default function Inspector({
               <span className="tag">Provenance · References</span>
               <span className="line" />
             </div>
+            {detail.provenance?.localization && (
+              <div className="ref prov-localization">
+                <b>Source localization:</b> {detail.provenance.localization}
+              </div>
+            )}
             {detail.references.map((r, i) => (
               <div className="ref" key={i}>
                 {r.citation}

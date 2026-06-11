@@ -952,6 +952,48 @@ body::after {
   padding: 3px 8px;
   text-transform: uppercase;
 }
+/* ===== VALIDATION TIER BADGE (Sprint 7 Stage D) ===== */
+.tier-badge {
+  font-family: var(--font-hud), sans-serif;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  border-radius: 4px;
+  padding: 3px 8px;
+  text-transform: uppercase;
+  font-weight: 600;
+  border: 1px solid currentColor;
+}
+/* VALIDATED — strongest (cyan); CROSS-CHECKED — qualified (amber); DEMONSTRATION — gray. */
+.tier-validated {
+  color: #35d6c3;
+  background: rgba(53, 214, 195, 0.1);
+}
+.tier-cross-checked {
+  color: #e0a23b;
+  background: rgba(224, 162, 59, 0.1);
+}
+.tier-demonstration {
+  color: var(--text-3);
+  background: rgba(255, 255, 255, 0.04);
+}
+/* Marker tier badge sits inline in the label — smaller. */
+.marker .lab .tier-badge {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 8px;
+  padding: 1px 5px;
+}
+.tier-explainer {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-2);
+  border-left: 2px solid var(--border-bright);
+  padding-left: 9px;
+}
+.prov-localization {
+  color: var(--text-2);
+}
 /* ===== SOURCE ATTRIBUTION (Sprint 4 artifact, rendered verbatim) ===== */
 .attr-headline {
   background: linear-gradient(180deg, rgba(53, 214, 195, 0.08), rgba(53, 214, 195, 0.02));

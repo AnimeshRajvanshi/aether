@@ -13,6 +13,7 @@ export interface EventSummary {
   lon: number;
   status: EventStatus;
   sensor: string;
+  validation_tier: string | null; // VALIDATED | CROSS-CHECKED | DEMONSTRATION | null (pending)
   headline: string | null;
   acquisition_utc: string | null;
 }
@@ -65,14 +66,17 @@ export interface Validation {
   n_pixels_bbox: number;
   reference_product: string;
   note: string;
+  integrated_mass_ratio: number | null;
+  pixel_pearson: number | null;
 }
 
 export interface ScopeCaveat {
+  kind: string; // "cluster_fraction" | "context_only"
   reference_total_t_hr: number;
-  reference_uncertainty_t_hr: number;
-  n_sources: number;
-  fraction_low_pct: number;
-  fraction_high_pct: number;
+  reference_uncertainty_t_hr: number | null;
+  n_sources: number | null;
+  fraction_low_pct: number | null;
+  fraction_high_pct: number | null;
   text: string;
 }
 
@@ -89,6 +93,7 @@ export interface Provenance {
   l2b_ch4_granule_ur: string | null;
   target_spectrum_source: string | null;
   bands_used: number | null;
+  localization: string | null;
 }
 
 export interface RasterBounds {
@@ -117,6 +122,8 @@ export interface EventDetail {
   status: EventStatus;
   location_label: string;
   chips: string[];
+  validation_tier: string | null;
+  tier_explainer: string | null;
   quantification: Quantification | null;
   uncertainty_budget: UncertaintyTerm[];
   geometry: Geometry | null;

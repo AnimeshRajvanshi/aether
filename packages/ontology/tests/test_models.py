@@ -251,7 +251,8 @@ class TestHypothesis:
                 "Wind direction from ERA5 is accurate within 30 degrees.",
                 "The infrastructure database is current as of 2024-Q1.",
             ],
-            falsification="Repeat overpass with no plume during similar wind conditions would weaken this hypothesis.",
+            falsification="Repeat overpass with no plume during similar wind conditions "
+            "would weaken this hypothesis.",
             score=0.78,
             rank=1,
             generation_method="llm_claude_sonnet_4.6",
@@ -280,7 +281,11 @@ class TestBrief:
             summary="A ~540 kg/hr methane plume was observed by EMIT...",
             body_markdown="# Overview\n\nA methane plume...",
             citations=[
-                {"claim": "Plume emission rate ~540 kg/hr", "evidence_id": str(uuid4()), "evidence_type": "detection"},
+                {
+                    "claim": "Plume emission rate ~540 kg/hr",
+                    "evidence_id": str(uuid4()),
+                    "evidence_type": "detection",
+                },
             ],
             provenance=basic_provenance,
         )

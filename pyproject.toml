@@ -56,6 +56,13 @@ select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
 # as confusables; we disable them rather than rewrite physics in ASCII.
 ignore = ["RUF001", "RUF002", "RUF003"]
 
+[tool.ruff.lint.per-file-ignores]
+# These frozen diagnostic scripts use the matched-filter matrix notation from
+# the literature (X radiance matrix, S covariance, T target, C correction, G
+# whitening) — lowercasing it would obscure the physics they document.
+"scripts/diagnose_stage_a_alignment.py" = ["N806"]
+"scripts/diagnose_stage_a_confirm.py" = ["N806"]
+
 [tool.mypy]
 python_version = "3.12"
 strict = true

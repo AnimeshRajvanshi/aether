@@ -177,7 +177,10 @@ def stats(arr: np.ndarray) -> str:
     a = arr[np.isfinite(arr)]
     if a.size == 0:
         return "(all NaN)"
-    return f"p1={np.percentile(a, 1):+.3e}  p50={np.percentile(a, 50):+.3e}  p99={np.percentile(a, 99):+.3e}"
+    return (
+        f"p1={np.percentile(a, 1):+.3e}  p50={np.percentile(a, 50):+.3e}  "
+        f"p99={np.percentile(a, 99):+.3e}"
+    )
 
 
 def main() -> None:
@@ -190,7 +193,7 @@ def main() -> None:
     lons = npz["lon"]
     lats = npz["lat"]
     bad = npz["bad_pixel_mask"]
-    target_wl, k = target_signature.load_unit_absorption_spectrum(TARGET_PATH)
+    _target_wl, k = target_signature.load_unit_absorption_spectrum(TARGET_PATH)
     print(f"  radiance.shape={radiance.shape}  bands_total={wl.size}")
 
     print("Sampling NASA L2B at L1B pixels...")
@@ -205,7 +208,7 @@ def main() -> None:
     nasa = np.full(lons.size, np.nan)
     nasa[valid] = l2b.values[rows_i[valid], cols_i[valid]]
     nasa_grid = nasa.reshape(lons.shape)
-    nasa_r, n_nasa = pearson_in_bbox(nasa_grid, nasa_grid, lons, lats)  # 1.0 sanity check
+    nasa_r, _n_nasa = pearson_in_bbox(nasa_grid, nasa_grid, lons, lats)  # 1.0 sanity check
     print(f"  NASA L2B: {stats(nasa_grid)}  (self-correlation should be 1.0, got {nasa_r:.3f})")
 
     # Band index sets
@@ -213,7 +216,7 @@ def main() -> None:
     nasa_window = select_indices(wl, [NASA_CH4_WINDOW])
     nasa_window_excluded = exclude_indices(nasa_window, wl, *NASA_EMIT_ALWAYS_EXCLUDE)
 
-    print(f"\nBand selection sizes:")
+    print("\nBand selection sizes:")
     print(f"  M0/M1 (three windows)              : {three_window.size} bands")
     print(f"  M2/M3 (NASA CH4 [2137,2493])       : {nasa_window.size} bands")
     print(f"  M4   (NASA + EMIT exclude 1275-1321): {nasa_window_excluded.size} bands")

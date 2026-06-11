@@ -15,7 +15,9 @@ from pathlib import Path
 
 import numpy as np
 
-PRE_PATH = Path("stage_a_outputs/turkmenistan_goturdepe_2022_08_15/_pre_loocv/our_enhancement_ortho.npz")
+PRE_PATH = Path(
+    "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/_pre_loocv/our_enhancement_ortho.npz"
+)
 POST_PATH = Path("stage_a_outputs/turkmenistan_goturdepe_2022_08_15/our_enhancement_ortho.npz")
 
 # Two blob regions identified in the side_by_side.png — both visible inside

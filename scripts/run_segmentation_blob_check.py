@@ -168,12 +168,15 @@ def main() -> None:
     plt.colorbar(im0, ax=axes[0], fraction=0.046, pad=0.04)
 
     # Right panel: plume mask outline overlaid on the enhancement.
-    im1 = axes[1].imshow(
+    axes[1].imshow(
         enh, extent=extent, origin="upper", cmap="inferno", vmin=0.0, vmax=vmax,
         aspect="equal", interpolation="nearest",
     )
     # Plume CC: shown as a cyan filled mask at low alpha plus a hard outline.
-    plume_mask = (result.labels == plume_label) if plume_label > 0 else np.zeros_like(result.labels, bool)
+    plume_mask = (
+        (result.labels == plume_label) if plume_label > 0
+        else np.zeros_like(result.labels, bool)
+    )
     cyan_overlay = np.zeros((*plume_mask.shape, 4))
     cyan_overlay[plume_mask] = [0.0, 1.0, 1.0, 0.35]
     axes[1].imshow(cyan_overlay, extent=extent, origin="upper", aspect="equal")
@@ -254,8 +257,10 @@ def main() -> None:
     ax.set_ylabel("Latitude")
     ax.set_title(
         f"Plume bbox zoom — cyan = plume CC (label {plume_label}, {counts[plume_label]} px)\n"
-        f"Blob A CC={rep.blob_a_component_label} ({'INSIDE' if rep.blob_a_inside_plume else 'OUTSIDE'} plume CC), "
-        f"Blob B CC={rep.blob_b_component_label} ({'INSIDE' if rep.blob_b_inside_plume else 'OUTSIDE'} plume CC)"
+        f"Blob A CC={rep.blob_a_component_label} "
+        f"({'INSIDE' if rep.blob_a_inside_plume else 'OUTSIDE'} plume CC), "
+        f"Blob B CC={rep.blob_b_component_label} "
+        f"({'INSIDE' if rep.blob_b_inside_plume else 'OUTSIDE'} plume CC)"
     )
     out_png_zoom = OUTPUT_DIR / "plume_mask_overlay_zoom.png"
     fig2.tight_layout()

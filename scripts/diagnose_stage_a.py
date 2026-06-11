@@ -118,21 +118,32 @@ def main() -> None:
     print(f"  count finite           : {np.isfinite(ours).sum()} / {ours.size}")
     print(f"  min / max              : {np.nanmin(ours):+.4e}  {np.nanmax(ours):+.4e}")
     print(f"  mean / median          : {np.nanmean(ours):+.4e}  {np.nanmedian(ours):+.4e}")
-    print(f"  abs-percentile  ", {f"p{p}": f"{np.nanpercentile(np.abs(ours), p):+.4e}" for p in pct_list})
-    print(f"  signed-percentile", {f"p{p}": f"{np.nanpercentile(ours, p):+.4e}" for p in pct_list})
+    print(
+        "  abs-percentile  ",
+        {f"p{p}": f"{np.nanpercentile(np.abs(ours), p):+.4e}" for p in pct_list},
+    )
+    print("  signed-percentile", {f"p{p}": f"{np.nanpercentile(ours, p):+.4e}" for p in pct_list})
 
     print("\nNASA L2B CH4ENH sampled at L1B pixels (ppm m, per LP DAAC):")
     print(f"  count finite           : {np.isfinite(nasa_grid).sum()} / {nasa_grid.size}")
     print(f"  min / max              : {np.nanmin(nasa_grid):+.4e}  {np.nanmax(nasa_grid):+.4e}")
-    print(f"  mean / median          : {np.nanmean(nasa_grid):+.4e}  {np.nanmedian(nasa_grid):+.4e}")
-    print(f"  signed-percentile", {f"p{p}": f"{np.nanpercentile(nasa_grid, p):+.4e}" for p in pct_list})
+    print(
+        f"  mean / median          : {np.nanmean(nasa_grid):+.4e}  "
+        f"{np.nanmedian(nasa_grid):+.4e}"
+    )
+    print(
+        "  signed-percentile",
+        {f"p{p}": f"{np.nanpercentile(nasa_grid, p):+.4e}" for p in pct_list},
+    )
 
     print("\nScale comparison: max |ours| / max |nasa|, mean |ours|/mean |nasa|:")
     print(
-        f"  ratio (max)            : {np.nanmax(np.abs(ours)) / max(np.nanmax(np.abs(nasa_grid)), 1e-12):.3e}"
+        f"  ratio (max)            : "
+        f"{np.nanmax(np.abs(ours)) / max(np.nanmax(np.abs(nasa_grid)), 1e-12):.3e}"
     )
     print(
-        f"  ratio (mean)           : {np.nanmean(np.abs(ours)) / max(np.nanmean(np.abs(nasa_grid)), 1e-12):.3e}"
+        f"  ratio (mean)           : "
+        f"{np.nanmean(np.abs(ours)) / max(np.nanmean(np.abs(nasa_grid)), 1e-12):.3e}"
     )
 
     # =================================================================== #
@@ -149,8 +160,8 @@ def main() -> None:
     if rows_blob.size > 0:
         unique_cols, col_counts = np.unique(cols_blob, return_counts=True)
         order = np.argsort(-col_counts)
-        print(f"  top-10 cross-track columns containing blob pixels (col_index : pixel_count):")
-        for c, ct in zip(unique_cols[order][:10], col_counts[order][:10]):
+        print("  top-10 cross-track columns containing blob pixels (col_index : pixel_count):")
+        for c, ct in zip(unique_cols[order][:10], col_counts[order][:10], strict=True):
             sample_vals = ours[rows_blob[cols_blob == c][:5], c]
             print(
                 f"    col={int(c):4d}  n={int(ct):5d}  "
@@ -172,8 +183,8 @@ def main() -> None:
         f"\n  Probing C, sᵀC⁻¹s, conditioning per column. shrinkage_alpha={shrinkage_alpha:g}"
     )
     print(
-        f"  Showing 3 suspect columns first, then 3 well-behaved columns "
-        f"(picked from the middle of the cross-track)."
+        "  Showing 3 suspect columns first, then 3 well-behaved columns "
+        "(picked from the middle of the cross-track)."
     )
 
     def probe_column(c: int) -> dict:
@@ -309,8 +320,14 @@ def main() -> None:
     print(f"\n  bands in CH4-sensitive 2150-2400 nm region: {all_in_ch4} total, {kept_in_ch4} kept")
     # List the actual nm of the dropped bands (the ones outside the three windows)
     dropped = np.where(~in_win)[0]
-    print(f"\n  dropped band wavelengths (first 25): {[float(round(w, 2)) for w in wavelengths_nm[dropped][:25]]}")
-    print(f"  dropped band wavelengths (last 15) : {[float(round(w, 2)) for w in wavelengths_nm[dropped][-15:]]}")
+    print(
+        "\n  dropped band wavelengths (first 25): "
+        f"{[float(round(w, 2)) for w in wavelengths_nm[dropped][:25]]}"
+    )
+    print(
+        "  dropped band wavelengths (last 15) : "
+        f"{[float(round(w, 2)) for w in wavelengths_nm[dropped][-15:]]}"
+    )
 
     # =================================================================== #
     # Hypothesis 6: ALIGNMENT — do we and NASA see the same (lon, lat) for the same pixel?
@@ -323,25 +340,27 @@ def main() -> None:
         idxs = np.linspace(0, len(ys) - 1, num=5).astype(int)
         print("  Showing 5 high-NASA pixels with our value at the same (lon, lat):")
         print(
-            f"    {'row':>5} {'col':>5} {'lon':>10} {'lat':>10} {'NASA':>12} {'OURS':>12} {'bad?':>5}"
+            f"    {'row':>5} {'col':>5} {'lon':>10} {'lat':>10} "
+            f"{'NASA':>12} {'OURS':>12} {'bad?':>5}"
         )
         for i in idxs:
             r, c = int(ys[i]), int(xs[i])
             print(
                 f"    {r:5d} {c:5d} {lons[r,c]:10.5f} {lats[r,c]:10.5f} "
-                f"{nasa_grid[r,c]:12.2f} {ours[r,c]:12.4e} {str(bool(bad[r,c])):>5}"
+                f"{nasa_grid[r,c]:12.2f} {ours[r,c]:12.4e} {bool(bad[r,c])!s:>5}"
             )
     # Also show what NASA reports at our blob pixels (we expect ~0 if the blobs are bogus)
     if rows_blob.size >= 3:
         print("\n  Showing 5 of our blob pixels with the NASA value at same (lon, lat):")
         print(
-            f"    {'row':>5} {'col':>5} {'lon':>10} {'lat':>10} {'NASA':>12} {'OURS':>12} {'bad?':>5}"
+            f"    {'row':>5} {'col':>5} {'lon':>10} {'lat':>10} "
+            f"{'NASA':>12} {'OURS':>12} {'bad?':>5}"
         )
         for i in np.linspace(0, rows_blob.size - 1, num=5).astype(int):
             r, c = int(rows_blob[i]), int(cols_blob[i])
             print(
                 f"    {r:5d} {c:5d} {lons[r,c]:10.5f} {lats[r,c]:10.5f} "
-                f"{nasa_grid[r,c]:12.2f} {ours[r,c]:12.4e} {str(bool(bad[r,c])):>5}"
+                f"{nasa_grid[r,c]:12.2f} {ours[r,c]:12.4e} {bool(bad[r,c])!s:>5}"
             )
 
     print("\nDone.")

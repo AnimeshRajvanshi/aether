@@ -83,7 +83,7 @@ def main() -> None:
     lons = npz["lon"]
     lats = npz["lat"]
     bad = npz["bad_pixel_mask"]
-    target_wl, k = target_signature.load_unit_absorption_spectrum(TARGET_PATH)
+    _target_wl, k = target_signature.load_unit_absorption_spectrum(TARGET_PATH)
 
     print("Re-running MF with NASA-faithful settings (M4) ...")
     nasa_window = np.where((wl >= 2137.0) & (wl <= 2493.0))[0]
@@ -150,14 +150,20 @@ def main() -> None:
     nasa_smooth[valid] = l2b_smoothed[rows_i[valid], cols_i[valid]]
     nasa_smooth = nasa_smooth.reshape(lons.shape)
     ok = in_bbox & np.isfinite(ours) & np.isfinite(nasa_smooth)
-    print(f"  pearson = {float(np.corrcoef(ours[ok], nasa_smooth[ok])[0, 1]):+.4f}  n={int(ok.sum())}")
+    print(
+        f"  pearson = {float(np.corrcoef(ours[ok], nasa_smooth[ok])[0, 1]):+.4f}  "
+        f"n={int(ok.sum())}"
+    )
 
     # ============================================================ C ===
     print("\n[C] Smooth BOTH (NASA 3x3 + ours 3x3) before correlating")
     ours_smoothed = scipy.ndimage.uniform_filter(np.nan_to_num(ours, nan=0.0),
                                                  size=3, mode="nearest")
     ok = in_bbox & np.isfinite(ours_smoothed) & np.isfinite(nasa_smooth)
-    print(f"  pearson = {float(np.corrcoef(ours_smoothed[ok], nasa_smooth[ok])[0, 1]):+.4f}  n={int(ok.sum())}")
+    print(
+        f"  pearson = {float(np.corrcoef(ours_smoothed[ok], nasa_smooth[ok])[0, 1]):+.4f}  "
+        f"n={int(ok.sum())}"
+    )
 
     # ============================================================ D ===
     print("\n[D] Aggregate to 5x5 super-pixels and correlate")
@@ -178,13 +184,19 @@ def main() -> None:
         & (lats_block >= BBOX["min_lat"]) & (lats_block <= BBOX["max_lat"])
     )
     ok_b = in_bbox_block & np.isfinite(ours_block) & np.isfinite(nasa_block)
-    print(f"  pearson = {float(np.corrcoef(ours_block[ok_b], nasa_block[ok_b])[0, 1]):+.4f}  n={int(ok_b.sum())}")
+    print(
+        f"  pearson = {float(np.corrcoef(ours_block[ok_b], nasa_block[ok_b])[0, 1]):+.4f}  "
+        f"n={int(ok_b.sum())}"
+    )
 
     # =========================================================== bbox stats
     print("\nDiagnostic stats over bbox (signed percentiles):")
     for name, arr in [("ours (M4)", ours), ("nasa_nn", nasa_nn), ("nasa_smooth", nasa_smooth)]:
         v = arr[in_bbox & np.isfinite(arr)]
-        print(f"  {name:14s}: p1={np.percentile(v, 1):+.2f}  p50={np.percentile(v, 50):+.2f}  p99={np.percentile(v, 99):+.2f}")
+        print(
+            f"  {name:14s}: p1={np.percentile(v, 1):+.2f}  "
+            f"p50={np.percentile(v, 50):+.2f}  p99={np.percentile(v, 99):+.2f}"
+        )
 
 
 if __name__ == "__main__":

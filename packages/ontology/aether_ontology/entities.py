@@ -32,14 +32,18 @@ class SensorType(StrEnum):
 class Observation(AetherBase):
     """A single scene or measurement from a sensor."""
 
-    sensor: str = Field(..., description="Human name, e.g., 'EMIT', 'TROPOMI', 'Landsat 8 OLI/TIRS'")
+    sensor: str = Field(
+        ..., description="Human name, e.g., 'EMIT', 'TROPOMI', 'Landsat 8 OLI/TIRS'"
+    )
     sensor_type: SensorType
     instrument_id: str | None = None
     granule_id: str | None = None
     time_range: TimeRange
     footprint: GeoJSONGeometry
     cloud_cover_pct: float | None = Field(None, ge=0.0, le=100.0)
-    data_url: str | None = Field(None, description="Canonical access URL (COG, Zarr, HDF, S3, etc.)")
+    data_url: str | None = Field(
+        None, description="Canonical access URL (COG, Zarr, HDF, S3, etc.)"
+    )
     asset_paths: dict[str, str] = Field(
         default_factory=dict,
         description="Named asset paths, e.g., {'CH4ENH': 's3://...', 'L1B_RAD': 's3://...'}",
@@ -174,7 +178,11 @@ class Hypothesis(AetherBase):
     """
 
     phenomenon_id: UUID
-    claim: str = Field(..., description="Natural-language explanation, e.g., 'Source likely a fugitive emission from compressor station X operated by Y.'")
+    claim: str = Field(
+        ...,
+        description="Natural-language explanation, e.g., 'Source likely a fugitive emission "
+        "from compressor station X operated by Y.'",
+    )
 
     supporting_observation_ids: list[UUID] = Field(default_factory=list)
     supporting_detection_ids: list[UUID] = Field(default_factory=list)
@@ -182,7 +190,8 @@ class Hypothesis(AetherBase):
 
     assumptions: list[str] = Field(
         default_factory=list,
-        description="Each assumption is a single sentence; missing assumptions are themselves a defect.",
+        description="Each assumption is a single sentence; missing assumptions are themselves "
+        "a defect.",
     )
     falsification: str | None = Field(
         None,
@@ -194,7 +203,8 @@ class Hypothesis(AetherBase):
 
     generation_method: str = Field(
         ...,
-        description="How was this hypothesis generated? e.g., 'llm_claude_sonnet_4.6', 'rule_based_v1', 'manual'",
+        description="How was this hypothesis generated? e.g., 'llm_claude_sonnet_4.6', "
+        "'rule_based_v1', 'manual'",
     )
 
 
@@ -218,7 +228,8 @@ class Brief(AetherBase):
 
     citations: list[dict[str, str]] = Field(
         default_factory=list,
-        description="Claim-to-evidence citations: [{'claim': '...', 'evidence_id': '...', 'evidence_type': 'observation|detection|hypothesis'}]",
+        description="Claim-to-evidence citations: [{'claim': '...', 'evidence_id': '...', "
+        "'evidence_type': 'observation|detection|hypothesis'}]",
     )
 
     rendered_url: str | None = Field(

@@ -25,7 +25,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import rioxarray
 from aether_detection.plume_segmentation import (
-    component_label_at_point,
     largest_component_in_region,
     segment_plume_varon,
 )
@@ -262,9 +261,11 @@ def main() -> None:
         rep.streak_our_nasa_ratio_p95 = rep.streak_our_p95_ppmm / rep.streak_nasa_p95_ppmm
 
     print(f"  Streak bbox n_pixels: {rep.streak_n_pixels_in_bbox}")
-    print(f"  OURS:  mean={rep.streak_our_mean_ppmm:+.1f}  median={rep.streak_our_median_ppmm:+.1f}  "
+    print(f"  OURS:  mean={rep.streak_our_mean_ppmm:+.1f}  "
+          f"median={rep.streak_our_median_ppmm:+.1f}  "
           f"p95={rep.streak_our_p95_ppmm:+.1f}  p99={rep.streak_our_p99_ppmm:+.1f}")
-    print(f"  NASA:  mean={rep.streak_nasa_mean_ppmm:+.1f}  median={rep.streak_nasa_median_ppmm:+.1f}  "
+    print(f"  NASA:  mean={rep.streak_nasa_mean_ppmm:+.1f}  "
+          f"median={rep.streak_nasa_median_ppmm:+.1f}  "
           f"p95={rep.streak_nasa_p95_ppmm:+.1f}  p99={rep.streak_nasa_p99_ppmm:+.1f}")
     print(f"  Pearson(ours, NASA) over streak bbox: {rep.streak_our_nasa_pearson:+.3f}")
     print(f"  p95 ratio (ours / NASA): {rep.streak_our_nasa_ratio_p95:+.2f}")
@@ -314,8 +315,14 @@ def main() -> None:
           f"(out of 1242 columns total)")
     print(f"  IQR-fraction of swath width: "
           f"{rep.raw_streak_high_crosstrack_iqr_fraction * 100:.1f}%")
-    print(f"  N distinct crosstrack columns spanned: {rep.raw_streak_high_crosstrack_distinct_cols}")
-    print(f"  Top-5 crosstrack columns (col idx, % of high pixels): {list(zip(rep.raw_streak_high_crosstrack_top5_columns, [f'{p:.1f}%' for p in rep.raw_streak_high_crosstrack_top5_pct], strict=True))}")
+    print("  N distinct crosstrack columns spanned: "
+          f"{rep.raw_streak_high_crosstrack_distinct_cols}")
+    top5 = list(zip(
+        rep.raw_streak_high_crosstrack_top5_columns,
+        [f"{p:.1f}%" for p in rep.raw_streak_high_crosstrack_top5_pct],
+        strict=True,
+    ))
+    print(f"  Top-5 crosstrack columns (col idx, % of high pixels): {top5}")
 
     # ===================================================================== #
     # Render diagnostics
@@ -358,7 +365,8 @@ def main() -> None:
         ax.set_title(title)
     fig.suptitle(
         f"Plume CC {plume_label}: ribbon (n={rep.ribbon_n_pixels}, "
-        f"our mean={rep.ribbon_our_mean_ppmm:+.0f} ppm·m, NASA mean={rep.ribbon_nasa_mean_ppmm:+.0f}) | "
+        f"our mean={rep.ribbon_our_mean_ppmm:+.0f} ppm·m, "
+        f"NASA mean={rep.ribbon_nasa_mean_ppmm:+.0f}) | "
         f"tail (n={rep.tail_n_pixels}, our mean={rep.tail_our_mean_ppmm:+.0f}, "
         f"NASA mean={rep.tail_nasa_mean_ppmm:+.0f}); "
         f"tail mass = {rep.tail_mass_fraction_of_plume * 100:+.1f}% of CC's signed mass"

@@ -3,7 +3,12 @@
 Usage:
     aether-eval list
     aether-eval show <event_id>
-    aether-eval run [--event <id>]
+    aether-eval run [--event <id>] [--pipeline real|stub]
+
+`run` defaults to the REAL pipeline (ADR 0002): it needs the local granule
+cache and, for Permian, ARCO-ERA5 network access — it is a local tool, not a
+CI step (CI runs the harness's logic + regression-comparison tests instead;
+see docs/science/eval_semantics.md).
 """
 
 from __future__ import annotations
@@ -13,7 +18,7 @@ from rich.console import Console
 from rich.table import Table
 
 from aether_eval.loader import discover_events, load_event
-from aether_eval.runner import run_evaluation, stub_pipeline
+from aether_eval.runner import Pipeline, run_evaluation, stub_pipeline
 
 app = typer.Typer(
     name="aether-eval",
@@ -101,11 +106,30 @@ def show_event(event_id: str) -> None:
 
 @app.command("run")
 def run(
-    event: str | None = typer.Option(None, "--event", "-e", help="Single event_id to run (defaults to all)"),
-    spatial_tolerance_m: float = typer.Option(5000.0, help="Spatial tolerance for matching, meters"),
-    temporal_tolerance_minutes: float = typer.Option(60.0, help="Temporal tolerance for matching, minutes"),
+    event: str | None = typer.Option(
+        None, "--event", "-e", help="Single event_id to run (defaults to all)"
+    ),
+    pipeline: str = typer.Option(
+        "real",
+        "--pipeline",
+        "-p",
+        help="'real' (the EMIT pipeline; needs local cache + ERA5 network) or 'stub'",
+    ),
+    spatial_tolerance_m: float = typer.Option(
+        5000.0,
+        help=(
+            "Fallback spatial tolerance (m) for events without location_precision_km"
+        ),
+    ),
+    temporal_tolerance_minutes: float = typer.Option(
+        60.0, help="Temporal tolerance for matching, minutes"
+    ),
 ) -> None:
-    """Run the pipeline against the benchmark and print the score."""
+    """Run the pipeline against the benchmark and print the honest scoreboard.
+
+    Exit code is 1 if any regression check fails or any runnable event errors;
+    `not_runnable` and `not_comparable` are expected outcomes and exit 0.
+    """
     all_events = discover_events()
 
     if event is not None:
@@ -117,20 +141,39 @@ def run(
         selected = all_events
 
     if not selected:
-        console.print("[yellow]No benchmark events to run. Add YAML files to eval/benchmark/.[/yellow]")
+        console.print(
+            "[yellow]No benchmark events to run. Add YAML files to eval/benchmark/.[/yellow]"
+        )
         raise typer.Exit(code=0)
 
+    chosen: Pipeline
+    if pipeline == "real":
+        # Imported lazily: the real pipeline pulls in the scientific stack.
+        from aether_eval.real_pipeline import real_emit_pipeline
+
+        chosen = real_emit_pipeline
+        name = "real_emit_pipeline"
+    elif pipeline == "stub":
+        chosen = stub_pipeline
+        name = "stub_pipeline"
+    else:
+        console.print(f"[red]Unknown pipeline {pipeline!r}; use 'real' or 'stub'.[/red]")
+        raise typer.Exit(code=1)
+
     report = run_evaluation(
-        pipeline=stub_pipeline,
+        pipeline=chosen,
         events=selected,
         spatial_tolerance_m=spatial_tolerance_m,
         temporal_tolerance_minutes=temporal_tolerance_minutes,
-        pipeline_name="stub_pipeline",
+        pipeline_name=name,
     )
 
     console.print("\n[bold]Evaluation report[/bold]")
     for line in report.summary_lines():
         console.print(f"  {line}")
+
+    if not report.regression_all_green:
+        raise typer.Exit(code=1)
 
 
 def main() -> None:

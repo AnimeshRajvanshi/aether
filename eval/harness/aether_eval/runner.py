@@ -1,31 +1,65 @@
-"""Evaluation runner — orchestrates pipeline execution and scoring across events."""
+"""Evaluation runner — orchestrates pipeline execution and scoring across events.
+
+ADR 0002 semantics: a pipeline may, per event,
+  * return detections (optionally with regression values via `PipelineOutput`),
+  * raise `EventNotRunnable(reason)` — the event is reported with that reason
+    and excluded from the recall denominator (never silently dropped),
+  * raise anything else — the event is an ERROR and counts against recall.
+"""
 
 from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from aether_ontology import Detection
 
 from aether_eval.loader import discover_events
-from aether_eval.metrics import PipelineRunResult, RunScore, score_run
-from aether_eval.schema import BenchmarkEvent
+from aether_eval.metrics import (
+    PipelineRunResult,
+    RunScore,
+    RunStatus,
+    score_run,
+)
+from aether_eval.regression import RegressionCheck, compare_to_committed
+from aether_eval.schema import BenchmarkEvent, ReferenceUsability
 
-# A Pipeline is anything callable that takes a BenchmarkEvent and returns a list
-# of Detections. In Sprint 1 we use a stub. In Sprint 2 we'll wire up the real
-# detection pipeline from packages/detection.
-Pipeline = Callable[[BenchmarkEvent], list[Detection]]
+
+# N818 wants an -Error suffix; this is a control-flow signal ("report this event
+# as not_runnable"), not an error — the suffix would misname the semantics.
+class EventNotRunnable(Exception):  # noqa: N818
+    """Raised by a pipeline when it cannot observe an event at all.
+
+    The message is the machine-readable reason shown on the scoreboard, e.g.
+    "no EMIT coverage: the event window predates EMIT's July 2022 launch".
+    """
+
+
+@dataclass
+class PipelineOutput:
+    """Rich per-event pipeline output.
+
+    `regression_values` (when provided) are compared against the event's
+    committed artifacts (see `aether_eval.regression`). Pipelines that only do
+    detection can keep returning a plain `list[Detection]`.
+    """
+
+    detections: list[Detection]
+    regression_values: dict[str, float] | None = None
+
+
+# A Pipeline takes a BenchmarkEvent and returns detections (plain or wrapped).
+Pipeline = Callable[[BenchmarkEvent], "list[Detection] | PipelineOutput"]
 
 
 def stub_pipeline(event: BenchmarkEvent) -> list[Detection]:
-    """A pipeline that detects nothing. Used until packages/detection is real.
+    """A pipeline that detects nothing. Kept for harness logic tests.
 
-    Returning an empty list gives us a meaningful baseline: recall = 0, precision
-    is undefined (no detections), quantification error is empty. As soon as
-    Sprint 2 produces a real detector, this gets replaced and the harness starts
-    catching regressions.
+    Returning an empty list gives a meaningful floor: recall = 0 over all
+    events (the stub "runs" everything, even pre-EMIT events, because it
+    observes nothing in the first place).
     """
     return []
 
@@ -36,6 +70,7 @@ class EventResult:
 
     event_id: str
     pipeline_result: PipelineRunResult
+    regression: list[RegressionCheck] = field(default_factory=list)
 
 
 @dataclass
@@ -48,25 +83,74 @@ class EvalReport:
     temporal_tolerance_minutes: float
     pipeline_name: str
 
+    @property
+    def regression_all_green(self) -> bool:
+        """True iff every regression check passed AND no runnable event errored."""
+        checks = [c for r in self.event_results for c in r.regression]
+        return all(c.passed for c in checks) and self.score.n_events_errored == 0
+
     def summary_lines(self) -> list[str]:
-        """Plain-text summary suitable for stdout or a log file."""
+        """The honest scoreboard (ADR 0002), suitable for stdout or a log file."""
         s = self.score
         lines = [
             f"Pipeline: {self.pipeline_name}",
-            f"Events evaluated: {s.n_events}",
-            f"Events recalled: {s.n_events_recalled} / {s.n_events}  (recall = {s.recall:.3f})",
-            f"Detections produced: {s.n_detections_total}",
-            f"Detections matched: {s.n_detections_matched}  (precision = {s.precision:.3f})",
-            f"Mean latency: {s.mean_latency_seconds:.3f}s/event",
-            f"Spatial tolerance: {self.spatial_tolerance_m:.0f}m",
-            f"Temporal tolerance: {self.temporal_tolerance_minutes:.1f}min",
+            f"Events: {s.n_events} ({s.n_events_runnable} runnable, "
+            f"{s.n_events_not_runnable} not_runnable)",
         ]
-        if s.quantification_mape:
-            lines.append("Quantification MAPE (mean absolute percentage error):")
-            for name, mape in s.quantification_mape.items():
-                lines.append(f"  {name}: {mape:.3f} ({mape * 100:.1f}%)")
+
+        events_by_id = {m.event.event_id: m for m in s.per_event_matches}
+        for res in self.event_results:
+            pr = res.pipeline_result
+            if pr.status is RunStatus.NOT_RUNNABLE:
+                lines.append(f"  {pr.event_id}: NOT_RUNNABLE — {pr.status_reason}")
+                continue
+            if pr.status is RunStatus.ERROR:
+                lines.append(f"  {pr.event_id}: ERROR — {pr.status_reason}")
+                continue
+
+            match = events_by_id.get(pr.event_id)
+            if match is not None and match.is_recalled:
+                best = min(p.spatial_distance_m for p in match.matched)
+                recalled = f"recalled ({best / 1000.0:.1f} km from reference location)"
+            else:
+                recalled = "NOT recalled"
+            lines.append(f"  {pr.event_id}: ran in {pr.latency_seconds:.1f}s — {recalled}")
+
+            for check in res.regression:
+                lines.append(f"    regression  {check.describe()}")
+
+            for q in s.quantification:
+                if q.event_id != pr.event_id:
+                    continue
+                if q.usability is ReferenceUsability.COMPARABLE:
+                    val = f"MAPE {q.mape:.3f} ({q.n_pairs} pairs)" if q.mape is not None \
+                        else "comparable, no matched measurement"
+                    lines.append(f"    quantification vs {q.measurement}: {val}")
+                else:
+                    lines.append(
+                        f"    quantification vs {q.measurement}: "
+                        f"NOT_COMPARABLE ({q.usability.value}) — {q.reason}"
+                    )
+
+        lines.append(
+            f"Detection recall (runnable events): {s.n_events_recalled}/{s.n_events_runnable}"
+            f"  (precision {s.precision:.3f} over {s.n_detections_total} detections)"
+        )
+        n_checks = sum(len(r.regression) for r in self.event_results)
+        if n_checks:
+            n_pass = sum(1 for r in self.event_results for c in r.regression if c.passed)
+            verdict = "GREEN" if self.regression_all_green else "FAILING"
+            lines.append(f"Regression vs committed artifacts: {n_pass}/{n_checks} — {verdict}")
         else:
-            lines.append("Quantification MAPE: (no matched measurements yet)")
+            lines.append("Regression vs committed artifacts: (none computed by this pipeline)")
+        n_comparable = sum(
+            1 for q in s.quantification if q.usability is ReferenceUsability.COMPARABLE
+        )
+        if n_comparable == 0 and s.quantification:
+            lines.append(
+                "Quantification MAPE: none claimable — every external flux reference is "
+                "not_comparable (reasons above)."
+            )
         return lines
 
 
@@ -91,22 +175,37 @@ def run_evaluation(
 
     for event in events:
         t0 = time.perf_counter()
-        error_msg: str | None = None
+        detections: list[Detection] = []
+        regression: list[RegressionCheck] = []
+        status = RunStatus.RAN
+        reason: str | None = None
         try:
-            detections = pipeline(event)
+            output = pipeline(event)
+            if isinstance(output, PipelineOutput):
+                detections = output.detections
+                if output.regression_values is not None:
+                    regression = compare_to_committed(event.event_id, output.regression_values)
+            else:
+                detections = output
+        except EventNotRunnable as e:
+            status = RunStatus.NOT_RUNNABLE
+            reason = str(e)
         except Exception as e:
-            detections = []
-            error_msg = f"{type(e).__name__}: {e}"
+            status = RunStatus.ERROR
+            reason = f"{type(e).__name__}: {e}"
         latency = time.perf_counter() - t0
 
         run_result = PipelineRunResult(
             event_id=event.event_id,
             detections=detections,
             latency_seconds=latency,
-            error=error_msg,
+            status=status,
+            status_reason=reason,
         )
         run_results.append(run_result)
-        event_results.append(EventResult(event_id=event.event_id, pipeline_result=run_result))
+        event_results.append(EventResult(
+            event_id=event.event_id, pipeline_result=run_result, regression=regression,
+        ))
 
     score = score_run(
         run_results,

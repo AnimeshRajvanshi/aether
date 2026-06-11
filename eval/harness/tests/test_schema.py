@@ -11,6 +11,7 @@ from aether_eval.schema import (
     Measurement,
     ObservedBy,
     Reference,
+    ReferenceUsability,
 )
 from aether_ontology import BBox, DetectionType, PhenomenonType, PlanetaryBody, Point, TimeRange
 from pydantic import ValidationError
@@ -65,16 +66,77 @@ class TestSchemaInvariants:
 
 class TestMeasurement:
     def test_basic(self) -> None:
-        m = Measurement(value=60000.0, uncertainty=5000.0, unit="kg/hr", note="Peak rate")
+        m = Measurement(
+            value=60000.0,
+            uncertainty=5000.0,
+            unit="kg/hr",
+            note="Peak rate",
+            reference_usability=ReferenceUsability.COMPARABLE,
+        )
         assert m.value == 60000.0
 
     def test_uncertainty_optional(self) -> None:
-        m = Measurement(value=60000.0, unit="kg/hr", note="No uncertainty estimate available")
+        m = Measurement(
+            value=60000.0,
+            unit="kg/hr",
+            note="No uncertainty estimate available",
+            reference_usability=ReferenceUsability.COMPARABLE,
+        )
         assert m.uncertainty is None
 
     def test_note_mandatory(self) -> None:
         with pytest.raises(ValidationError):
-            Measurement(value=60000.0, unit="kg/hr")  # type: ignore[call-arg]
+            Measurement(  # type: ignore[call-arg]
+                value=60000.0,
+                unit="kg/hr",
+                reference_usability=ReferenceUsability.COMPARABLE,
+            )
+
+    def test_usability_mandatory(self) -> None:
+        """ADR 0002: every benchmark measurement must declare how it can be used."""
+        with pytest.raises(ValidationError):
+            Measurement(value=60000.0, unit="kg/hr", note="Peak rate")  # type: ignore[call-arg]
+
+    def test_non_comparable_requires_reason(self) -> None:
+        """scope_mismatch / context_only without a stated reason is refused."""
+        for usability in (ReferenceUsability.SCOPE_MISMATCH, ReferenceUsability.CONTEXT_ONLY):
+            with pytest.raises(ValidationError):
+                Measurement(
+                    value=163.0, unit="t/hr", note="Cluster total", reference_usability=usability
+                )
+            m = Measurement(
+                value=163.0,
+                unit="t/hr",
+                note="Cluster total",
+                reference_usability=usability,
+                usability_reason="12-source cluster total vs our single plume",
+            )
+            assert m.usability_reason is not None
+
+    def test_blank_reason_rejected(self) -> None:
+        with pytest.raises(ValidationError):
+            Measurement(
+                value=18.3,
+                unit="t/hr",
+                note="Press release",
+                reference_usability=ReferenceUsability.CONTEXT_ONLY,
+                usability_reason="   ",
+            )
+
+
+class TestLocationPrecision:
+    def test_optional_and_positive(self) -> None:
+        kwargs = _valid_event_kwargs()
+        event = BenchmarkEvent(**kwargs)
+        assert event.location_precision_km is None
+
+        kwargs["location_precision_km"] = 40.0
+        event = BenchmarkEvent(**kwargs)
+        assert event.location_precision_km == 40.0
+
+        kwargs["location_precision_km"] = 0.0
+        with pytest.raises(ValidationError):
+            BenchmarkEvent(**kwargs)
 
 
 class TestKnownMeasurements:
@@ -86,6 +148,7 @@ class TestKnownMeasurements:
                 uncertainty=5000.0,
                 unit="kg/hr",
                 note="Peak rate",
+                reference_usability=ReferenceUsability.COMPARABLE,
             ),
         }
         event = BenchmarkEvent(**kwargs)

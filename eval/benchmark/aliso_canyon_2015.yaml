@@ -21,7 +21,10 @@ date_range:
   start: "2015-10-23T00:00:00Z"
   end: "2016-02-11T00:00:00Z"
 
-# Aliso Canyon facility, San Fernando Valley, California
+# Aliso Canyon facility, San Fernando Valley, California.
+# Facility-precise (Conley 2016, well SS-25) — declared for honesty even though
+# the event is not runnable by an EMIT pipeline (pre-EMIT era).
+location_precision_km: 1.0
 location:
   lon: -118.560
   lat: 34.314
@@ -36,6 +39,9 @@ known_measurements:
     value: 60000.0
     uncertainty: 5000.0
     unit: "kg/hr"
+    # Peer-reviewed in-situ aircraft measurement of THIS event — genuinely
+    # comparable in principle (moot while the event is not EMIT-runnable).
+    reference_usability: comparable
     note: >-
       Peak atmospheric leak rate observed in early phase of event. From
       Conley et al. 2016 aircraft measurements: "atmospheric leak rates of up
@@ -44,6 +50,7 @@ known_measurements:
     value: 97100.0
     uncertainty: 7500.0
     unit: "tonnes"
+    reference_usability: comparable
     note: >-
       Total methane released over the Oct 23 2015 - Feb 11 2016 event window,
       per Conley et al. 2016: "in total, released 97,100 metric tons of methane

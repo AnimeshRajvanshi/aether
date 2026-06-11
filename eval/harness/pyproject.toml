@@ -5,6 +5,12 @@ description = "Aether evaluation harness — benchmarks, metrics, runner"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "aether-ontology",
+    # The real-pipeline eval recipes (ADR 0002). Imported lazily inside
+    # aether_eval.real_pipeline so the harness logic stays light to import.
+    "aether-detection",
+    "aether-data-spine",
+    "numpy>=1.26",
+    "rioxarray>=0.15",
     "pydantic>=2.7",
     "pyyaml>=6.0",
     "typer>=0.12",

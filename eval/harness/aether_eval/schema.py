@@ -8,6 +8,7 @@ in `eval/benchmark/` and is loaded into one of these objects.
 from __future__ import annotations
 
 from datetime import datetime
+from enum import StrEnum
 
 from aether_ontology import (
     BBox,
@@ -19,6 +20,19 @@ from aether_ontology import (
     TimeRange,
 )
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+
+class ReferenceUsability(StrEnum):
+    """How a benchmark measurement may be used when scoring a pipeline (ADR 0002).
+
+    Only ``comparable`` references ever produce a quantification error number.
+    The other two yield a ``not_comparable`` outcome carrying ``usability_reason``
+    — the harness refuses to compute a lookalike MAPE against them.
+    """
+
+    COMPARABLE = "comparable"
+    SCOPE_MISMATCH = "scope_mismatch"
+    CONTEXT_ONLY = "context_only"
 
 
 class Measurement(BaseModel):
@@ -42,6 +56,33 @@ class Measurement(BaseModel):
             "(e.g. a single-plume estimate is not comparable to a 12-source total)."
         ),
     )
+    reference_usability: ReferenceUsability = Field(
+        ...,
+        description=(
+            "Whether a pipeline output may be scored against this value. Required, "
+            "no default: every benchmark measurement must declare how it can be used "
+            "(ADR 0002). Only 'comparable' references produce quantification error."
+        ),
+    )
+    usability_reason: str | None = Field(
+        None,
+        description=(
+            "Machine-readable reason reported verbatim by the harness when the "
+            "reference is not comparable. Required for scope_mismatch/context_only."
+        ),
+    )
+
+    @model_validator(mode="after")
+    def _check_reason_present_when_not_comparable(self) -> Measurement:
+        """A non-comparable reference without a stated reason is not honest data."""
+        if self.reference_usability is not ReferenceUsability.COMPARABLE and not (
+            self.usability_reason and self.usability_reason.strip()
+        ):
+            raise ValueError(
+                f"reference_usability={self.reference_usability.value!r} requires a "
+                "non-empty usability_reason — the harness reports it verbatim."
+            )
+        return self
 
 
 class Attribution(BaseModel):
@@ -113,6 +154,17 @@ class BenchmarkEvent(BaseModel):
     date_range: TimeRange
     location: Point
     bbox: BBox
+    location_precision_km: float | None = Field(
+        None,
+        gt=0,
+        description=(
+            "The spatial scale at which `location` is meaningful (ADR 0002). Recall "
+            "matching uses this as the per-event spatial tolerance when set (a "
+            "field-center estimate for a multi-source cluster is honest only at tens "
+            "of km; a NASA plume-complex footprint at a few km). Falls back to the "
+            "runner's global tolerance when None."
+        ),
+    )
 
     known_measurements: dict[str, Measurement] = Field(default_factory=dict)
     attribution: Attribution = Field(default_factory=Attribution)

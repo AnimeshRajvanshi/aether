@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pytest
 import yaml
-
 from aether_eval.loader import load_event_file
 from aether_eval.pipelines import (
     PIPELINE_NAME,
@@ -15,6 +14,7 @@ from aether_eval.pipelines import (
     stage_b_quantification_pipeline,
 )
 from aether_eval.runner import run_evaluation
+from aether_eval.schema import ReferenceUsability
 
 
 def _fixture_event_yaml(tmp_path: Path) -> Path:
@@ -33,6 +33,8 @@ def _fixture_event_yaml(tmp_path: Path) -> Path:
                 "uncertainty": 18.0,
                 "unit": "tonnes/hr",
                 "note": "Thorpe 2023 cluster total — not same-scope as single plume.",
+                "reference_usability": "scope_mismatch",
+                "usability_reason": "12-source cluster total vs our single plume",
             },
         },
         "canonical_acquisition": {
@@ -93,7 +95,8 @@ def test_pipeline_emits_one_detection_when_q_estimate_present(tmp_path: Path) ->
     # Asymmetric range — both bounds present
     assert d.measurements["emission_rate_metric_tonnes_per_hr_low"] == pytest.approx(14.22)
     assert d.measurements["emission_rate_metric_tonnes_per_hr_high"] == pytest.approx(30.57)
-    assert d.measurements["emission_rate_metric_tonnes_per_hr_nasa_calibrated"] == pytest.approx(16.32)
+    nasa_cal = d.measurements["emission_rate_metric_tonnes_per_hr_nasa_calibrated"]
+    assert nasa_cal == pytest.approx(16.32)
     # Symmetric 1-σ uncertainty: Q × σ_fractional
     assert d.measurement_uncertainty["emission_rate_metric_tonnes_per_hr"] == pytest.approx(
         27.086 * 0.129
@@ -110,9 +113,9 @@ def test_pipeline_emits_one_detection_when_q_estimate_present(tmp_path: Path) ->
 
 def test_run_evaluation_with_stage_b_pipeline(tmp_path: Path) -> None:
     """End-to-end: run_evaluation with the Stage B pipeline against a single
-    event produces a non-empty Detection list and computes a quantification
-    MAPE (which will be huge because of the scope mismatch — that is
-    expected and documented, not a bug)."""
+    event produces a non-empty Detection list — and a NOT_COMPARABLE
+    quantification outcome, because the reference is a scope-mismatched
+    cluster total (ADR 0002: no lookalike MAPE is ever computed against it)."""
     benchmark_dir = tmp_path / "bench"
     benchmark_dir.mkdir()
     event_path = _fixture_event_yaml(benchmark_dir)
@@ -135,11 +138,16 @@ def test_run_evaluation_with_stage_b_pipeline(tmp_path: Path) -> None:
     assert report.score.n_events == 1
     assert report.score.n_detections_total == 1
     assert report.score.n_detections_matched == 1
-    # Quantification MAPE was computed (a value, not the empty dict).
-    # The scope mismatch (single plume vs cluster total) means it is large
-    # — and that is the expected, documented outcome.
-    assert report.score.quantification_mape != {}
-    mape = report.score.quantification_mape["emission_rate_metric_tonnes_per_hr"]
-    # 27 vs 163 → MAPE ≈ 0.83. Tests against >0.5 just to assert the scope
-    # mismatch shows up clearly in the headline number.
-    assert mape > 0.5
+    # The reference is declared scope_mismatch, so the harness must output a
+    # not_comparable outcome with the reason — never a number.
+    outcomes = [
+        q for q in report.score.quantification
+        if q.measurement == "emission_rate_metric_tonnes_per_hr"
+    ]
+    assert len(outcomes) == 1
+    assert outcomes[0].usability is ReferenceUsability.SCOPE_MISMATCH
+    assert outcomes[0].mape is None
+    assert outcomes[0].reason == "12-source cluster total vs our single plume"
+    # ...and the rendered scoreboard says so explicitly.
+    rendered = "\n".join(report.summary_lines())
+    assert "NOT_COMPARABLE (scope_mismatch)" in rendered

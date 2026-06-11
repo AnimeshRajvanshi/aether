@@ -48,6 +48,11 @@ bbox:
   min_lat: 38.86
   max_lon: 54.64
   max_lat: 40.12
+# The location above is a FIELD-CENTER estimate for a 12-source cluster spanning
+# the Goturdepe and Barsagelmez fields (~60 km extent) — not a source coordinate.
+# Recall against it is honest only at field/cluster scale (ADR 0002): "did we
+# find a plume in the field the literature flagged?"
+location_precision_km: 40.0
 
 known_measurements:
   emission_rate_metric_tonnes_per_hr:
@@ -58,6 +63,13 @@ known_measurements:
     # below). Structured so the dashboard can source the single-vs-cluster
     # comparability framing without parsing prose.
     n_sources: 12
+    # ADR 0002: never scored as a quantification target.
+    reference_usability: scope_mismatch
+    usability_reason: >-
+      Thorpe 2023's 163 ± 18 t/hr is a 12-source, multi-granule CLUSTER total;
+      our retrieval quantifies ONE source-connected plume from one granule.
+      Agreement/disagreement is not claimable (docs/science/sprint2_validation.md)
+      — a MAPE against this value would be a fake validation number.
     note: >-
       Cluster TOTAL for twelve methane sources at the Goturdepe and
       Barsagelmez fields, attributed by Thorpe et al. 2023 (Sci. Adv. 9

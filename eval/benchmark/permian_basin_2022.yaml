@@ -48,12 +48,23 @@ bbox:
   min_lat: 32.346
   max_lon: -104.070
   max_lat: 32.396
+# Location is pinned to NASA's published complex-000524 footprint (~3.2 × 5.6 km);
+# recall is honest at footprint scale (ADR 0002).
+location_precision_km: 3.0
 
 known_measurements:
   emission_rate_metric_tonnes_per_hr:
     value: 18.3
     uncertainty: null
     unit: "tonnes/hr"
+    # ADR 0002 + Sprint 7 ruling: context only, never a quantification target.
+    reference_usability: context_only
+    usability_reason: >-
+      Press-release value with no method, granule attribution, or uncertainty
+      (Sprint 7 Stage A WebFetch-confirmed). Ruled CONTEXT ONLY in Sprint 7:
+      NASA's own L2B through the same single-overpass IME method gives ~0.9 t/hr,
+      so the ~21x gap is method/definition, not retrieval error. A MAPE against
+      18.3 would manufacture a fake error number.
     note: >-
       PRESS-RELEASE VALUE only. NASA JPL's October 2022 communications state
       "scientists estimate flow rates of 20.2 tons (18.3 metric tons) per
@@ -66,6 +77,12 @@ known_measurements:
     value: 3.3
     uncertainty: 0.3
     unit: "km"
+    reference_usability: context_only
+    usability_reason: >-
+      Press-release-grade ("about 2 miles"), and our committed plume mask is
+      anchored to NASA's published footprint, so plume geometry is not an
+      independent prediction of ours — comparing it to NASA's own announcement
+      would be circular.
     note: >-
       Approximate plume length from NASA's announcement ("about 2 miles, or
       3.3 kilometers"). Press-release-grade.

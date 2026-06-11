@@ -3,12 +3,19 @@
 The matching logic is the single most consequential thing in this harness — it
 determines what counts as a "true positive." Three checks must all pass:
 
-1. Spatial: detection within `spatial_tolerance_m` of event location (haversine).
+1. Spatial: detection within the event's `location_precision_km` (or the global
+   `spatial_tolerance_m` fallback) of the event location (haversine).
 2. Temporal: detection time within ±`temporal_tolerance_minutes` of event date range.
 3. Type: detection.detection_type ∈ event.expected_detection_types.
 
 A detection may match at most one event; ties are broken by smallest spatial
 distance.
+
+Scoring separates the two ADR-0002 families: detection recall (over runnable
+events only — `not_runnable` events are reported, never silently dropped, and
+excluded from the denominator) and per-(event, measurement) quantification
+outcomes, where only `comparable` references ever yield an error number; the
+others yield `not_comparable` with the schema's machine-readable reason.
 """
 
 from __future__ import annotations
@@ -16,10 +23,11 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
+from enum import StrEnum
 
 from aether_ontology import Detection
 
-from aether_eval.schema import BenchmarkEvent
+from aether_eval.schema import BenchmarkEvent, ReferenceUsability
 
 EARTH_RADIUS_M = 6_371_008.8  # IUGG mean radius
 
@@ -95,9 +103,18 @@ def match_detections_to_event(
     spatial_tolerance_m: float = 5000.0,
     temporal_tolerance_minutes: float = 60.0,
 ) -> MatchResult:
-    """Match detections to a single benchmark event."""
+    """Match detections to a single benchmark event.
+
+    The spatial tolerance is the event's own `location_precision_km` when set
+    (ADR 0002: reference locations have wildly different meanings — a
+    field-center estimate for a 12-source cluster vs a pinned plume-complex
+    footprint), falling back to `spatial_tolerance_m` otherwise.
+    """
     matched: list[MatchedPair] = []
     unmatched: list[Detection] = []
+
+    if event.location_precision_km is not None:
+        spatial_tolerance_m = event.location_precision_km * 1000.0
 
     for det in detections:
         # Type check first (cheapest)
@@ -128,18 +145,57 @@ def match_detections_to_event(
 # --------------------------------------------------------------------------- #
 
 
+class RunStatus(StrEnum):
+    """Per-event run outcome.
+
+    NOT_RUNNABLE events are excluded from the recall denominator (the pipeline
+    cannot observe them, e.g. a pre-EMIT event vs an EMIT pipeline) but stay on
+    the scoreboard with their reason. ERROR events DO count against recall —
+    a crash on a runnable event is a miss, not an excuse.
+    """
+
+    RAN = "ran"
+    NOT_RUNNABLE = "not_runnable"
+    ERROR = "error"
+
+
 @dataclass
 class PipelineRunResult:
     """The output of running a pipeline against a single event.
 
     `detections` is whatever the pipeline produced. `latency_seconds` is wall-clock
-    time the pipeline took to produce them.
+    time the pipeline took to produce them. `status_reason` carries the
+    machine-readable reason for NOT_RUNNABLE / ERROR statuses.
     """
 
     event_id: str
     detections: list[Detection]
     latency_seconds: float
-    error: str | None = None
+    status: RunStatus = RunStatus.RAN
+    status_reason: str | None = None
+
+
+@dataclass(frozen=True)
+class QuantificationOutcome:
+    """The quantification verdict for one (event, measurement) pair (ADR 0002).
+
+    Only `comparable` references carry an error number (`mape`, when at least
+    one matched detection reported the measurement). Non-comparable references
+    carry the schema's `usability_reason` verbatim and NO number — emitting a
+    lookalike MAPE against a scope-mismatched or context-only reference would
+    fabricate a validation result.
+    """
+
+    event_id: str
+    measurement: str
+    usability: ReferenceUsability
+    reason: str | None  # usability_reason, verbatim, for non-comparable references
+    mape: float | None  # only for comparable references with >=1 matched pair
+    n_pairs: int
+
+    @property
+    def is_comparable(self) -> bool:
+        return self.usability is ReferenceUsability.COMPARABLE
 
 
 @dataclass
@@ -147,20 +203,23 @@ class RunScore:
     """Aggregate scores over a multi-event run."""
 
     n_events: int
+    n_events_runnable: int
+    n_events_not_runnable: int
+    n_events_errored: int
     n_events_recalled: int
     n_detections_total: int
     n_detections_matched: int
 
-    recall: float
+    recall: float  # over runnable events only (ran + errored)
     precision: float
     mean_latency_seconds: float
 
-    # Per-measurement quantification error, keyed by measurement name.
-    # Value is mean absolute percentage error across all matched pairs that
-    # had that measurement in both detection and event.
-    quantification_mape: dict[str, float] = field(default_factory=dict)
+    # One outcome per (event, measurement-with-a-reference); see
+    # QuantificationOutcome. The same measurement name can be comparable on one
+    # event and not on another, so this is NOT keyed by name alone.
+    quantification: list[QuantificationOutcome] = field(default_factory=list)
 
-    # Per-event detail
+    # Per-event detail (RAN events only; NOT_RUNNABLE/ERROR events have no match)
     per_event_matches: list[MatchResult] = field(default_factory=list)
 
 
@@ -169,6 +228,40 @@ def _percentage_error(predicted: float, reference: float) -> float | None:
     if reference == 0:
         return None
     return abs(predicted - reference) / abs(reference)
+
+
+def _quantification_outcomes(
+    event: BenchmarkEvent, match: MatchResult
+) -> list[QuantificationOutcome]:
+    """One outcome per benchmark measurement, honoring `reference_usability`."""
+    outcomes: list[QuantificationOutcome] = []
+    for name, ref in event.known_measurements.items():
+        if ref.reference_usability is not ReferenceUsability.COMPARABLE:
+            outcomes.append(QuantificationOutcome(
+                event_id=event.event_id,
+                measurement=name,
+                usability=ref.reference_usability,
+                reason=ref.usability_reason,
+                mape=None,
+                n_pairs=0,
+            ))
+            continue
+        errs: list[float] = []
+        for pair in match.matched:
+            if name not in pair.detection.measurements:
+                continue
+            err = _percentage_error(pair.detection.measurements[name], ref.value)
+            if err is not None:
+                errs.append(err)
+        outcomes.append(QuantificationOutcome(
+            event_id=event.event_id,
+            measurement=name,
+            usability=ReferenceUsability.COMPARABLE,
+            reason=None,
+            mape=(sum(errs) / len(errs)) if errs else None,
+            n_pairs=len(errs),
+        ))
+    return outcomes
 
 
 def score_run(
@@ -182,22 +275,35 @@ def score_run(
     Each `PipelineRunResult` is associated with one event by `event_id`. Detections
     in that result are matched against that event only — we don't cross-match
     across events, because each run is a per-event invocation of the pipeline.
+
+    Recall is computed over RUNNABLE events only (status ran/error); events the
+    pipeline cannot observe (NOT_RUNNABLE) are reported but not scored against it.
     """
     events_by_id = {e.event_id: e for e in events}
 
     n_events = len(run_results)
+    n_not_runnable = 0
+    n_errored = 0
     n_recalled = 0
     n_dets_total = 0
     n_dets_matched = 0
 
     per_event: list[MatchResult] = []
-    measurement_errors: dict[str, list[float]] = {}
+    quantification: list[QuantificationOutcome] = []
     latencies: list[float] = []
 
     for result in run_results:
         if result.event_id not in events_by_id:
             raise KeyError(f"PipelineRunResult.event_id={result.event_id!r} has no matching event")
         event = events_by_id[result.event_id]
+
+        if result.status is RunStatus.NOT_RUNNABLE:
+            n_not_runnable += 1
+            continue
+        if result.status is RunStatus.ERROR:
+            n_errored += 1
+            latencies.append(result.latency_seconds)
+            continue
 
         match = match_detections_to_event(
             result.detections,
@@ -212,31 +318,25 @@ def score_run(
         if match.is_recalled:
             n_recalled += 1
 
-        # Quantification error per measurement
-        for pair in match.matched:
-            for name, ref in event.known_measurements.items():
-                if name not in pair.detection.measurements:
-                    continue
-                pred = pair.detection.measurements[name]
-                err = _percentage_error(pred, ref.value)
-                if err is None:
-                    continue
-                measurement_errors.setdefault(name, []).append(err)
-
+        quantification.extend(_quantification_outcomes(event, match))
         latencies.append(result.latency_seconds)
 
-    recall = (n_recalled / n_events) if n_events > 0 else 0.0
+    n_runnable = n_events - n_not_runnable
+    recall = (n_recalled / n_runnable) if n_runnable > 0 else 0.0
     precision = (n_dets_matched / n_dets_total) if n_dets_total > 0 else 0.0
     mean_latency = (sum(latencies) / len(latencies)) if latencies else 0.0
 
     return RunScore(
         n_events=n_events,
+        n_events_runnable=n_runnable,
+        n_events_not_runnable=n_not_runnable,
+        n_events_errored=n_errored,
         n_events_recalled=n_recalled,
         n_detections_total=n_dets_total,
         n_detections_matched=n_dets_matched,
         recall=recall,
         precision=precision,
         mean_latency_seconds=mean_latency,
-        quantification_mape={name: sum(errs) / len(errs) for name, errs in measurement_errors.items()},
+        quantification=quantification,
         per_event_matches=per_event,
     )

@@ -1,0 +1,28 @@
+{
+  "dataset": "OGIM_v2.7 (Oil and Gas Infrastructure Mapping database)",
+  "doi": "10.5281/zenodo.15103476",
+  "methods_doi": "10.5194/essd-15-3761-2023",
+  "source_url": "https://zenodo.org/api/records/15103476/files/OGIM_v2.7.gpkg/content",
+  "source_sha256": "6025432af1fa748bb1306edfcecb6ea296de9f9946eec57395e8779be19bc365",
+  "event_id": "permian_basin_2022",
+  "region_label": "Permian Basin / Carlsbad NM producing area (EMIT 2022-08-26)",
+  "region_bbox_min_lon_min_lat_max_lon_max_lat": [
+    -104.45,
+    31.95,
+    -103.85,
+    32.55
+  ],
+  "crs": "EPSG:4326",
+  "total_features_in_subset": 12284,
+  "features_per_layer": {
+    "Gathering_and_Processing": 1,
+    "Natural_Gas_Compressor_Stations": 27,
+    "Natural_Gas_Flaring_Detections": 91,
+    "Oil_Natural_Gas_Pipelines": 1418,
+    "Oil_and_Natural_Gas_Basins": 1,
+    "Oil_and_Natural_Gas_Wells": 10744,
+    "Stations_Other": 2
+  },
+  "geometry_note": "Features copied verbatim from OGIM; full geometry retained.",
+  "license": "OGIM is public-domain (EDF/MethaneSAT)."
+}

@@ -1,5 +1,7 @@
 # Aether Planetary Engine
 
+[![CI](https://github.com/AnimeshRajvanshi/aether/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AnimeshRajvanshi/aether/actions/workflows/ci.yml)
+
 AI-native dashboard and analysis engine for orbital and planetary monitoring data.
 
 **Status:** Sprints 1–7 complete (end-to-end methane wedge on two real EMIT events —

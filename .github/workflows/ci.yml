@@ -1,0 +1,121 @@
+# Sprint 8 Item 2: the full guard suite on every push — guards that run only
+# when someone remembers to run them are not guards.
+#
+# The python job enforces: ruff == 0, the full pytest suite (network-gated
+# integration tests auto-deselect exactly as they do locally — and the
+# deselected count is ASSERTED to equal the integration-marked set, so nothing
+# is silently skipped), and a summary step that demonstrates the guard suites
+# (no-fabrication, no-staleness, independence, byte-match/regen, tier rubric,
+# eval regression logic) were collected and run.
+#
+# What CI deliberately does NOT run: the full `aether-eval run` real pipeline
+# (needs ~GB cached granules + ARCO-ERA5 network) — that is local-only by
+# design; see docs/science/eval_semantics.md for the split.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv (with cache)
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      - name: Sync workspace (locked)
+        run: uv sync --frozen
+
+      - name: Ruff — zero errors, no exceptions
+        run: uv run ruff check .
+
+      - name: Pytest — full suite (integration tests deselect, visibly)
+        run: |
+          set -o pipefail
+          uv run pytest -q 2>&1 | tee pytest_output.txt
+
+      - name: Assert deselection is exactly the network-gated integration set
+        run: |
+          DESELECTED=$(grep -oE '[0-9]+ deselected' pytest_output.txt | grep -oE '[0-9]+' | head -1)
+          DESELECTED=${DESELECTED:-0}
+          uv run pytest -m integration --collect-only -q 2>/dev/null | tee integration_tests.txt
+          INTEGRATION=$(grep -cE '::' integration_tests.txt || true)
+          echo "deselected in run: $DESELECTED — integration-marked tests: $INTEGRATION"
+          if [ "$DESELECTED" -ne "$INTEGRATION" ]; then
+            echo "::error::deselected count ($DESELECTED) != integration-marked tests ($INTEGRATION) — something is being skipped that is not network-gated"
+            exit 1
+          fi
+          {
+            echo "## Network-gated (deselected) tests — local-only by design"
+            echo ""
+            echo '```'
+            grep -E '::' integration_tests.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guard suite — demonstrably included
+        run: |
+          GUARDS="
+          packages/causal/tests/test_no_fabrication.py
+          packages/causal/tests/test_no_fabrication_permian.py
+          apps/api/tests/test_no_staleness.py
+          apps/api/tests/test_no_staleness_permian.py
+          apps/api/tests/test_tier_rubric.py
+          packages/detection/tests/test_hitran_k.py
+          eval/harness/tests/test_real_pipeline.py
+          "
+          for f in $GUARDS; do
+            if [ ! -f "$f" ]; then
+              echo "::error::guard test file missing: $f"
+              exit 1
+            fi
+          done
+          uv run pytest --collect-only -q $GUARDS > guard_collect.txt
+          N=$(grep -cE '::' guard_collect.txt)
+          echo "guard tests collected: $N"
+          {
+            echo "## Guard suite (ran as part of the full pytest job)"
+            echo ""
+            echo "no-fabrication, no-staleness, byte-match/regen, tier rubric,"
+            echo "HITRAN independence, eval regression logic — $N tests across:"
+            echo ""
+            echo '```'
+            echo "$GUARDS" | sed '/^[[:space:]]*$/d'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build

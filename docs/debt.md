@@ -58,6 +58,21 @@ the eval harness, and a couple of tests.
 
 - **Eval harness runs a `stub_pipeline`** (0/3 recall) — the real matched filter is
   not wired into `aether-eval`. Tracked in `PROJECT_STATUS.md` open tasks.
+  **Headline item of the agreed next (debt) sprint.**
 - **1.46× vs 1.66× MF over-amplitude residual** — a hypothesis (effective-layer /
   flat-continuum), not an established cause; awaits deferred physics refinements.
   See `docs/science/sprint6_hitran_independence.md` §8–9.
+- **Topbar "Acquired" readout (apps/web)** — shows the FIRST active event's
+  acquisition timestamp as a global HUD field; with two live events this is
+  ambiguous. Per-event acquisition is correct in each inspector. Cosmetic,
+  non-scientific; logged at the Sprint 7 Stage D review.
+- **Comparative-claims guard gap (attribution)** — Sprint 7's
+  `test_comparative_claims_are_truthful` asserts comparative spatial claims against
+  the computed candidate table for the **Permian H1 facility path only**. There is
+  no general guard parsing comparative language ("nearest", "closer than", "largest")
+  across ALL hypothesis rationales/events, so a false comparative in a future event's
+  prose would still need human gate review to catch. Generalize alongside the
+  no-staleness suite.
+- **No CI** — the 212-test suite + guard suites run locally only. The agreed next
+  (debt) sprint adds CI running pytest + the guard suites (+ per-file ruff on touched
+  paths), so the no-fabrication / no-staleness / tier-rubric guards gate merges.

@@ -49,11 +49,14 @@ def test_events_list_two_active_events_with_tiers() -> None:
     assert set(by_id) == {GOTURDEPE, PERMIAN}
     assert by_id[GOTURDEPE]["status"] == "active"
     assert by_id[PERMIAN]["status"] == "active"
-    assert by_id[GOTURDEPE]["validation_tier"] == "VALIDATED"
+    # Per the rubric (docs/science/validation_tiers.md), VALIDATED is reserved for
+    # independent flux truth, held by no event — both events are CROSS-CHECKED (they
+    # differ in cross-check STRENGTH, which lives in the explainer, not the badge).
+    assert by_id[GOTURDEPE]["validation_tier"] == "CROSS-CHECKED"
     assert by_id[PERMIAN]["validation_tier"] == "CROSS-CHECKED"
-    # Headlines are the real OURS-CAL rates, never invented.
+    # Sub-1 t/hr headline rates show two decimals (0.85, not 0.9).
     permian_q = json.loads((config.stage_b_dir(PERMIAN) / "q_estimate.json").read_text())
-    assert by_id[PERMIAN]["headline"] == f"CH₄ · {permian_q['q_central_t_hr']:.1f} t/hr"
+    assert by_id[PERMIAN]["headline"] == f"CH₄ · {permian_q['q_central_t_hr']:.2f} t/hr"
 
 
 def test_marker_sits_on_real_centroid(q: dict) -> None:

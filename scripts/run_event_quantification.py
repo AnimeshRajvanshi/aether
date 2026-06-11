@@ -111,7 +111,10 @@ EVENTS: dict[str, Event] = {
         l2b_ur=constants.TURKMENISTAN_GOTURDEPE_2022_08_15_L2B_CH4_GRANULE_UR,
         acquisition_utc=datetime(2022, 8, 15, 4, 28, 38, tzinfo=UTC),
         plume_bbox={"min_lon": 53.5, "min_lat": 39.3, "max_lon": 54.2, "max_lat": 39.7},
-        tier="VALIDATED",
+        # CROSS-CHECKED (strong), not VALIDATED: VALIDATED is reserved for independent
+        # flux truth, which Goturdepe lacks (Thorpe is a scope-mismatched cluster total).
+        # See docs/science/validation_tiers.md. (This runner refuses Goturdepe anyway.)
+        tier="CROSS-CHECKED",
         nasa_target_shape_crosscheck=True,
         notes=["Frozen Sprint-6 operational artifacts (run_migration_v2_operational.py)."],
     ),

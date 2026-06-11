@@ -86,27 +86,57 @@ def _is_active(event_id: str) -> bool:
     return q_path.exists() and bounds_path.exists()
 
 
-# Validation tier per event. Read from the committed stage_a_report.json when present
-# (the Sprint 7 runner records it); Goturdepe's Sprint-6 report predates the field, so
-# it falls back to this map. NOT a scientific value invented here — the tier was
-# decided by each event's probe evidence (see the gate reports).
-_TIER_DEFAULT: dict[str, str] = {"turkmenistan_goturdepe_2022_08_15": "VALIDATED"}
+# Validation tier per event — see the rubric in docs/science/validation_tiers.md.
+# VALIDATED is the RESERVED top tier (requires independent flux truth: controlled
+# release, in-situ, or a peer-reviewed PER-SOURCE flux). NO current event qualifies —
+# Goturdepe's only flux reference (Thorpe 163±18 t/hr) is a scope-mismatched CLUSTER
+# total, so its agreement/disagreement is not claimable (Sprint 2 validation doc).
+# Both current events are therefore CROSS-CHECKED; they differ in cross-check STRENGTH
+# (carried in the explainer, not the badge). Read from stage_a_report.validation_tier
+# when present; Goturdepe's Sprint-6 report predates the field, so it falls back here.
+_TIER_DEFAULT: dict[str, str] = {"turkmenistan_goturdepe_2022_08_15": "CROSS-CHECKED"}
 
 
 def _validation_tier(event_id: str, stage_a: dict[str, Any]) -> str:
     return str(stage_a.get("validation_tier") or _TIER_DEFAULT.get(event_id, "DEMONSTRATION"))
 
 
-def _tier_explainer(tier: str, val: Validation, ours_central: float) -> str:
-    """First-class explainer of what the tier means for THIS event, with its limits."""
+def _fmt_rate(v: float) -> str:
+    """Display a t/hr rate: sub-1 rates get 2 decimals (0.85, not 0.9), else 1."""
+    return f"{v:.2f}" if abs(v) < 1.0 else f"{v:.1f}"
+
+
+def _tier_explainer(
+    tier: str, val: Validation, *, is_context: bool, k_shape_r: float | None, ours_central: float
+) -> str:
+    """First-class explainer: what the tier means for THIS event + its limits, tracing
+    to the rubric (docs/science/validation_tiers.md). CROSS-CHECKED is differentiated by
+    STRENGTH here — never by the badge. Strength keys on whether the event has a
+    cluster-scale reference + self-derived localization (Goturdepe = strong) vs a
+    press-release reference + NASA-anchored localization (Permian = weaker)."""
     if tier == "VALIDATED":
+        # Reserved top tier — held by no current event (stated for an honest ceiling).
         return (
-            "VALIDATED — our independent retrieval reproduces NASA's L2B CH4ENH over the "
-            f"plume (Pearson r = {val.pearson_in_bbox:.2f}) and the IME/Q chain is anchored "
-            "to that reference. LIMIT: still a single event, NASA-L2B-anchored — not an "
-            "in-situ flux measurement."
+            "VALIDATED — reserved top tier: requires independent flux truth (a controlled "
+            "release, in-situ measurement, or peer-reviewed PER-SOURCE flux). No current "
+            "event qualifies."
         )
     if tier == "CROSS-CHECKED":
+        if not is_context:
+            # Strong: pixel-level spatial agreement + self-derived S + k-shape verified.
+            k_clause = (
+                f", the methane k-shape verified against NASA's per-granule target "
+                f"(r = {k_shape_r:.3f})"
+                if k_shape_r is not None
+                else ""
+            )
+            return (
+                f"CROSS-CHECKED (strong) — pixel-level spatial agreement with NASA L2B "
+                f"(r = {val.pearson_in_bbox:.2f}), fully self-derived localization{k_clause}, "
+                f"and a NASA-cal anchor. LIMIT: a single overpass with NO independent flux "
+                f"reference — Thorpe et al.'s 163 ± 18 t/hr is a scope-mismatched cluster "
+                f"total, so agreement/disagreement is not claimable."
+            )
         facts = (
             f"integrated mass over NASA's published footprint agrees to "
             f"{val.integrated_mass_ratio:.2f}× (ours/NASA)"
@@ -114,19 +144,19 @@ def _tier_explainer(tier: str, val: Validation, ours_central: float) -> str:
             else f"spatial Pearson r = {val.pearson_in_bbox:.2f}"
         )
         pixel = (
-            f", BUT pixel-level agreement is weak (r = {val.pixel_pearson:.2f})"
+            f", but pixel-level agreement is weak (r = {val.pixel_pearson:.2f})"
             if val.pixel_pearson is not None
             else ""
         )
         return (
             f"CROSS-CHECKED — a NASA L2B raster exists, so our retrieval is checked against "
-            f"it: {facts}{pixel}. NOT VALIDATED: no peer-reviewed per-source flux, the source "
-            f"localization is inherited from NASA's plume footprint, and the published "
-            f"18.3 t/hr is press-release context only — not a comparison target."
+            f"it: {facts}{pixel}; localization is NASA-footprint-anchored; no k-shape check "
+            f"is available. LIMIT: NO independent flux reference — the published 18.3 t/hr is "
+            f"press-release context only, not a comparison target."
         )
     return (
         "DEMONSTRATION — no independent reference raster exists for this granule, so the "
-        f"~{ours_central:.1f} t/hr retrieval is internally consistent but UNVALIDATED."
+        f"~{ours_central:.2f} t/hr retrieval is internally consistent but UNVALIDATED."
     )
 
 
@@ -220,7 +250,7 @@ def _summary(event_id: str) -> EventSummary:
             status=EventStatus.ACTIVE,
             sensor=sensor_name,
             validation_tier=_validation_tier(event_id, stage_a),
-            headline=f"CH₄ · {q['q_central_t_hr']:.1f} t/hr",
+            headline=f"CH₄ · {_fmt_rate(q['q_central_t_hr'])} t/hr",
             acquisition_utc=stage_a.get("acquisition_utc"),
         )
 
@@ -421,6 +451,13 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
     diag_path = config.stage_b_dir(event_id) / "diagnostics.json"
     diag = _read_json(diag_path) if diag_path.exists() else {}
     pixel_pearson = diag.get("pixelwise_pearson_on_footprint_ours_vs_nasa")
+    # k-shape cross-check r vs NASA's per-granule target (committed in the k provenance);
+    # present for Goturdepe (≈0.993), absent for Permian (no NASA target). Feeds the
+    # strong-CROSS-CHECKED explainer.
+    kprov_path = config.stage_a_dir(event_id) / "hitran_k" / "hitran_k_sat_provenance.json"
+    k_shape_r = (
+        _read_json(kprov_path).get("shape_pearson_r_vs_nasa") if kprov_path.exists() else None
+    )
     if is_context:
         pixel_r = pixel_pearson if pixel_pearson is not None else float("nan")
         val_note = (
@@ -532,7 +569,9 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
         ),
         chips=_chips(event),
         validation_tier=tier,
-        tier_explainer=_tier_explainer(tier, validation, ours_central),
+        tier_explainer=_tier_explainer(
+            tier, validation, is_context=is_context, k_shape_r=k_shape_r, ours_central=ours_central
+        ),
         quantification=quantification,
         uncertainty_budget=budget,
         geometry=geometry,

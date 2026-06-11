@@ -9,6 +9,8 @@ type QCal = "ours" | "nasa";
 
 const f1 = (n: number) => n.toFixed(1);
 const f2 = (n: number) => n.toFixed(2);
+// Headline rate: sub-1 t/hr shows 2 decimals (0.85, not 0.9); else 1.
+const fmtRate = (n: number) => (Math.abs(n) < 1 ? n.toFixed(2) : n.toFixed(1));
 
 export default function Inspector({
   detail,
@@ -126,7 +128,7 @@ function renderActive(detail: EventDetail, qcal: QCal, onQcal: (c: QCal) => void
           </button>
         </div>
         <div className="q-big">
-          <span className="num">{f1(cal.value_t_hr)}</span>
+          <span className="num">{fmtRate(cal.value_t_hr)}</span>
           <span className="unit">t CH₄ / hr</span>
         </div>
         <div className="q-range">

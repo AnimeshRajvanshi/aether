@@ -176,3 +176,26 @@ or disagreement as validation.
 
 See `docs/reports/sprint7_stage_b_report.md` for the gate report and the exact
 committed numbers.
+
+## Stage C attribution — confidence-tier precedent (cross-event)
+
+Stage C ran facility-level attribution on the dense Permian OGIM subset (see
+`docs/reports/sprint7_stage_c_report.md`). It established a **cross-event tier
+precedent** worth recording for future events:
+
+- **MODERATE requires the spatial claim to be robust to the stated localization
+  uncertainty.** Goturdepe earned field-level MODERATE because its back-projected
+  source S sits *inside* a 133 km² field polygon — a containment that survives the
+  same wind/localization wobble that the uncertainty budget carries.
+- **A discrimination resting on margins within the noise is LOW**, however clearly it
+  ranks. Permian's nearest-*centerline* candidate (the GOONCH FEDERAL COM 0409 pad)
+  is favored only on an **angular** margin (~0.4° vs ≥13°); it is not even the
+  distance-closest well (ARTEMIS FEDERAL COM #002 is, at 0.26 km), the angular
+  discriminator rests on the self-declared weakest-link half-angle, and the distance
+  margins (~0.3–1.6 km) are comparable to S's ~1 km NASA-inherited positional
+  uncertainty. The data **ranks** candidates but cannot **establish** one, so every
+  facility hypothesis is capped at **LOW** (`FAC_CEILING`), enforced by test.
+
+This is the dense-coverage analogue of Goturdepe's sparse-coverage finding: in both,
+the honest headline is the *limit of attribution*, not a named culprit — and the tier
+reflects discrimination power, not proximity alone.

@@ -84,11 +84,39 @@ def test_sector_candidates_carry_no_ogim_id(hyp: dict) -> None:
             assert h["candidate"].get("ogim_name") is None
 
 
-def test_no_facility_reaches_high(hyp: dict) -> None:
-    """Dense-coverage discrimination cap: no facility-level hypothesis may be HIGH."""
+def test_no_facility_exceeds_low(hyp: dict) -> None:
+    """Dense-coverage cap (Stage C review): with discriminating margins within the
+    stated localization uncertainty, the data RANKS but cannot ESTABLISH a source, so
+    no facility hypothesis may exceed LOW (not merely 'not HIGH')."""
     for h in hyp["hypotheses"]:
-        assert h["confidence_tier"] != "high", (
-            f"{h['id']} is HIGH — but dense coverage cannot isolate a facility (see confidence_cap)"
+        assert h["confidence_tier"] in {"low", "insufficient"}, (
+            f"{h['id']} is {h['confidence_tier']} — but margins are within the ~1 km localization "
+            f"noise, so no facility may exceed LOW (see confidence_cap)"
+        )
+
+
+def test_comparative_claims_are_truthful(hyp: dict) -> None:
+    """Comparative spatial claims must match the computed candidate table, so a false
+    'closer than any' / 'nearest overall' cannot slip through (the Stage C review escape:
+    H1 had claimed the pad was closer in BOTH distance and angle, which was false)."""
+    h1 = hyp["hypotheses"][0]
+    blob = json.dumps(h1)
+    ps = hyp["plume_summary"]
+
+    # The exact false comparative must never reappear.
+    assert "both distance and angle" not in blob.lower()
+    assert "closer in both" not in blob.lower()
+
+    # The H1 candidate must BE the nearest-by-centerline record (the only claim made).
+    centerline_id = int(ps["nearest_by_centerline"].split("OGIM_ID ")[1].split(",")[0])
+    assert h1["candidate"]["ogim_id"] == centerline_id, "H1 is not the nearest-centerline candidate"
+
+    # When a DIFFERENT well is distance-closest, H1 must name it (no hiding a closer well).
+    distance_id = int(ps["nearest_by_distance"].split("OGIM_ID ")[1].split(",")[0])
+    if distance_id != centerline_id:
+        distance_name = ps["nearest_by_distance"].split(" (OGIM_ID")[0]
+        assert distance_name in blob, (
+            f"a closer-by-distance well ({distance_name}) exists but H1 does not disclose it"
         )
 
 

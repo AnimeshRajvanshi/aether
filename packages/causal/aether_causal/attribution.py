@@ -627,14 +627,33 @@ FAC_TYPE_WELL = 0.85  # a well is a fully plausible moderate-source emitter
 FAC_MAGNITUDE_MODERATE = 0.80  # 0.85 t/hr squarely in the moderate point-source regime
 FAC_TYPE_NON_OG = 0.08
 FAC_MAGNITUDE_NON_OG = 0.30
-# Spatial values reflect that even the NEAREST-centerline candidate is not isolated
-# (wide speed-derived wedge + NASA-anchored S + multi-well pads).
-FAC_SPATIAL_NEAREST = 0.70  # favored, but capped by the wide wedge / anchored S
+# Spatial values reflect that even the NEAREST-CENTERLINE candidate is not isolated.
+# (Stage C review correction) The nearest-centerline pad is NOT the distance-closest
+# candidate, and its only discriminating margin is ANGULAR — which rests on the
+# self-declared weakest link (the speed-derived half-angle), with distance margins
+# (~0.3-1.6 km) comparable to S's ~1 km NASA-inherited positional uncertainty. So the
+# favored ranking is REAL but NOT ESTABLISHED: the spatial value was lowered from the
+# original 0.70 (which had been justified by a now-removed, false "closer in both
+# distance AND angle" claim) to 0.50, and facility hypotheses are capped at LOW.
+FAC_SPATIAL_NEAREST = 0.50  # nearest-CENTERLINE only; margin within the localization noise
 FAC_SPATIAL_OTHER = 0.30  # an alternative in-wedge well; cannot be excluded
 FAC_SPATIAL_NEUTRAL = 0.50  # location does not discriminate sector (for non-O&G)
 
+# Facility-event confidence ceiling: LOW. When the discriminating margin is within the
+# stated localization uncertainty, the data can RANK candidates but cannot ESTABLISH
+# one — so no facility hypothesis may exceed LOW (cf. Goturdepe's MODERATE, which rests
+# on S sitting inside a 133 km^2 field polygon, robust to the same uncertainty).
+FAC_CEILING = ConfidenceTier.LOW
+
 _WELL_LAYER = "Oil_and_Natural_Gas_Wells"
 _RENDER_CAP = 8  # cap the rendered ranked candidate list; total is always stated
+
+
+def _fac_capped_tier(score: float) -> tuple[ConfidenceTier, bool]:
+    """Band the score, then cap at FAC_CEILING (LOW) for facility hypotheses."""
+    band = _band(score)
+    capped = _TIER_ORDER.index(band) > _TIER_ORDER.index(FAC_CEILING)
+    return (FAC_CEILING if capped else band), capped
 
 
 def _facility_candidates(
@@ -707,6 +726,14 @@ def build_facility_hypothesis_set(event_id: str, root: Path | None = None) -> Hy
     ]
     n_pad = len(pad_members)
 
+    # The DISTANCE-closest candidate is NOT necessarily the nearest-centerline one
+    # (ranked is sorted by angle first). Compute it explicitly so comparative claims
+    # are truthful: the nearest-centerline pad is favored by ANGLE, but a different
+    # well may be physically closer to S.
+    nd = min(ranked, key=lambda c: c["dist_km"])
+    nd_name = str(nd["props"].get("FAC_NAME"))
+    nd_id = int(nd["props"]["OGIM_ID"])
+
     # nearest VIIRS flaring detection in the wedge (corroboration only; dated)
     flare_ev = None
     for f in _features(subset, "Natural_Gas_Flaring_Detections"):
@@ -760,10 +787,12 @@ def build_facility_hypothesis_set(event_id: str, root: Path | None = None) -> Hy
         f"THIS plume.",
         moderate_regime_assumption,
         f"HEADLINE (dense-coverage discrimination): {n_2sigma} O&G wells fall within the plume-scale "
-        f"2-sigma wedge ({n_1sigma} within 1-sigma). The nearest-centerline candidate (the {lease_name} "
-        f"lease/pad, {n_pad} co-located completions in the wedge) is FAVORED but NOT isolated — the data "
-        f"cannot pick the specific well, and cannot exclude the other {n_2sigma - n_pad} wells. No "
-        f"facility reaches HIGH; this is the dense-coverage analogue of Goturdepe's sparse finding.",
+        f"2-sigma wedge ({n_1sigma} within 1-sigma). The nearest-CENTERLINE candidate (the {lease_name} "
+        f"lease/pad, {n_pad} co-located completions, {top['dist_km']:.1f} km from S at {top['dev']:.1f} "
+        f"deg) is FAVORED but NOT isolated: its only discriminating margin is angular, and a DIFFERENT "
+        f"well ({nd_name}, OGIM_ID {nd_id}) is actually distance-closest at {nd['dist_km']:.1f} km. The "
+        f"data RANKS candidates but cannot ESTABLISH one; no facility exceeds LOW. This is the "
+        f"dense-coverage analogue of Goturdepe's sparse finding.",
     ]
 
     def comp(name: str, value: float, rationale: str) -> ScoreComponent:
@@ -774,11 +803,14 @@ def build_facility_hypothesis_set(event_id: str, root: Path | None = None) -> Hy
     # ---------------- H1: nearest-centerline well pad (favored, not isolated) -------
     h1_components = [
         comp("spatial_consistency", FAC_SPATIAL_NEAREST,
-             f"The {lease_name} lease/pad is the nearest-centerline candidate: {top['dist_km']:.1f} km from S, "
-             f"{top['dev']:.1f} deg off the upwind azimuth — closer in BOTH distance and angle than any "
-             f"other in-wedge well. But the wedge is wide ({wedge.half_angle_2sigma_deg:.0f} deg at "
-             f"2-sigma), S is NASA-anchored, and the pad holds {n_pad} co-located completions, so this "
-             f"is favored, NOT isolated — capped well below certainty."),
+             f"The {lease_name} lease/pad is the nearest-CENTERLINE candidate ({top['dev']:.1f} deg off "
+             f"the upwind azimuth, vs >=13 deg for every non-pad well), {top['dist_km']:.1f} km from S. "
+             f"It is NOT the distance-closest well, however: {nd_name} (OGIM_ID {nd_id}) is closer at "
+             f"{nd['dist_km']:.1f} km (though {nd['dev']:.0f} deg off-centerline). So the ONLY "
+             f"discriminating margin is angular — and angular uncertainty is the self-declared weakest "
+             f"link (speed-derived half-angle {wedge.half_angle_2sigma_deg:.0f} deg at 2-sigma), while "
+             f"the distance margins (~{nd['dist_km']:.1f}-1.6 km) are comparable to S's ~1 km "
+             f"NASA-inherited positional uncertainty. The favored ranking is REAL but NOT ESTABLISHED."),
         comp("type_prior", FAC_TYPE_WELL,
              "An active O&G well in a dense producing basin; a plausible moderate-source emitter. "
              "Type barely discriminates at this magnitude (see assumptions)."),
@@ -788,7 +820,7 @@ def build_facility_hypothesis_set(event_id: str, root: Path | None = None) -> Hy
              f"super-emitter scale."),
     ]
     h1_score = round(sum(c.value * c.weight for c in h1_components), 4)
-    h1_tier, h1_capped = _capped_tier(h1_score)
+    h1_tier, h1_capped = _fac_capped_tier(h1_score)
     pad_id_list = ", ".join(str(int(c["props"]["OGIM_ID"])) for c in pad_members[:6])
     hyps.append(SourceHypothesis(
         id="H1", rank=1,
@@ -798,20 +830,23 @@ def build_facility_hypothesis_set(event_id: str, root: Path | None = None) -> Hy
             ogim_layer=_WELL_LAYER, ogim_id=top_id, ogim_name=top_name, operator=top_operator,
         ),
         claim=(
-            f"The ~{q_t_hr:.2f} t/hr plume's nearest-centerline candidate is the {lease_name} lease/pad "
+            f"The ~{q_t_hr:.2f} t/hr plume's nearest-CENTERLINE candidate is the {lease_name} lease/pad "
             f"({top_operator}), ~{top['dist_km']:.1f} km from the back-projected source S and "
-            f"~{top['dev']:.1f} deg off the wind azimuth. Pad/operator-level only: the pad holds "
-            f"{n_pad} co-located completions and the specific well CANNOT be isolated, nor can the "
-            f"other {n_2sigma - n_pad} in-wedge wells be excluded."
+            f"~{top['dev']:.1f} deg off the wind azimuth (vs >=13 deg for every non-pad well). It is NOT "
+            f"the distance-closest well — {nd_name} (OGIM_ID {nd_id}) is closer at {nd['dist_km']:.1f} km. "
+            f"Pad/operator-level RANKING only: the pad holds {n_pad} co-located completions, the specific "
+            f"well CANNOT be isolated, and the other {n_2sigma - n_pad} in-wedge wells cannot be excluded."
         ),
         confidence_tier=h1_tier,
         confidence_rationale=(
             f"Heuristic score {h1_score:.2f} (band {_band(h1_score).value})"
-            + (f" CAPPED to {h1_tier.value}: even the nearest-centerline candidate is not isolated "
-               f"(wide wedge + NASA-anchored S + multi-well pad), so MODERATE pad/operator-level is the "
-               f"highest defensible tier — NOT HIGH facility attribution." if h1_capped
-               else ": favored pad/operator-level candidate, but NOT HIGH — the evidence does not "
-                    "isolate a single facility.")
+            + (f" CAPPED to {h1_tier.value.upper()}: the only discriminating margin is angular, the "
+               f"angular uncertainty is the self-declared weakest link, and the distance margins are "
+               f"comparable to S's ~1 km NASA-inherited positional uncertainty — so the data RANKS this "
+               f"pad first but cannot ESTABLISH it. LOW, not MODERATE (contrast Goturdepe, whose "
+               f"MODERATE rests on S inside a 133 km^2 field, robust to that uncertainty)." if h1_capped
+               else ": ranked first by angular proximity, but LOW — margins are within the localization "
+                    "noise, so the ranking is real but not established.")
         ),
         score=h1_score, score_components=h1_components,
         evidence=[
@@ -852,8 +887,10 @@ def build_facility_hypothesis_set(event_id: str, root: Path | None = None) -> Hy
             cfg.localization_note,
         ],
         counter_considerations=[
+            f"{nd_name} (OGIM_ID {nd_id}) is physically CLOSER to S ({nd['dist_km']:.1f} km) than this "
+            f"pad — the pad wins only on angle, not distance.",
             f"{n_2sigma - n_pad} other O&G wells fall within the same wedge and cannot be excluded; "
-            f"proximity ranks the pad first but does not isolate it.",
+            f"the data ranks the pad first but does not isolate it.",
             "The specific emitting well on the pad is unresolved; even pad-level rests on a wide, "
             "speed-derived wedge and a NASA-anchored source point.",
         ],
@@ -881,7 +918,7 @@ def build_facility_hypothesis_set(event_id: str, root: Path | None = None) -> Hy
         comp("magnitude_consistency", FAC_MAGNITUDE_MODERATE, "Same moderate-source magnitude as H1."),
     ]
     h2_score = round(sum(c.value * c.weight for c in h2_components), 4)
-    h2_tier, _ = _capped_tier(h2_score)
+    h2_tier, _ = _fac_capped_tier(h2_score)
     hyps.append(SourceHypothesis(
         id="H2", rank=2,
         candidate=Candidate(
@@ -934,7 +971,7 @@ def build_facility_hypothesis_set(event_id: str, root: Path | None = None) -> Hy
              "A moderate point source is not characteristic of a natural seep here; magnitude disfavors it."),
     ]
     h3_score = round(sum(c.value * c.weight for c in h3_components), 4)
-    h3_tier, _ = _capped_tier(h3_score)
+    h3_tier, _ = _fac_capped_tier(h3_score)
     hyps.append(SourceHypothesis(
         id="H3", rank=3,
         candidate=Candidate(kind=CandidateKind.SECTOR,
@@ -979,9 +1016,11 @@ def build_facility_hypothesis_set(event_id: str, root: Path | None = None) -> Hy
             "qualitative tiers and the visible component rationales."
         ),
         confidence_cap=(
-            f"No hypothesis exceeds {CEILING.value.upper()}: dense but spatially-ambiguous coverage plus "
-            f"a NASA-anchored source localization cannot isolate a single facility. The nearest pad is "
-            f"MODERATE, not HIGH."
+            f"No hypothesis exceeds {FAC_CEILING.value.upper()}: dense, spatially-ambiguous coverage "
+            f"plus a NASA-anchored source localization lets the data RANK candidates but not ESTABLISH "
+            f"one. The favored pad wins only on an angular margin that rests on the weakest-link "
+            f"half-angle, with distance margins within the ~1 km localization noise — so it is LOW, not "
+            f"MODERATE (cf. Goturdepe's MODERATE, robust to the same uncertainty)."
         ),
         plume_summary={
             "emission_rate_ours_cal_t_hr": f"{q_t_hr:.3f}",
@@ -994,7 +1033,8 @@ def build_facility_hypothesis_set(event_id: str, root: Path | None = None) -> Hy
             "search_radius_km": f"{wedge.search_radius_km:.0f}",
             "wells_in_wedge_2sigma": str(n_2sigma),
             "wells_in_wedge_1sigma": str(n_1sigma),
-            "nearest_candidate": f"{lease_name} lease/pad ({top_operator})",
+            "nearest_by_centerline": f"{top_name} (OGIM_ID {top_id}, {top['dev']:.1f} deg, {top['dist_km']:.1f} km)",
+            "nearest_by_distance": f"{nd_name} (OGIM_ID {nd_id}, {nd['dist_km']:.1f} km, {nd['dev']:.1f} deg)",
         },
         global_assumptions=global_assumptions,
         hypotheses=hyps,

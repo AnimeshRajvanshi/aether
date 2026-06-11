@@ -8,22 +8,35 @@
 ## Headline — discrimination power, not a named culprit
 
 **21 oil & gas wells fall within the plume-scale back-projection wedge** (14 within
-1-sigma). The nearest-centerline candidate is the **GOONCH FEDERAL COM 0409
+1-sigma). The **nearest-CENTERLINE** candidate is the **GOONCH FEDERAL COM 0409
 lease/pad** (operator NOVO OIL & GAS NORTHERN DELAWARE, LLC; 14 co-located
-completions in the wedge, ~0.6 km from S, ~0.4° off the wind azimuth) — but it
-**cannot be isolated**: the wedge is wide (half-angle 25°/43° at 1σ/2σ, driven by
-the low 3.58 m/s wind), the source point S is **inherited from NASA's plume
-footprint** (not self-derived), and the specific well on the pad is unresolved. **No
-facility reaches HIGH.** This is the dense-coverage analogue of Goturdepe's
+completions in the wedge, ~0.6 km from S, **~0.4° off the wind azimuth** vs ≥13° for
+every non-pad well). It is **not** the distance-closest well — **ARTEMIS FEDERAL COM
+#002 (OGIM_ID 4325465) is closer at 0.26 km** (though 36° off-centerline). So the
+pad's only discriminating margin is *angular*, the angular uncertainty is the
+self-declared weakest link (speed-derived half-angle 25°/43° at 1σ/2σ, driven by the
+low 3.58 m/s wind), the distance margins (~0.3–1.6 km) are comparable to S's ~1 km
+NASA-inherited positional uncertainty, and S is itself **inherited from NASA's plume
+footprint** (not self-derived). **The data RANKS candidates but cannot ESTABLISH one;
+no facility exceeds LOW.** This is the dense-coverage analogue of Goturdepe's
 sparse-data finding, and gets the same first-class treatment.
 
 ## Ranked hypotheses (deterministic; every OGIM record real + guard-verified)
 
 | id | tier | score | candidate |
 |---|---|---:|---|
-| H1 | **MODERATE** | 0.75 | GOONCH FEDERAL COM 0409 lease/pad (nearest-centerline; favored, not isolated) |
+| H1 | **LOW** (band MODERATE, **capped**) | 0.63 | GOONCH FEDERAL COM 0409 lease/pad — nearest-*centerline* only; ranked, not established |
 | H2 | LOW | 0.51 | one of the 7 in-wedge wells NOT on that pad (the indistinguishable alternatives) |
 | H3 | LOW | 0.37 | non-O&G (natural seep / other sector) — completeness |
+
+> **Stage C review correction (recorded).** An earlier draft rated H1 MODERATE and
+> claimed the pad was "closer in BOTH distance and angle than any other in-wedge well"
+> — **false**: ARTEMIS FEDERAL COM #002 is distance-closest (0.26 km). The pad wins on
+> *angle only*. The rationale was rewritten truthfully, the spatial component lowered
+> 0.70→0.50 (its 0.70 had rested on the removed false claim), and facility hypotheses
+> are now **capped at LOW** (`FAC_CEILING`). A new guard
+> (`test_comparative_claims_are_truthful`) asserts comparative spatial claims against
+> the computed candidate table so a false "closer/nearest" fails tests.
 
 ## How each Stage C requirement was met
 
@@ -82,22 +95,26 @@ the one engine, selected by what the OGIM data contains.
 
 ## Honesty self-check (the things a reviewer should poke)
 
-- **Is MODERATE for H1 over-claiming?** It is the nearest-centerline candidate by a
-  clear margin (0.6 km / 0.4° vs the next non-pad well at 1.5 km / 13°), so MODERATE
-  is defensible — but it is explicitly **pad/operator-level, not HIGH**, because (a)
-  14 co-located completions can't be separated, (b) 7 other wells share the wedge,
-  (c) S is NASA-anchored, (d) the wedge is wide. The cap is enforced by test.
+- **Why is H1 LOW, not MODERATE?** Its only discriminating margin is *angular*
+  (~0.4° vs ≥13°); the angular uncertainty is the self-declared weakest link, and the
+  distance margins (~0.3–1.6 km) are comparable to S's ~1 km NASA-inherited positional
+  uncertainty — and ARTEMIS is actually distance-closer. The ranking is real but not
+  established, so the tier is capped at LOW. MODERATE would require a spatial claim
+  robust to the stated localization uncertainty (cf. Goturdepe, whose MODERATE rests
+  on S sitting *inside* a 133 km² field polygon). Enforced by `test_no_facility_exceeds_low`.
 - **Named a specific operator (NOVO OIL & GAS).** It is a real OGIM record, the
-  spatially-favored one, named for transparency — with the claim stating plainly
-  that the specific well is unresolved and the other candidates are not excluded.
+  nearest-centerline one, named for transparency — with the claim stating plainly
+  that it is NOT the distance-closest well, the specific well is unresolved, and the
+  other candidates are not excluded.
 - **18.3 t/hr** plays no role in attribution (it is press-release context from
   Stage B; the magnitude prior uses our own retrieved 0.85 t/hr).
 
 ## Verification
 
 - `uv run pytest` green (full suite). New: `test_no_fabrication_permian.py`
-  (5 guards incl. the no-HIGH cap, pad-multiplicity honesty, and regeneration
-  byte-identity). Goturdepe attribution byte-identical.
+  (7 guards incl. the **no-above-LOW** cap, **comparative-claims truthfulness**,
+  pad-multiplicity honesty, and regeneration byte-identity). Goturdepe attribution
+  byte-identical.
 - `attribution_outputs/permian_basin_2022/hypotheses.{json,md}` committed.
 
 ## STOP — for review

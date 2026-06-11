@@ -4,7 +4,7 @@
   "generated_method": "rule_based_deterministic_v1",
   "headline_finding": "DENSE-COVERAGE DISCRIMINATION: 21 O&G wells fall within the plume-scale back-projection wedge (14 within 1-sigma). The nearest-centerline candidate is the GOONCH FEDERAL COM 0409 lease/pad (NOVO OIL & GAS NORTHERN DELAWARE, LLC, 14 co-located completions, ~0.6 km from S), but it CANNOT be isolated — the wedge is wide, the source point S is inherited from NASA's plume footprint (not self-derived), and the specific well is unresolved. No facility reaches HIGH. This is the dense-coverage analogue of Goturdepe's sparse-data finding, and gets the same first-class treatment.",
   "scoring_disclaimer": "Scores are a documented additive heuristic (weighted components shown), NOT calibrated probabilities. Confidence reflects DISCRIMINATION POWER, not proximity alone; rely on the qualitative tiers and the visible component rationales.",
-  "confidence_cap": "No hypothesis exceeds MODERATE: dense but spatially-ambiguous coverage plus a NASA-anchored source localization cannot isolate a single facility. The nearest pad is MODERATE, not HIGH.",
+  "confidence_cap": "No hypothesis exceeds LOW: dense, spatially-ambiguous coverage plus a NASA-anchored source localization lets the data RANK candidates but not ESTABLISH one. The favored pad wins only on an angular margin that rests on the weakest-link half-angle, with distance margins within the ~1 km localization noise — so it is LOW, not MODERATE (cf. Goturdepe's MODERATE, robust to the same uncertainty).",
   "plume_summary": {
     "emission_rate_ours_cal_t_hr": "0.851",
     "emission_rate_regime": "moderate point source (sub-super-emitter)",
@@ -16,7 +16,8 @@
     "search_radius_km": "2",
     "wells_in_wedge_2sigma": "21",
     "wells_in_wedge_1sigma": "14",
-    "nearest_candidate": "GOONCH FEDERAL COM 0409 lease/pad (NOVO OIL & GAS NORTHERN DELAWARE, LLC)"
+    "nearest_by_centerline": "GOONCH FEDERAL COM 0409 #224H (OGIM_ID 4311811, 0.4 deg, 0.6 km)",
+    "nearest_by_distance": "ARTEMIS FEDERAL COM #002 (OGIM_ID 4325465, 0.3 km, 35.9 deg)"
   },
   "global_assumptions": [
     "Steady ERA5 wind over the ~0.09 h plume transit.",
@@ -24,7 +25,7 @@
     "SEGMENTATION-DEPENDENCE: the source point S is derived from a NASA-anchored plume footprint (NASA L2B CH4PLM complex 000524), NOT a fully self-derived localization. Goturdepe's S came end-to-end from our own retrieval; this attribution inherits NASA's plume location. Treat the apex accordingly.",
     "Plume-scale search radius 2 km (the source of a compact ~3.3 km plume sits at S +/- ~1 km, not tens of km upwind); wells beyond it are not candidates for THIS plume.",
     "MODERATE-SOURCE REGIME: the retrieved rate (~0.85 t/hr [0.57-1.15]) is a moderate point source, consistent with a SINGLE well, small equipment, or a tank battery — not necessarily a large facility (Duren et al. 2019, doi:10.1038/s41586-019-1720-3; Cusworth et al. 2021, doi:10.1021/acs.estlett.1c00173). So facility TYPE barely discriminates among the well candidates; spatial proximity is the only real discriminator, and it is weak here.",
-    "HEADLINE (dense-coverage discrimination): 21 O&G wells fall within the plume-scale 2-sigma wedge (14 within 1-sigma). The nearest-centerline candidate (the GOONCH FEDERAL COM 0409 lease/pad, 14 co-located completions in the wedge) is FAVORED but NOT isolated — the data cannot pick the specific well, and cannot exclude the other 7 wells. No facility reaches HIGH; this is the dense-coverage analogue of Goturdepe's sparse finding."
+    "HEADLINE (dense-coverage discrimination): 21 O&G wells fall within the plume-scale 2-sigma wedge (14 within 1-sigma). The nearest-CENTERLINE candidate (the GOONCH FEDERAL COM 0409 lease/pad, 14 co-located completions, 0.6 km from S at 0.4 deg) is FAVORED but NOT isolated: its only discriminating margin is angular, and a DIFFERENT well (ARTEMIS FEDERAL COM #002, OGIM_ID 4325465) is actually distance-closest at 0.3 km. The data RANKS candidates but cannot ESTABLISH one; no facility exceeds LOW. This is the dense-coverage analogue of Goturdepe's sparse finding."
   ],
   "hypotheses": [
     {
@@ -38,17 +39,17 @@
         "ogim_name": "GOONCH FEDERAL COM 0409 #224H",
         "operator": "NOVO OIL & GAS NORTHERN DELAWARE, LLC"
       },
-      "claim": "The ~0.85 t/hr plume's nearest-centerline candidate is the GOONCH FEDERAL COM 0409 lease/pad (NOVO OIL & GAS NORTHERN DELAWARE, LLC), ~0.6 km from the back-projected source S and ~0.4 deg off the wind azimuth. Pad/operator-level only: the pad holds 14 co-located completions and the specific well CANNOT be isolated, nor can the other 7 in-wedge wells be excluded.",
-      "confidence_tier": "moderate",
-      "confidence_rationale": "Heuristic score 0.75 (band moderate): favored pad/operator-level candidate, but NOT HIGH — the evidence does not isolate a single facility.",
-      "score": 0.7525,
+      "claim": "The ~0.85 t/hr plume's nearest-CENTERLINE candidate is the GOONCH FEDERAL COM 0409 lease/pad (NOVO OIL & GAS NORTHERN DELAWARE, LLC), ~0.6 km from the back-projected source S and ~0.4 deg off the wind azimuth (vs >=13 deg for every non-pad well). It is NOT the distance-closest well — ARTEMIS FEDERAL COM #002 (OGIM_ID 4325465) is closer at 0.3 km. Pad/operator-level RANKING only: the pad holds 14 co-located completions, the specific well CANNOT be isolated, and the other 7 in-wedge wells cannot be excluded.",
+      "confidence_tier": "low",
+      "confidence_rationale": "Heuristic score 0.63 (band moderate) CAPPED to LOW: the only discriminating margin is angular, the angular uncertainty is the self-declared weakest link, and the distance margins are comparable to S's ~1 km NASA-inherited positional uncertainty — so the data RANKS this pad first but cannot ESTABLISH it. LOW, not MODERATE (contrast Goturdepe, whose MODERATE rests on S inside a 133 km^2 field, robust to that uncertainty).",
+      "score": 0.6325,
       "score_components": [
         {
           "name": "spatial_consistency",
-          "value": 0.7,
+          "value": 0.5,
           "weight": 0.6,
-          "rationale": "The GOONCH FEDERAL COM 0409 lease/pad is the nearest-centerline candidate: 0.6 km from S, 0.4 deg off the upwind azimuth — closer in BOTH distance and angle than any other in-wedge well. But the wedge is wide (43 deg at 2-sigma), S is NASA-anchored, and the pad holds 14 co-located completions, so this is favored, NOT isolated — capped well below certainty.",
-          "contribution": 0.42
+          "rationale": "The GOONCH FEDERAL COM 0409 lease/pad is the nearest-CENTERLINE candidate (0.4 deg off the upwind azimuth, vs >=13 deg for every non-pad well), 0.6 km from S. It is NOT the distance-closest well, however: ARTEMIS FEDERAL COM #002 (OGIM_ID 4325465) is closer at 0.3 km (though 36 deg off-centerline). So the ONLY discriminating margin is angular — and angular uncertainty is the self-declared weakest link (speed-derived half-angle 43 deg at 2-sigma), while the distance margins (~0.3-1.6 km) are comparable to S's ~1 km NASA-inherited positional uncertainty. The favored ranking is REAL but NOT ESTABLISHED.",
+          "contribution": 0.3
         },
         {
           "name": "type_prior",
@@ -117,7 +118,8 @@
         "SEGMENTATION-DEPENDENCE: the source point S is derived from a NASA-anchored plume footprint (NASA L2B CH4PLM complex 000524), NOT a fully self-derived localization. Goturdepe's S came end-to-end from our own retrieval; this attribution inherits NASA's plume location. Treat the apex accordingly."
       ],
       "counter_considerations": [
-        "7 other O&G wells fall within the same wedge and cannot be excluded; proximity ranks the pad first but does not isolate it.",
+        "ARTEMIS FEDERAL COM #002 (OGIM_ID 4325465) is physically CLOSER to S (0.3 km) than this pad — the pad wins only on angle, not distance.",
+        "7 other O&G wells fall within the same wedge and cannot be excluded; the data ranks the pad first but does not isolate it.",
         "The specific emitting well on the pad is unresolved; even pad-level rests on a wide, speed-derived wedge and a NASA-anchored source point."
       ],
       "falsification": "A facility-resolved overpass (or measured wind-direction variance tightening the wedge) placing the source on a different pad/well, or off this pad entirely, would falsify this.",

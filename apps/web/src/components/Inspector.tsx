@@ -32,8 +32,12 @@ export default function Inspector({
       {/* drag the left edge to resize the panel; the plume stage reflows live */}
       <div className="panel-resize" onPointerDown={onResizeStart} title="Drag to resize" />
       <div className="insp-scroll">
-        <div>
-          <div className="evt-name">{detail.short_name}</div>
+        <div className="evt-head">
+          <div className="evt-toprow">
+            <div className="evt-name">{detail.short_name}</div>
+            {/* document code = the real event_id, nothing invented */}
+            <div className="evt-code">{detail.event_id}</div>
+          </div>
           <div className="evt-sub">{detail.location_label}</div>
           <div className="evt-chips">
             {detail.chips.map((c, i) => (
@@ -108,10 +112,6 @@ function renderActive(detail: EventDetail, qcal: QCal, onQcal: (c: QCal) => void
   const scope = detail.scope_caveat!;
   const cal = qcal === "ours" ? q.ours_cal : q.nasa_cal;
 
-  // Stage A Pearson gauge: arc length of a r=27 circle (mockup geometry).
-  const circ = 2 * Math.PI * 27;
-  const offset = circ * (1 - val.pearson_in_bbox);
-
   return (
     <>
       <div className="panel">
@@ -169,29 +169,28 @@ function renderActive(detail: EventDetail, qcal: QCal, onQcal: (c: QCal) => void
           <span className="tag">Stage A Validation</span>
           <span className="line" />
         </div>
-        <div className="valid">
-          <div className="gauge">
-            <svg width="68" height="68" viewBox="0 0 68 68">
-              <circle cx="34" cy="34" r="27" fill="none" stroke="#1d242e" strokeWidth="5" />
-              <circle
-                cx="34"
-                cy="34"
-                r="27"
-                fill="none"
-                stroke="#35d6c3"
-                strokeWidth="5"
-                strokeLinecap="round"
-                strokeDasharray={circ.toFixed(1)}
-                strokeDashoffset={offset.toFixed(1)}
-              />
-            </svg>
-            <div className="gtext">
-              <span className="n">{f2(val.pearson_in_bbox)}</span>
-              <span className="l">PEARSON</span>
-            </div>
-          </div>
-          <div className="vtext">{val.note}</div>
+        {/* spec-sheet meter (replaces the v1 radial gauge): the same value,
+            plus every other validation number the API already serves */}
+        <div className="meter-head">
+          <span className="meter-num">{f2(val.pearson_in_bbox)}</span>
+          <span className="meter-cap">Pearson r · in-bbox</span>
         </div>
+        <div className="meter-track">
+          <div
+            className="meter-fill"
+            style={{ width: `${Math.round(Math.max(0, Math.min(1, val.pearson_in_bbox)) * 100)}%` }}
+          />
+        </div>
+        <Drow k="Reference product" v={val.reference_product} u="" />
+        <Drow k="Pearson (full scene)" v={f2(val.pearson_full_scene)} u="" />
+        <Drow k="Pixels in bbox" v={String(val.n_pixels_bbox)} u="px" />
+        {val.integrated_mass_ratio !== null && (
+          <Drow k="Integrated mass (ours/NASA)" v={f2(val.integrated_mass_ratio)} u="×" />
+        )}
+        {val.pixel_pearson !== null && (
+          <Drow k="Plume-pixel Pearson" v={f2(val.pixel_pearson)} u="" />
+        )}
+        <p className="vtext">{val.note}</p>
       </div>
 
       <div className="panel">

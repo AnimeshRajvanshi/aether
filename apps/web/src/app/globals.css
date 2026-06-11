@@ -1,19 +1,34 @@
-/* Ported from docs/design/aether_photoreal_mockup.html — the approved visual
-   target. Colors, typography scale and panel styling are kept verbatim; the
-   standalone three.js canvas (#three) becomes the Cesium container, and the
-   inline plume SVG becomes a georeferenced raster draped on the globe. */
+/* ============================================================================
+   AETHER — redesign/v2 design system ("instrument data-plate").
+   Direction + every deliberate evolution of the locked identity are documented
+   in docs/reports/redesign_v2_report.md. Reference set: docs/design/references/
+   (industrial spec-sheet / technical-label language) merged with the Division
+   tactical-HUD identity. Type system (report §8): Archivo = UI grotesque
+   (labels, buttons, badges, display numerals — refs set labels AND numerals in
+   one industrial grotesque across weights); IBM Plex Mono = data values, codes,
+   tables; IBM Plex Sans = prose and honesty text (most readable on screen);
+   Chakra Petch = brand accent ONLY (wordmark, planetary watermark — the refs'
+   reserved techno-display voice). Amber–cyan duotone on deep near-black,
+   photoreal Cesium globe, AETHER wordmark with amber underline.
+
+   Color discipline (semantic, enforced here):
+     amber  = measurement emphasis + interactive-selected state
+     cyan   = reference / cross-check / validation data + links + mask outline
+     alert  = caveats and warnings ONLY
+     neutrals carry everything else; hierarchy is typographic, not chromatic.
+   ========================================================================= */
 
 :root {
-  --bg-void: #06080c;
-  --bg-base: #0a0d12;
-  --bg-panel: #10141b;
-  --bg-raised: #151a23;
-  --border: #1d242e;
-  --border-bright: #2c3845;
-  --grid: #10161e;
-  --text: #e8edf2;
-  --text-2: #93a1b0;
-  --text-3: #566472;
+  --bg-void: #050708;
+  --bg-base: #0a0d0f;
+  --bg-panel: #0e1114;
+  --bg-raised: #13171b;
+  --border: #1d2327;
+  --border-bright: #2d363b;
+  --grid: #11161a;
+  --text: #e9eae4;
+  --text-2: #97a1a3;
+  --text-3: #5a646a;
   --amber: #ff9d3c;
   --amber-bri: #ffb866;
   --amber-dim: #7a4f23;
@@ -22,6 +37,23 @@
   --cyan-dim: #1b7a70;
   --alert: #ff5d5d;
   --good: #3ad07a;
+  --hairline: rgba(233, 234, 228, 0.14);
+  /* diagonal hatch — the references' texture for "empty remainder" / framing */
+  --hatch: repeating-linear-gradient(
+    -45deg,
+    rgba(233, 234, 228, 0.07) 0 1px,
+    transparent 1px 5px
+  );
+  /* micro-interaction timing: one fast token, one medium; ease-out only */
+  --t-fast: 120ms cubic-bezier(0.2, 0, 0.2, 1);
+  --t-med: 200ms cubic-bezier(0.2, 0, 0.2, 1);
+  /* tracking scale (em-based): caps run wider as they get smaller; display
+     numerals run tight — the references' rule. px tracking only in the locked
+     wordmark. */
+  --track-tight: -0.01em;
+  --track-ui: 0.12em;
+  --track-label: 0.18em;
+  --track-wide: 0.28em;
 }
 
 * {
@@ -40,30 +72,42 @@ body {
   font-size: 13px;
   overflow: hidden;
 }
-/* faint scanline overlay */
+/* faint scanline — kept from v1, dialed down (atmosphere, not theater) */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.022;
+  opacity: 0.018;
   background: repeating-linear-gradient(0deg, #fff 0 1px, transparent 1px 3px);
 }
+::selection {
+  background: var(--amber);
+  color: #0a0d0f;
+}
+button {
+  font: inherit;
+}
+:focus-visible {
+  outline: 1px solid var(--amber);
+  outline-offset: 2px;
+}
+
 .app {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
-/* ---- top bar ---- */
+/* ---- top bar: document header ---- */
 .topbar {
   display: flex;
   align-items: center;
   gap: 26px;
-  height: 58px;
-  padding: 0 18px;
-  background: linear-gradient(180deg, var(--bg-panel), var(--bg-base));
+  height: 56px;
+  padding: 0 18px 0 16px;
+  background: var(--bg-base);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   z-index: 50;
@@ -72,7 +116,7 @@ body::after {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-brand), sans-serif;
 }
 .mark-top {
   font-weight: 700;
@@ -83,12 +127,12 @@ body::after {
   border-bottom: 2px solid var(--amber);
   padding-bottom: 4px;
   width: fit-content;
-  text-shadow: 0 0 16px rgba(255, 157, 60, 0.22);
+  text-shadow: 0 0 16px rgba(255, 157, 60, 0.2);
 }
 .mark-sub {
   font-family: var(--font-mono), monospace;
   font-size: 9px;
-  letter-spacing: 2px;
+  letter-spacing: var(--track-wide);
   color: var(--text-3);
 }
 .spacer {
@@ -96,19 +140,24 @@ body::after {
 }
 .top-status {
   display: flex;
-  gap: 22px;
-  align-items: center;
+  align-items: stretch;
 }
 .top-status .si {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  justify-content: center;
+  gap: 2px;
   text-align: right;
+  padding: 0 18px;
+  border-left: 1px solid var(--border);
+}
+.top-status .si:last-child {
+  padding-right: 0;
 }
 .top-status .si .lbl {
-  font-family: var(--font-hud), sans-serif;
-  font-size: 8px;
-  letter-spacing: 1.5px;
+  font-family: var(--font-label), sans-serif;
+  font-size: 8.5px;
+  letter-spacing: var(--track-label);
   color: var(--text-3);
   text-transform: uppercase;
 }
@@ -117,58 +166,101 @@ body::after {
   font-size: 11px;
   color: var(--text);
 }
+
 .main {
   position: relative;
   flex: 1;
   min-height: 0;
 }
-.rail {
+
+/* ---- vertical data spine (replaces the v1 icon rail; carries the real
+   program designation + pipeline stages, no non-functional controls) ---- */
+.spine {
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
-  width: 52px;
+  width: 38px;
   background: var(--bg-base);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 12px 0;
-  gap: 4px;
+  gap: 12px;
   z-index: 40;
 }
-.rail .ico {
-  width: 38px;
-  height: 38px;
+.spine .cross {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  color: var(--text-3);
+  line-height: 1;
+  user-select: none;
+}
+.spine .spine-label {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  overflow: hidden;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: var(--track-wide);
   color: var(--text-3);
-  cursor: pointer;
-  font-size: 16px;
-  transition: 0.15s;
-  border: 1px solid transparent;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
-.rail .ico:hover {
+.spine .spine-label b {
   color: var(--text-2);
-  background: var(--bg-panel);
+  font-weight: 500;
 }
-.rail .ico.active {
-  color: var(--amber);
-  background: rgba(255, 157, 60, 0.08);
-  border-color: rgba(255, 157, 60, 0.22);
+
+/* ---- bottom status strip: persistent provenance declaration ---- */
+.statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  height: 26px;
+  padding: 0 14px;
+  background: var(--bg-base);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: var(--track-wide);
+  color: var(--text-3);
+  text-transform: uppercase;
+  z-index: 50;
 }
-.rail .gap {
-  flex: 1;
+.statusbar span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.statusbar .sb-honesty {
+  color: var(--text-2);
 }
 
 /* ---- stage / globe ---- */
 .stage {
   position: absolute;
-  inset: 0 0 0 52px;
+  inset: 0 0 0 38px;
   overflow: hidden;
-  background: radial-gradient(ellipse 90% 70% at 50% 40%, #0b1018 0%, #06080c 70%);
+  background: radial-gradient(ellipse 90% 70% at 50% 40%, #0b1013 0%, #050708 70%);
+}
+/* blueprint dot grid behind the globe (the canvas is alpha-transparent in
+   space, so the grid reads only around the limb — ambient, never over data) */
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(233, 234, 228, 0.055) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: 13px 13px;
 }
 #cesiumContainer {
   position: absolute;
@@ -185,61 +277,93 @@ body::after {
 
 .bodysel {
   position: absolute;
-  top: 16px;
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 6px;
   z-index: 20;
-  transition: opacity 0.5s;
+  border: 1px solid var(--border-bright);
+  background: rgba(5, 7, 8, 0.7);
+  backdrop-filter: blur(4px);
+  transition: opacity var(--t-med);
 }
 .bodysel button {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 10px;
-  letter-spacing: 2px;
+  letter-spacing: var(--track-ui);
+  font-weight: 600;
   padding: 8px 18px;
-  background: rgba(8, 11, 16, 0.65);
+  background: transparent;
   color: var(--text-3);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: 0;
+  border-right: 1px solid var(--border);
   cursor: pointer;
-  transition: 0.18s;
+  transition: color var(--t-fast), background var(--t-fast);
   text-transform: uppercase;
-  backdrop-filter: blur(4px);
+}
+.bodysel button:last-child {
+  border-right: 0;
 }
 .bodysel button.on {
-  color: var(--text);
-  border-color: var(--cyan-dim);
-  box-shadow: inset 0 0 14px rgba(53, 214, 195, 0.12);
+  color: var(--amber-bri);
+  background: rgba(255, 157, 60, 0.1);
+  box-shadow: inset 0 -2px 0 var(--amber);
 }
 .bodysel button:hover:not(.on) {
   color: var(--text-2);
 }
 .stage-hint {
   position: absolute;
-  bottom: 18px;
+  bottom: 14px;
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-mono), monospace;
-  font-size: 10.5px;
+  font-size: 10px;
+  letter-spacing: 0;
   color: var(--text-3);
   z-index: 20;
-  transition: opacity 0.5s;
+  transition: opacity var(--t-med);
 }
 .stage-hint b {
-  color: var(--cyan);
+  color: var(--amber-bri);
+  font-weight: 500;
 }
-.scan-readout {
+
+/* top-right readout: framed label/value rows (real config + counts only) */
+.readout {
   position: absolute;
-  top: 16px;
-  right: 18px;
+  top: 14px;
+  right: 16px;
+  z-index: 20;
+  border: 1px solid var(--border);
+  background: rgba(5, 7, 8, 0.7);
+  backdrop-filter: blur(4px);
+  padding: 8px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 218px;
+  transition: opacity var(--t-med);
+}
+.readout .ro-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+.readout .ro-k {
+  font-family: var(--font-label), sans-serif;
+  font-size: 8.5px;
+  letter-spacing: var(--track-label);
+  color: var(--text-3);
+  text-transform: uppercase;
+  padding-top: 1px;
+}
+.readout .ro-v {
   font-family: var(--font-mono), monospace;
   font-size: 10px;
-  color: var(--text-3);
+  letter-spacing: 0;
+  color: var(--text-2);
   text-align: right;
-  z-index: 20;
-  line-height: 1.7;
-  transition: opacity 0.5s;
 }
 .fade-out {
   opacity: 0 !important;
@@ -254,11 +378,17 @@ body::after {
   flex-direction: column;
   gap: 10px;
   z-index: 30;
-  font-family: var(--font-hud), sans-serif;
-  letter-spacing: 3px;
+  font-family: var(--font-label), sans-serif;
+  letter-spacing: var(--track-label);
   color: var(--text-3);
   font-size: 11px;
   pointer-events: none;
+}
+.loading .err-plate {
+  border: 1px solid rgba(255, 93, 93, 0.4);
+  border-left: 3px solid var(--alert);
+  background: rgba(255, 93, 93, 0.05);
+  padding: 10px 16px;
 }
 .loading .spin {
   width: 30px;
@@ -283,26 +413,25 @@ body::after {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 9px;
   pointer-events: none;
   text-align: center;
 }
 .nodata-overlay .nodata-body {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-brand), sans-serif;
   font-size: 22px;
-  font-weight: 600;
-  letter-spacing: 8px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
   color: var(--text-2);
 }
 .nodata-overlay .nodata-msg {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 11px;
-  letter-spacing: 3px;
+  letter-spacing: var(--track-wide);
   color: var(--text-3);
   border: 1px solid var(--border-bright);
-  border-radius: 6px;
   padding: 6px 14px;
-  background: rgba(8, 11, 16, 0.55);
+  background: rgba(5, 7, 8, 0.6);
   backdrop-filter: blur(4px);
 }
 .nodata-overlay .nodata-sub {
@@ -333,19 +462,17 @@ body::after {
 }
 .marker .dot {
   position: absolute;
-  left: -6px;
-  top: -6px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+  left: -5px;
+  top: -5px;
+  width: 10px;
+  height: 10px;
   background: var(--amber);
   box-shadow: 0 0 12px var(--amber);
-  animation: bob 2.6s ease-in-out infinite;
-  transition: transform 0.2s;
+  transition: transform var(--t-fast);
 }
 .marker.pending .dot {
   background: var(--text-3);
-  box-shadow: 0 0 10px var(--text-3);
+  box-shadow: 0 0 8px var(--text-3);
 }
 .marker .ring {
   position: absolute;
@@ -354,28 +481,28 @@ body::after {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  border: 1.5px solid var(--amber);
+  border: 1px solid var(--amber);
   opacity: 0.6;
-  animation: ping 2.6s ease-out infinite;
+  animation: ping 2.8s ease-out infinite;
 }
 .marker.pending .ring {
   border-color: var(--text-3);
 }
 .marker.active .dot {
-  width: 14px;
-  height: 14px;
-  left: -7px;
-  top: -7px;
+  width: 12px;
+  height: 12px;
+  left: -6px;
+  top: -6px;
 }
+/* squared targeting frame (data-plate language; replaces the v1 circle) */
 .marker.active .reticle {
   position: absolute;
-  left: -22px;
-  top: -22px;
-  width: 44px;
-  height: 44px;
+  left: -21px;
+  top: -21px;
+  width: 42px;
+  height: 42px;
   border: 1px solid var(--cyan);
-  border-radius: 50%;
-  opacity: 0.7;
+  opacity: 0.75;
 }
 .marker.active .reticle::before,
 .marker.active .reticle::after {
@@ -385,31 +512,39 @@ body::after {
 }
 .marker.active .reticle::before {
   left: 50%;
-  top: -6px;
+  top: -7px;
   width: 1px;
-  height: 12px;
+  height: 14px;
   transform: translateX(-50%);
 }
 .marker.active .reticle::after {
   top: 50%;
-  left: -6px;
+  left: -7px;
   height: 1px;
-  width: 12px;
+  width: 14px;
   transform: translateY(-50%);
 }
+/* label as a mini data-plate */
 .marker .lab {
   position: absolute;
-  left: 15px;
-  top: -8px;
-  font-family: var(--font-hud), sans-serif;
+  left: 27px;
+  top: -11px;
+  font-family: var(--font-label), sans-serif;
   font-size: 9.5px;
-  letter-spacing: 1.5px;
+  letter-spacing: var(--track-ui);
+  font-weight: 600;
   color: var(--text);
   white-space: nowrap;
-  text-shadow: 0 0 6px #000, 0 0 6px #000;
+  background: rgba(5, 7, 8, 0.82);
+  border: 1px solid var(--border-bright);
+  border-left: 2px solid var(--amber);
+  padding: 4px 8px 5px;
   opacity: 0;
-  transition: 0.2s;
+  transition: opacity var(--t-fast);
   text-transform: uppercase;
+}
+.marker.pending .lab {
+  border-left-color: var(--text-3);
 }
 .marker.active .lab,
 .marker:hover .lab {
@@ -418,21 +553,13 @@ body::after {
 .marker .sub {
   display: block;
   font-family: var(--font-mono), monospace;
-  font-size: 8px;
-  color: var(--text-3);
-  letter-spacing: 1px;
+  font-size: 8.5px;
+  color: var(--text-2);
+  letter-spacing: 0;
+  margin-top: 2px;
 }
 .marker:hover .dot {
-  transform: scale(1.6);
-}
-@keyframes bob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
+  transform: scale(1.45);
 }
 @keyframes ping {
   0% {
@@ -462,7 +589,7 @@ body::after {
 .plume-hud {
   position: absolute;
   /* right inset tracks the panel width so the stage reflows live on resize */
-  inset: 0 var(--panel-width, 392px) 0 0;
+  inset: 0 var(--panel-width, 470px) 0 0;
   overflow: hidden;
   opacity: 0;
   /* fades in over the camera flight (shared --fly-duration), no extra delay */
@@ -473,32 +600,32 @@ body::after {
 }
 .bracket {
   position: absolute;
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--cyan-dim);
-  opacity: 0.5;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--cyan-dim);
+  opacity: 0.6;
 }
 .bracket.b1 {
-  top: 8px;
-  left: 8px;
+  top: 10px;
+  left: 10px;
   border-right: 0;
   border-bottom: 0;
 }
 .bracket.b2 {
-  top: 8px;
-  right: 8px;
+  top: 10px;
+  right: 10px;
   border-left: 0;
   border-bottom: 0;
 }
 .bracket.b3 {
-  bottom: 8px;
-  left: 8px;
+  bottom: 10px;
+  left: 10px;
   border-right: 0;
   border-top: 0;
 }
 .bracket.b4 {
-  bottom: 8px;
-  right: 8px;
+  bottom: 10px;
+  right: 10px;
   border-left: 0;
   border-top: 0;
 }
@@ -508,16 +635,15 @@ body::after {
   pointer-events: auto;
 }
 .coord-box {
-  background: rgba(8, 11, 16, 0.72);
+  background: rgba(5, 7, 8, 0.78);
   border: 1px solid var(--border);
-  border-radius: 5px;
   padding: 8px 11px;
   backdrop-filter: blur(4px);
 }
 .coord-box .ttl {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 8.5px;
-  letter-spacing: 1.6px;
+  letter-spacing: var(--track-label);
   color: var(--text-3);
   margin-bottom: 5px;
   text-transform: uppercase;
@@ -533,59 +659,63 @@ body::after {
 }
 .seg {
   display: inline-flex;
-  background: rgba(8, 11, 16, 0.8);
+  background: rgba(5, 7, 8, 0.8);
   border: 1px solid var(--border-bright);
-  border-radius: 6px;
-  overflow: hidden;
   backdrop-filter: blur(4px);
 }
 .seg button {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 10px;
-  letter-spacing: 1.2px;
+  letter-spacing: var(--track-ui);
+  font-weight: 600;
   padding: 7px 14px;
   background: transparent;
   color: var(--text-3);
   border: 0;
+  border-right: 1px solid var(--border);
   cursor: pointer;
-  transition: 0.15s;
+  transition: color var(--t-fast), background var(--t-fast);
   text-transform: uppercase;
 }
+.seg button:last-child {
+  border-right: 0;
+}
 .seg button.on {
-  background: rgba(53, 214, 195, 0.12);
-  color: var(--cyan-bri);
-  box-shadow: inset 0 0 0 1px rgba(53, 214, 195, 0.3);
+  background: rgba(255, 157, 60, 0.1);
+  color: var(--amber-bri);
+  box-shadow: inset 0 -2px 0 var(--amber);
 }
 .back-btn {
   position: absolute;
   top: 14px;
   left: 16px;
   z-index: 6;
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 10px;
-  letter-spacing: 1.5px;
+  letter-spacing: var(--track-ui);
+  font-weight: 600;
   color: var(--text-2);
-  background: rgba(8, 11, 16, 0.7);
+  background: rgba(5, 7, 8, 0.75);
   border: 1px solid var(--border-bright);
-  border-radius: 6px;
   padding: 8px 13px;
   cursor: pointer;
   backdrop-filter: blur(4px);
   text-transform: uppercase;
-  transition: 0.15s;
+  transition: color var(--t-fast), border-color var(--t-fast);
   pointer-events: auto;
 }
 .back-btn:hover {
-  color: var(--cyan);
-  border-color: var(--cyan-dim);
+  color: var(--amber-bri);
+  border-color: var(--amber-dim);
 }
 
+/* ---- inspector: a numbered spec-sheet over the committed artifacts ---- */
 .inspector {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  width: var(--panel-width, 392px);
+  width: var(--panel-width, 470px);
   background: var(--bg-panel);
   border-left: 1px solid var(--border);
   transform: translateX(100%);
@@ -620,58 +750,57 @@ body::after {
   transform: translateY(-50%);
   width: 2px;
   height: 34px;
-  border-radius: 2px;
   background: var(--border-bright);
-  transition: background 0.15s;
+  transition: background var(--t-fast);
 }
 .panel-resize:hover::before {
-  background: var(--cyan-dim);
+  background: var(--amber-dim);
 }
 .insp-scroll {
   overflow-y: auto;
-  padding: 16px;
+  padding: 16px 16px 22px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
+  /* section index: every .panel-h tag and full-width caveat header counts —
+     conditional sections (brief, attribution, references) renumber correctly */
+  counter-reset: sec;
 }
 .insp-scroll::-webkit-scrollbar {
   width: 8px;
 }
 .insp-scroll::-webkit-scrollbar-thumb {
   background: var(--border-bright);
-  border-radius: 4px;
 }
-.panel {
-  background: var(--bg-base);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px;
-  position: relative;
+.insp-scroll::-webkit-scrollbar-track {
+  background: var(--bg-panel);
 }
-.panel-h {
+
+/* event header: document plate */
+.evt-head {
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--border);
+}
+.evt-toprow {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 11px;
-}
-.panel-h .tag {
-  font-family: var(--font-hud), sans-serif;
-  font-size: 9px;
-  letter-spacing: 2px;
-  color: var(--text-3);
-  text-transform: uppercase;
-}
-.panel-h .line {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, var(--border), transparent);
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
 }
 .evt-name {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 19px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   line-height: 1.1;
+  text-transform: uppercase;
+}
+.evt-code {
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  white-space: nowrap;
 }
 .evt-sub {
   font-family: var(--font-mono), monospace;
@@ -686,11 +815,11 @@ body::after {
   flex-wrap: wrap;
 }
 .chip {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 9px;
-  letter-spacing: 1px;
+  letter-spacing: var(--track-ui);
+  font-weight: 500;
   padding: 3px 8px;
-  border-radius: 4px;
   text-transform: uppercase;
 }
 .chip.type {
@@ -708,64 +837,111 @@ body::after {
   color: var(--text-2);
   border: 1px solid var(--border-bright);
 }
+
+/* panels: data plates with indexed headers */
+.panel {
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  padding: 13px 14px 14px;
+  position: relative;
+}
+.panel-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 11px;
+}
+.panel-h .tag {
+  font-family: var(--font-label), sans-serif;
+  font-size: 9px;
+  letter-spacing: var(--track-label);
+  font-weight: 600;
+  color: var(--text-2);
+  text-transform: uppercase;
+}
+.panel-h .tag::before {
+  counter-increment: sec;
+  content: counter(sec, decimal-leading-zero);
+  font-family: var(--font-mono), monospace;
+  font-weight: 600;
+  color: var(--text-3);
+  margin-right: 8px;
+}
+.panel-h .line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
 .q-cal {
   display: inline-flex;
   margin-bottom: 12px;
   border: 1px solid var(--border-bright);
-  border-radius: 5px;
-  overflow: hidden;
 }
 .q-cal button {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 9px;
-  letter-spacing: 1px;
+  letter-spacing: var(--track-ui);
+  font-weight: 600;
   padding: 5px 10px;
   background: transparent;
   color: var(--text-3);
   border: 0;
+  border-right: 1px solid var(--border);
   cursor: pointer;
   text-transform: uppercase;
-  transition: 0.15s;
+  transition: color var(--t-fast), background var(--t-fast);
+}
+.q-cal button:last-child {
+  border-right: 0;
 }
 .q-cal button.on {
   background: rgba(255, 157, 60, 0.12);
   color: var(--amber-bri);
 }
+/* headline stat: big confident numeral (display face, not mono — the mono
+   stays for tabular data; this is the references' stat-block treatment) */
 .q-big {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 9px;
 }
 .q-big .num {
-  font-family: var(--font-mono), monospace;
-  font-size: 46px;
-  font-weight: 600;
+  font-family: var(--font-label), sans-serif;
+  font-size: 50px;
+  font-weight: 700;
+  letter-spacing: var(--track-tight);
+  font-variant-numeric: tabular-nums;
   color: var(--amber);
-  line-height: 1;
-  text-shadow: 0 0 26px rgba(255, 157, 60, 0.3);
+  line-height: 0.95;
+  text-shadow: 0 0 24px rgba(255, 157, 60, 0.25);
 }
 .q-big .unit {
   font-family: var(--font-mono), monospace;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-2);
 }
 .q-range {
   font-family: var(--font-mono), monospace;
   font-size: 11px;
   color: var(--text-2);
-  margin-top: 9px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--grid);
 }
 .q-range b {
   color: var(--text);
 }
 .q-note {
   font-size: 11px;
-  color: var(--text-3);
+  color: var(--text-2);
   margin-top: 7px;
   line-height: 1.5;
 }
+
+/* uncertainty bars: flat fill + hatched remainder inside a hairline frame */
 .ubar {
-  margin-bottom: 9px;
+  margin-bottom: 10px;
 }
 .ubar:last-child {
   margin-bottom: 0;
@@ -784,26 +960,26 @@ body::after {
   color: var(--text);
 }
 .ubar-track {
-  height: 5px;
-  background: var(--bg-raised);
-  border-radius: 3px;
-  overflow: hidden;
+  height: 8px;
+  border: 1px solid var(--border-bright);
+  background-image: var(--hatch);
 }
 .ubar-fill {
   height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, var(--cyan-dim), var(--cyan));
+  background: var(--cyan);
 }
 .ubar.sys .ubar-fill {
-  background: linear-gradient(90deg, var(--amber-dim), var(--amber));
+  background: var(--amber);
 }
 .ubar.sys .ubar-top .v {
   color: var(--amber-bri);
 }
+
 .drow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
+  gap: 12px;
   padding: 6px 0;
   border-bottom: 1px solid var(--grid);
   font-family: var(--font-mono), monospace;
@@ -817,90 +993,99 @@ body::after {
 }
 .drow .v {
   color: var(--text);
+  text-align: right;
 }
 .drow .v .u {
   color: var(--text-3);
   font-size: 10px;
   margin-left: 3px;
 }
+
+/* caveats: the document's warnings — alert is reserved for these */
 .caveat {
-  background: linear-gradient(180deg, rgba(255, 93, 93, 0.06), rgba(255, 93, 93, 0.02));
-  border: 1px solid rgba(255, 93, 93, 0.3);
-  border-radius: 8px;
-  padding: 13px 14px;
+  background: rgba(255, 93, 93, 0.045);
+  border: 1px solid rgba(255, 93, 93, 0.35);
+  border-left: 3px solid var(--alert);
+  padding: 12px 14px;
   position: relative;
 }
 .caveat::before {
   content: "⚠";
   position: absolute;
-  top: 12px;
+  top: 11px;
   right: 13px;
   color: var(--alert);
-  font-size: 14px;
-  opacity: 0.7;
+  font-size: 13px;
+  opacity: 0.8;
 }
 .caveat .ch {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 9.5px;
-  letter-spacing: 1.8px;
+  letter-spacing: var(--track-label);
+  font-weight: 600;
   color: var(--alert);
   text-transform: uppercase;
   margin-bottom: 8px;
 }
+.caveat .ch::before {
+  counter-increment: sec;
+  content: counter(sec, decimal-leading-zero);
+  font-family: var(--font-mono), monospace;
+  font-weight: 600;
+  margin-right: 8px;
+}
 .caveat p {
-  font-size: 11.5px;
-  line-height: 1.55;
+  font-size: 12px;
+  line-height: 1.6;
   color: var(--text-2);
 }
 .caveat b {
   color: var(--text);
 }
-.valid {
+
+/* validation meter: framed horizontal bar (replaces the v1 radial gauge) */
+.meter-head {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
 }
-.gauge {
-  width: 68px;
-  height: 68px;
-  flex-shrink: 0;
-  position: relative;
-}
-.gauge svg {
-  position: absolute;
-  inset: 0;
-  transform: rotate(-90deg);
-}
-.gauge .gtext {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-.gauge .gtext .n {
-  font-family: var(--font-mono), monospace;
-  font-size: 17px;
-  font-weight: 600;
+.meter-num {
+  font-family: var(--font-label), sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: var(--track-tight);
+  font-variant-numeric: tabular-nums;
   color: var(--cyan);
   line-height: 1;
 }
-.gauge .gtext .l {
-  font-family: var(--font-hud), sans-serif;
-  font-size: 7px;
-  letter-spacing: 1.5px;
+.meter-cap {
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: var(--track-label);
   color: var(--text-3);
+  text-transform: uppercase;
 }
-.valid .vtext {
-  font-size: 11px;
+.meter-track {
+  height: 8px;
+  border: 1px solid var(--border-bright);
+  background-image: var(--hatch);
+  margin-bottom: 11px;
+}
+.meter-fill {
+  height: 100%;
+  background: var(--cyan);
+}
+.vtext {
+  font-size: 11.5px;
   color: var(--text-2);
   line-height: 1.55;
+  margin-top: 10px;
 }
-.valid .vtext b {
+.vtext b {
   color: var(--text);
 }
+
 .brief p {
   font-size: 12px;
   line-height: 1.65;
@@ -943,21 +1128,21 @@ body::after {
   color: var(--text-2);
 }
 .pending-badge {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 9px;
-  letter-spacing: 1.5px;
+  letter-spacing: var(--track-ui);
+  font-weight: 500;
   color: var(--text-3);
   border: 1px solid var(--border-bright);
-  border-radius: 4px;
   padding: 3px 8px;
   text-transform: uppercase;
 }
-/* ===== VALIDATION TIER BADGE (Sprint 7 Stage D) ===== */
+
+/* ===== VALIDATION TIER BADGE ===== */
 .tier-badge {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 9px;
-  letter-spacing: 1.2px;
-  border-radius: 4px;
+  letter-spacing: var(--track-ui);
   padding: 3px 8px;
   text-transform: uppercase;
   font-weight: 600;
@@ -980,12 +1165,12 @@ body::after {
 .marker .lab .tier-badge {
   display: inline-block;
   margin-left: 6px;
-  font-size: 8px;
+  font-size: 8.5px;
   padding: 1px 5px;
 }
 .tier-explainer {
-  margin: 8px 0 0;
-  font-size: 11.5px;
+  margin: 10px 0 0;
+  font-size: 12px;
   line-height: 1.5;
   color: var(--text-2);
   border-left: 2px solid var(--border-bright);
@@ -994,18 +1179,20 @@ body::after {
 .prov-localization {
   color: var(--text-2);
 }
+
 /* ===== SOURCE ATTRIBUTION (Sprint 4 artifact, rendered verbatim) ===== */
 .attr-headline {
-  background: linear-gradient(180deg, rgba(53, 214, 195, 0.08), rgba(53, 214, 195, 0.02));
-  border: 1px solid var(--cyan-dim);
-  border-radius: 8px;
+  background: rgba(53, 214, 195, 0.06);
+  border: 1px solid rgba(53, 214, 195, 0.3);
+  border-left: 3px solid var(--cyan);
   padding: 12px 13px;
   margin-bottom: 12px;
 }
 .attr-headline .ch {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 9.5px;
-  letter-spacing: 1.8px;
+  letter-spacing: var(--track-label);
+  font-weight: 600;
   color: var(--cyan);
   text-transform: uppercase;
   margin-bottom: 7px;
@@ -1020,12 +1207,12 @@ body::after {
   color: var(--text);
   font-weight: 500;
 }
+/* the scoring disclaimer is honesty text — set in the prose face at full
+   legibility, never italic mono fine-print */
 .attr-disclaimer {
-  font-family: var(--font-mono), monospace;
-  font-size: 10px;
-  line-height: 1.5;
-  color: var(--text-3);
-  font-style: italic;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--text-2);
   margin-bottom: 12px;
 }
 .attr-disclaimer.small {
@@ -1033,8 +1220,7 @@ body::after {
 }
 .attr-card {
   border: 1px solid var(--border);
-  border-radius: 7px;
-  background: var(--bg-base);
+  background: var(--bg-panel);
   margin-bottom: 9px;
   overflow: hidden;
 }
@@ -1051,6 +1237,7 @@ body::after {
   border: 0;
   cursor: pointer;
   text-align: left;
+  transition: background var(--t-fast);
 }
 .attr-card-head:hover {
   background: var(--bg-raised);
@@ -1064,18 +1251,18 @@ body::after {
 }
 .attr-desc {
   flex: 1;
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 11px;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.02em;
+  font-weight: 500;
   color: var(--text);
   line-height: 1.3;
 }
 .attr-tier {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 8.5px;
-  letter-spacing: 1px;
+  letter-spacing: var(--track-ui);
   padding: 3px 7px;
-  border-radius: 4px;
   white-space: nowrap;
   flex-shrink: 0;
   text-transform: uppercase;
@@ -1112,9 +1299,9 @@ body::after {
 }
 .attr-rationale {
   font-family: var(--font-mono), monospace;
-  font-size: 10px;
+  font-size: 10.5px;
   line-height: 1.5;
-  color: var(--text-3);
+  color: var(--text-2);
   padding: 0 11px 10px;
 }
 .attr-body {
@@ -1122,9 +1309,9 @@ body::after {
   border-top: 1px solid var(--grid);
 }
 .attr-sub {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 9px;
-  letter-spacing: 1.5px;
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--text-3);
   margin: 13px 0 7px;
@@ -1156,15 +1343,13 @@ body::after {
   color: var(--text);
 }
 .attr-comp-track {
-  height: 4px;
-  background: var(--bg-raised);
-  border-radius: 2px;
-  overflow: hidden;
+  height: 5px;
+  border: 1px solid var(--border-bright);
+  background-image: var(--hatch);
 }
 .attr-comp-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--cyan-dim), var(--cyan));
-  border-radius: 2px;
+  background: var(--cyan);
 }
 .attr-comp-rationale {
   font-size: 10.5px;
@@ -1183,9 +1368,9 @@ body::after {
   padding-left: 9px;
 }
 .attr-ev-kind {
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 8.5px;
-  letter-spacing: 1px;
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--cyan);
   margin-bottom: 3px;
@@ -1207,19 +1392,18 @@ body::after {
 .attr-caveat {
   margin-top: 6px;
   padding: 8px 10px;
-  background: linear-gradient(180deg, rgba(255, 157, 60, 0.1), rgba(255, 157, 60, 0.03));
+  background: rgba(255, 157, 60, 0.07);
   border: 1px solid rgba(255, 157, 60, 0.35);
   border-left: 3px solid var(--amber);
-  border-radius: 5px;
   font-size: 10.5px;
   line-height: 1.5;
   color: var(--text-2);
 }
 .attr-caveat-tag {
   display: block;
-  font-family: var(--font-hud), sans-serif;
+  font-family: var(--font-label), sans-serif;
   font-size: 8.5px;
-  letter-spacing: 1.2px;
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--amber-bri);
   margin-bottom: 4px;
@@ -1250,11 +1434,29 @@ body::after {
   font-style: italic;
 }
 
+/* decorative motion only — functional transitions (panel/camera sync) are
+   kept, since the Cesium camera flight cannot be disabled symmetrically */
+@media (prefers-reduced-motion: reduce) {
+  .marker .ring {
+    animation: none;
+    opacity: 0.35;
+  }
+  .loading .spin {
+    animation-duration: 3s;
+  }
+}
+
 /* Cesium chrome: we drive our own HUD. Keep the credit (imagery attribution)
-   but make it subtle; hide the default toolbar/selection widgets. */
+   but make it subtle; when the inspector is open, shift it left of the panel
+   so it stays visible (legally required attribution is never covered). */
 .cesium-viewer-bottom {
-  right: 400px;
-  bottom: 2px;
+  right: 12px;
+  bottom: 4px;
+  /* tracks the inspector slide so the credit never hides behind the panel */
+  transition: right var(--fly-duration, 1.5s) var(--fly-easing, ease);
+}
+.stage:has(.detail.mounted) .cesium-viewer-bottom {
+  right: calc(var(--panel-width, 470px) + 12px);
 }
 .cesium-widget-credits {
   font-size: 9px !important;

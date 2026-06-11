@@ -31,18 +31,21 @@ CI enforces `ruff check .` == 0 from Sprint 8 onward, which retires the
 - **1.46× vs 1.66× MF over-amplitude residual** — a hypothesis (effective-layer /
   flat-continuum), not an established cause; awaits deferred physics refinements.
   See `docs/science/sprint6_hitran_independence.md` §8–9.
-- **Topbar "Acquired" readout (apps/web)** — shows the FIRST active event's
-  acquisition timestamp as a global HUD field; with two live events this is
-  ambiguous. Per-event acquisition is correct in each inspector. Cosmetic,
-  non-scientific; logged at the Sprint 7 Stage D review. **In scope for Sprint 8
-  Item 4.**
-- **Comparative-claims guard gap (attribution)** — Sprint 7's
-  `test_comparative_claims_are_truthful` asserts comparative spatial claims against
-  the computed candidate table for the **Permian H1 facility path only**. There is
-  no general guard parsing comparative language ("nearest", "closer than", "largest")
-  across ALL hypothesis rationales/events, so a false comparative in a future event's
-  prose would still need human gate review to catch. **In scope for Sprint 8
-  Item 4** (cheap version, or formally re-logged as a permanent human-gate item).
-- **No CI** — the test suite + guard suites run locally only. **In scope for
-  Sprint 8 Item 2** (GitHub Actions: ruff 0 + pytest with visible deselection +
-  guard suite + web typecheck/build).
+- ~~**Topbar "Acquired" readout (apps/web)**~~ — **RETIRED (Sprint 8 Item 4)**:
+  the chip is now per-selected-event (renders only while an event is selected,
+  with that event's own acquisition timestamp); the ambiguous global
+  "first active event" readout is gone.
+- **Comparative-claims guard** — **generalized (Sprint 8 Item 4)**:
+  `packages/causal/tests/test_comparative_claims.py` parses proximity
+  superlatives (nearest/closest/closer/farther/farthest) across ALL events'
+  committed hypotheses and verifies them against each artifact's computed
+  `nearest_by_*` table: unverifiable proximity claims fail, candidates must be
+  nearest on a computed axis, distance-closer wells must be disclosed, and the
+  Stage-C false phrasing is banned verbatim. **Remaining human-gate scope
+  (permanent, by design):** size/count superlatives ("largest", "most active")
+  and exclusivity claims ("the only…") need entity linking that is not cheap —
+  they stay on the gate-review checklist, documented in the guard's docstring.
+- ~~**No CI**~~ — **RETIRED (Sprint 8 Item 2)**: `.github/workflows/ci.yml`
+  enforces ruff 0 + full pytest (deselection asserted visible) + guard-suite
+  listing + web typecheck/build on every push/PR to main. (Green-on-a-real-push
+  confirmation happens at the human `git push`, per the standing rule.)

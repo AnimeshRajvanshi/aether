@@ -124,10 +124,14 @@ export default function Dashboard() {
   const detailShown = phase === "flying" || phase === "detail";
   const activeEvents = events.filter((e) => e.status === "active");
   const pendingCount = events.filter((e) => e.status === "pending").length;
-  // Acquisition timestamp of the (single) reconstructed event — the static
-  // historical overpass this app displays. From /api/events, which reads it from
-  // stage_a_report.json. There is no live feed; nothing here is real-time.
-  const acquisition = activeEvents[0]?.acquisition_utc ?? null;
+  // Acquisition timestamp of the SELECTED event's historical overpass (from
+  // /api/events, which reads stage_a_report.json). With two live events a
+  // global "first event" readout is ambiguous, so the chip only renders while
+  // an event is selected. There is no live feed; nothing here is real-time.
+  const selectedSummary = detail
+    ? events.find((e) => e.event_id === detail.event_id) ?? null
+    : null;
+  const acquisition = selectedSummary?.acquisition_utc ?? null;
 
   return (
     <div className="app">

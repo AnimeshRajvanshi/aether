@@ -96,6 +96,46 @@ def test_normalize_longitude_for_0_360_grid() -> None:
     assert out.grid_lon == pytest.approx(-104.5, abs=0.01)
 
 
+def _make_synthetic_surface(
+    sp_field: float = 90000.0,
+    t2m_field: float = 305.0,
+    lat_grid=(31.5, 32.0, 32.5, 33.0),
+    lon_grid=(-105.0, -104.5, -104.0, -103.5),
+) -> xr.Dataset:
+    """Tiny synthetic ERA5 dataset with constant surface pressure + 2 m temperature."""
+    times = np.array(
+        ["2022-08-26T17:00:00", "2022-08-26T18:00:00", "2022-08-26T19:00:00"],
+        dtype="datetime64[ns]",
+    )
+    shape = (times.size, len(lat_grid), len(lon_grid))
+    return xr.Dataset(
+        data_vars={
+            era5.ARCO_ERA5_VAR_SP: (
+                ("time", "latitude", "longitude"),
+                np.full(shape, sp_field, dtype=np.float32),
+            ),
+            era5.ARCO_ERA5_VAR_T2M: (
+                ("time", "latitude", "longitude"),
+                np.full(shape, t2m_field, dtype=np.float32),
+            ),
+        },
+        coords={"time": times, "latitude": np.array(lat_grid), "longitude": np.array(lon_grid)},
+    )
+
+
+def test_get_surface_state_uniform_field_returns_field_value() -> None:
+    ds = _make_synthetic_surface(sp_field=89500.0, t2m_field=306.0)
+    out = era5.get_surface_state_at_point(
+        lat=32.25, lon=-104.15, utc=datetime(2022, 8, 26, 17, 46, 42), dataset=ds
+    )
+    assert out.surface_pressure_pa == pytest.approx(89500.0, abs=1e-3)
+    assert out.temperature_2m_k == pytest.approx(306.0, abs=1e-3)
+    assert abs(out.grid_lat - 32.25) <= 0.5
+    assert abs(out.grid_lon - (-104.15)) <= 0.5
+    # 17:46 is 14 min from 18:00 (nearest) → ~0.23 h.
+    assert 0.2 < out.hour_distance_h < 0.3
+
+
 def test_constants_are_public_arco_uri() -> None:
     """The dataset URI points at the anonymous ARCO-ERA5 GCS bucket."""
     assert era5.ARCO_ERA5_GCS_URI.startswith("gs://gcp-public-data-arco-era5/")

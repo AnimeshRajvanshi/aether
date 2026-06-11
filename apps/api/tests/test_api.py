@@ -188,6 +188,32 @@ def test_unknown_event_404() -> None:
     assert client.get("/api/events/does_not_exist").status_code == 404
 
 
+def test_scope_caveat_context_only_for_press_release_reference() -> None:
+    """Sprint 7 generality: an event whose only reference is a press-release figure
+    (uncertainty=null, no n_sources — e.g. Permian's 18.3 t/hr) yields a CONTEXT-ONLY
+    scope block, NOT a Thorpe cluster-fraction template with swapped numbers."""
+    from aether_api import loaders
+    from aether_eval.loader import load_event_file
+
+    event = load_event_file(config.benchmark_yaml(PERMIAN))
+    meas = event.known_measurements["emission_rate_metric_tonnes_per_hr"]
+    assert meas.uncertainty is None  # the precondition that drives context_only
+
+    scope = loaders._scope_caveat(event, meas, ours_central=0.85, nasa_central=0.88)
+    assert scope.kind == "context_only"
+    assert scope.reference_total_t_hr == meas.value  # 18.3
+    # No cluster fraction is asserted for a context-only reference.
+    assert scope.n_sources is None
+    assert scope.fraction_low_pct is None and scope.fraction_high_pct is None
+    # The text must refuse the comparison on the honest grounds (no obs date, intermittency).
+    low = scope.text.lower()
+    assert "press-release" in low
+    assert "no observation date" in low or "no overpass" in low or "names no overpass" in low
+    assert "intermitten" in low
+    # It must NOT borrow the Thorpe cluster framing.
+    assert "thorpe" not in low and "cluster" not in low
+
+
 def test_data_root_override(tmp_path: Path) -> None:
     # AETHER_DATA_ROOT must redirect file reads (used for deployment/tests).
     assert config.data_root() == Path(config.__file__).resolve().parents[3]

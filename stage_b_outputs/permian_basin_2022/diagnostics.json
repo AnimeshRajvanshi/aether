@@ -1,0 +1,12 @@
+{
+  "background_mean_ppm_m": -0.30800766109114325,
+  "background_std_ppm_m": 289.11251988248074,
+  "background_p99_ppm_m": 697.3090661465294,
+  "plume_footprint_mean_ours_ppm_m": 354.54238450677127,
+  "plume_footprint_max_ours_ppm_m": 1159.8129534126485,
+  "plume_footprint_mean_nasa_ppm_m": 368.8964010099085,
+  "plume_footprint_pixel_count": 123,
+  "plume_to_background_contrast": 1.2263128025409853,
+  "pixelwise_pearson_on_footprint_ours_vs_nasa": 0.13680060614983602,
+  "note": "Internal-consistency sanity. background std is the scene-clutter noise level; contrast = mean(ours over footprint)/std(background). pixelwise Pearson on the footprint is LOW here even though integrated magnitudes agree \u2014 the plume is weak relative to clutter, so pixel-level co-registration is poor."
+}

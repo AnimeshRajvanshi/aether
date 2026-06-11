@@ -42,6 +42,8 @@ ARCO_ERA5_GCS_URI: str = (
 )
 ARCO_ERA5_VAR_U10: str = "10m_u_component_of_wind"
 ARCO_ERA5_VAR_V10: str = "10m_v_component_of_wind"
+ARCO_ERA5_VAR_SP: str = "surface_pressure"  # Pa
+ARCO_ERA5_VAR_T2M: str = "2m_temperature"  # K
 
 DEFAULT_CACHE_DIR = Path.home() / ".aether_cache" / "era5"
 
@@ -159,6 +161,90 @@ def get_wind_at_point(
         u_ms=u_interp,
         v_ms=v_interp,
         speed_ms=float(np.hypot(u_interp, v_interp)),
+        source=ARCO_ERA5_GCS_URI,
+        grid_lat=grid_lat,
+        grid_lon=grid_lon,
+        requested_lat=lat,
+        requested_lon=lon,
+        requested_utc=utc,
+        nearest_hour_utc=nearest_utc,
+        hour_distance_h=hour_distance_h,
+    )
+
+
+@dataclass(frozen=True)
+class SurfaceStateAtOverpass:
+    """ERA5 surface pressure + 2 m temperature at a point, time-interpolated.
+
+    Used to set the near-surface atmospheric state (``p``, ``T``) that the
+    ppm·m → kg/m² conversion and the HITRAN k generation both need. Sourcing
+    these from the same reanalysis as the wind keeps the scene state internally
+    consistent and — crucially for events at elevation (e.g. the Permian Basin
+    at ~1 km) — avoids a sea-level pressure default that would bias n_air, and
+    hence IME and Q, by ~10%.
+    """
+
+    surface_pressure_pa: float
+    temperature_2m_k: float
+    source: str
+    grid_lat: float
+    grid_lon: float
+    requested_lat: float
+    requested_lon: float
+    requested_utc: datetime
+    nearest_hour_utc: datetime
+    hour_distance_h: float
+
+
+def get_surface_state_at_point(
+    lat: float,
+    lon: float,
+    utc: datetime,
+    dataset: xr.Dataset | None = None,
+) -> SurfaceStateAtOverpass:
+    """Return ERA5 surface pressure + 2 m temperature at a point + time.
+
+    Same nearest-cell + 2-hour linear-time-interpolation strategy as
+    :func:`get_wind_at_point`; see that function for the rationale. ``dataset``
+    is injectable so tests can supply a synthetic in-memory store.
+    """
+    if dataset is None:
+        dataset = open_arco_era5_wind()
+
+    era5_lon = _normalize_longitude_for_grid(lon, dataset)
+    sp_var = dataset[ARCO_ERA5_VAR_SP].sel(latitude=lat, longitude=era5_lon, method="nearest")
+    t2m_var = dataset[ARCO_ERA5_VAR_T2M].sel(latitude=lat, longitude=era5_lon, method="nearest")
+
+    grid_lat = float(sp_var.latitude.values)
+    grid_lon_raw = float(sp_var.longitude.values)
+    grid_lon = grid_lon_raw if grid_lon_raw <= 180.0 else grid_lon_raw - 360.0
+
+    requested_np = np.datetime64(utc.replace(tzinfo=None))
+    window = sp_var.sel(time=slice(
+        requested_np - np.timedelta64(1, "h"),
+        requested_np + np.timedelta64(1, "h"),
+    ))
+    if window.time.size == 0:
+        raise ValueError(
+            f"No ERA5 samples within ±1 h of {utc.isoformat()} at "
+            f"({grid_lat}, {grid_lon}); check date range coverage."
+        )
+
+    sp = float(sp_var.interp(time=requested_np, kwargs={"fill_value": "extrapolate"}).values)
+    t2m = float(t2m_var.interp(time=requested_np, kwargs={"fill_value": "extrapolate"}).values)
+
+    nearest_time_np = sp_var.sel(time=requested_np, method="nearest").time.values
+    nearest_utc = datetime.fromtimestamp(
+        (nearest_time_np - np.datetime64("1970-01-01")) / np.timedelta64(1, "s"),
+        tz=UTC,
+    )
+    hour_distance_h = abs(
+        (nearest_time_np - requested_np) / np.timedelta64(1, "s")
+    ) / 3600.0
+
+    return SurfaceStateAtOverpass(
+        surface_pressure_pa=sp,
+        temperature_2m_k=t2m,
         source=ARCO_ERA5_GCS_URI,
         grid_lat=grid_lat,
         grid_lon=grid_lon,

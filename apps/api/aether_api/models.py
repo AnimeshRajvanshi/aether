@@ -111,13 +111,26 @@ class Validation(_Base):
 
 
 class ScopeCaveat(_Base):
-    """The red 'Read Before Citing' block — single-plume vs cluster total."""
+    """The 'Read Before Citing' block.
 
+    Two kinds, set by the reference's nature (Sprint 7 generality — the block is
+    event-specific CONTENT, never a Thorpe template with swapped numbers):
+
+    - ``cluster_fraction``: the reference is a peer-reviewed multi-source cluster
+      total with an uncertainty (e.g. Goturdepe / Thorpe 2023). Single-plume vs
+      cluster fraction is meaningful, so the numeric fields are populated.
+    - ``context_only``: the reference is a press-release figure with no method,
+      date, or uncertainty (e.g. Permian / 18.3 t/hr). There is NO cluster and no
+      meaningful fraction; the numeric fields are null and the text explains why
+      the figure is context, not a comparison target.
+    """
+
+    kind: str = "cluster_fraction"
     reference_total_t_hr: float
-    reference_uncertainty_t_hr: float
-    n_sources: int
-    fraction_low_pct: float
-    fraction_high_pct: float
+    reference_uncertainty_t_hr: float | None = None
+    n_sources: int | None = None
+    fraction_low_pct: float | None = None
+    fraction_high_pct: float | None = None
     text: str
 
 

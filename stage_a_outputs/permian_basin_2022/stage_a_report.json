@@ -1,0 +1,53 @@
+{
+  "started_utc": "2026-06-11T07:12:42.317945+00:00",
+  "finished_utc": "2026-06-11T07:12:59.986861+00:00",
+  "event_id": "permian_basin_2022",
+  "acquisition_utc": "2022-08-26T17:46:42Z",
+  "l1b_granule_ur": "EMIT_L1B_RAD_001_20220826T174642_2223812_024",
+  "l2a_mask_granule_ur": "EMIT_L2A_MASK_002_20220826T174642_2223812_024",
+  "l2b_ch4_granule_ur": "EMIT_L2B_CH4ENH_002_20220826T174642_2223812_024",
+  "validation_tier": "CROSS-CHECKED",
+  "target_spectrum_source": "Independent HITRAN2020 line-by-line (HAPI) \u2014 saturation-aware unit absorption via finite-enhancement log-radiance regression (Thompson/EMIT-ATBD method), generated from this granule's own geometry/SRF/ERA5 surface state. No NASA per-granule target spectrum exists for this granule, so there is NO k-shape cross-check (unlike Goturdepe's r=0.993). See stage_a_outputs/permian_basin_2022/hitran_k/.",
+  "target_spectrum_local_path": "/Users/animeshrajvanshi/Documents/aether/stage_a_outputs/permian_basin_2022/hitran_k/hitran_k_sat.json",
+  "k_method": "HITRAN2020 line-by-line (HAPI) Voigt; saturation-aware unit absorption via finite-enhancement log-radiance regression (Thompson/EMIT-ATBD method), Gaussian-SRF convolved to EMIT",
+  "k_nasa_target_used": false,
+  "k_shape_pearson_r_vs_nasa": null,
+  "k_shape_crosscheck_available": false,
+  "k_provenance_ref": "stage_a_outputs/permian_basin_2022/hitran_k/hitran_k_sat_provenance.json",
+  "ppm_scaling_factor_forward": 1.0,
+  "geometry_solar_zenith_deg": 27.564537686035155,
+  "geometry_view_zenith_deg": 9.607477275006197,
+  "scene_mean_elevation_m": 1086.3567230840677,
+  "era5_surface_pressure_pa": 90896.74899739583,
+  "era5_2m_temperature_k": 303.5040151977539,
+  "era5_surface_grid_lat": 32.25,
+  "era5_surface_grid_lon": -104.0,
+  "radiance_shape": [
+    1280,
+    1242,
+    285
+  ],
+  "bands_used": 49,
+  "bad_pixel_fraction": 0.9223763335346216,
+  "nasa_l2b_geotiff": "/Users/animeshrajvanshi/.aether_cache/emit_l2b_ch4/EMIT_L2B_CH4ENH_002_20220826T174642_2223812_024/EMIT_L2B_CH4ENH_002_20220826T174642_2223812_024.tif",
+  "plume_bbox": {
+    "min_lon": -104.104,
+    "min_lat": 32.346,
+    "max_lon": -104.07,
+    "max_lat": 32.396
+  },
+  "pearson_full_scene": 0.5269452466425109,
+  "pearson_in_bbox": 0.5184744391502418,
+  "pearson_in_bbox_strong_signal": 0.03621228603511711,
+  "n_pixels_compared_full": 162559,
+  "n_pixels_compared_bbox": 496,
+  "shrinkage_alpha_min": 1e-09,
+  "shrinkage_alpha_median": 1e-09,
+  "shrinkage_alpha_p95": 1e-09,
+  "shrinkage_alpha_max": 1e-09,
+  "shrinkage_alpha_n_columns": 814,
+  "retrieval": "v2 saturation-aware HITRAN k (per-granule; Sprint 7 shared runner)",
+  "notes": [
+    "Independent per-granule retrieval. NASA file never read in k generation. Forward scale 1.0; nothing reverse-fit to any flux."
+  ]
+}

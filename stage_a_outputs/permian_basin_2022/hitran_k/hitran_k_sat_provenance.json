@@ -1,0 +1,56 @@
+{
+  "method": "HITRAN2020 line-by-line (HAPI) Voigt; saturation-aware unit absorption via finite-enhancement log-radiance regression (Thompson/EMIT-ATBD method), Gaussian-SRF convolved to EMIT",
+  "hitran2020_doi": "10.1016/j.jqsrt.2021.107949",
+  "hapi_doi": "10.1016/j.jqsrt.2016.03.005",
+  "line_table": "CH4_win",
+  "isotopologues": [
+    [
+      6,
+      1
+    ],
+    [
+      6,
+      2
+    ],
+    [
+      6,
+      3
+    ],
+    [
+      6,
+      4
+    ]
+  ],
+  "wavenumber_range_cm": [
+    3951.231448054553,
+    4739.457182966776
+  ],
+  "wavenumber_step_cm": 0.01,
+  "solar_zenith_deg": 27.564537686035155,
+  "view_zenith_deg": 9.607477275006197,
+  "air_mass_factor": 2.142269361813486,
+  "surface_pressure_pa": 90896.74899739583,
+  "surface_temperature_k": 303.5040151977539,
+  "excess_ch4_column_per_ppmm_molec_cm2": 2169205150591007.2,
+  "ch4_background_ppm": 1.85,
+  "dry_air_column_molec_cm2": 1.9271434395197493e+25,
+  "background_ch4_column_molec_cm2": 3.5652153631115362e+19,
+  "enhancement_ladder_ppm_m": [
+    0.0,
+    10000.0
+  ],
+  "enhancement_ladder_n": 21,
+  "background_note": "effective surface-sigma single layer (documented approximation)",
+  "continuum_note": "flat (within-band albedo/H2O shape is a deferred refinement)",
+  "n_emit_bands": 285,
+  "n_in_window_bands": 52,
+  "window_nm": [
+    2137.0,
+    2493.0
+  ],
+  "nasa_target_used": false,
+  "event_id": "permian_basin_2022",
+  "l1b_granule_ur": "EMIT_L1B_RAD_001_20220826T174642_2223812_024",
+  "era5_surface_pressure_source": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+  "nasa_target_shape_crosscheck_available": false
+}

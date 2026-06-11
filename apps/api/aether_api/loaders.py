@@ -71,9 +71,72 @@ def _read_json(path: Path) -> dict[str, Any]:
     return data
 
 
+def _is_active(event_id: str) -> bool:
+    """An event is ACTIVE (rendered live) only when BOTH its quantification and its
+    UI render assets are committed.
+
+    Sprint 7 generality fix: activation was previously gated on q_estimate.json
+    alone — a Goturdepe-shaped assumption. Permian's Stage B quantification can
+    land in stage_b_outputs/ while the event is still gated behind Stage D (UI
+    integration), which is what produces the assets/<id>/bounds.json render set.
+    Until those assets exist the event stays an honest PENDING.
+    """
+    q_path = config.stage_b_dir(event_id) / "q_estimate.json"
+    bounds_path = config.assets_dir(event_id) / "bounds.json"
+    return q_path.exists() and bounds_path.exists()
+
+
 def _emission_measurement(event: BenchmarkEvent) -> Measurement | None:
     """The reference emission-rate measurement (cluster total) from the YAML."""
     return event.known_measurements.get("emission_rate_metric_tonnes_per_hr")
+
+
+def _scope_caveat(
+    event: BenchmarkEvent, meas: Measurement, ours_central: float, nasa_central: float
+) -> ScopeCaveat:
+    """Build the event-specific 'Read Before Citing' block.
+
+    Sprint 7 generality: the block is CONTENT keyed to what the reference IS, not
+    a Thorpe template with swapped numbers. A peer-reviewed multi-source cluster
+    total (uncertainty + n_sources present) yields a single-plume-vs-cluster
+    FRACTION; a press-release figure with no method/uncertainty yields a
+    CONTEXT-ONLY block that refuses the comparison.
+    """
+    ref_total = meas.value
+    if meas.uncertainty is not None and meas.n_sources:
+        # Cluster-fraction (e.g. Goturdepe / Thorpe 2023). Text + numerics unchanged.
+        n_sources = meas.n_sources
+        frac_low = nasa_central / ref_total * 100.0
+        frac_high = ours_central / ref_total * 100.0
+        return ScopeCaveat(
+            kind="cluster_fraction",
+            reference_total_t_hr=ref_total,
+            reference_uncertainty_t_hr=meas.uncertainty,
+            n_sources=n_sources,
+            fraction_low_pct=frac_low,
+            fraction_high_pct=frac_high,
+            text=(
+                f"This is one source-connected plume. Thorpe et al. 2023 report "
+                f"{ref_total:g} ± {meas.uncertainty:g} t/hr for the full {n_sources}-source "
+                f"cluster. A single-plume estimate is not comparable to the cluster total — "
+                f"expected ≈{round(frac_low)}–{round(frac_high)}% of it."
+            ),
+        )
+    # Context-only (e.g. Permian / 18.3 t/hr press release). No cluster, no fraction.
+    return ScopeCaveat(
+        kind="context_only",
+        reference_total_t_hr=ref_total,
+        text=(
+            f"The only published figure for this event is {ref_total:g} t/hr — a "
+            f"press-release value with no observation date, method, or uncertainty. It "
+            f"names no overpass, so its correspondence to THIS scene is inferred, not "
+            f"established, and super-emitter intermittency makes a same-site / "
+            f"different-day comparison meaningless. It is CONTEXT for the site, not a "
+            f"validation target for this retrieval. Our estimate ≈{ours_central:.1f} t/hr "
+            f"is cross-checked against NASA's L2B over the same footprint (see "
+            f"validation), not against this figure."
+        ),
+    )
 
 
 def _primary_sensor(event: BenchmarkEvent) -> tuple[str, str]:
@@ -97,10 +160,9 @@ def _summary(event_id: str) -> EventSummary:
     event = load_event_file(config.benchmark_yaml(event_id))
     disp = _DISPLAY[event_id]
     sensor_name, _ = _primary_sensor(event)
-    q_path = config.stage_b_dir(event_id) / "q_estimate.json"
 
-    if q_path.exists():
-        q = _read_json(q_path)
+    if _is_active(event_id):
+        q = _read_json(config.stage_b_dir(event_id) / "q_estimate.json")
         stage_a = _read_json(config.stage_a_dir(event_id) / "stage_a_report.json")
         # Marker sits on the real plume centroid; headline is the OURS-CAL rate.
         return EventSummary(
@@ -154,8 +216,7 @@ def get_event_detail(event_id: str) -> EventDetail | None:
     if event_id not in EVENT_IDS:
         return None
     event = load_event_file(config.benchmark_yaml(event_id))
-    q_path = config.stage_b_dir(event_id) / "q_estimate.json"
-    if q_path.exists():
+    if _is_active(event_id):
         return _active_detail(event_id, event)
     return _pending_detail(event_id, event)
 
@@ -181,7 +242,9 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
     disp = _DISPLAY[event_id]
     meas = _emission_measurement(event)
     assert meas is not None, f"{event_id} is active but has no reference emission measurement"
-    assert meas.uncertainty is not None, f"{event_id} reference measurement lacks uncertainty"
+    # NOTE: a reference WITHOUT an uncertainty (e.g. Permian's press-release 18.3 t/hr)
+    # is valid — it yields a context_only scope block, not a cluster fraction. The
+    # earlier `assert meas.uncertainty is not None` was a Goturdepe-shaped assumption.
 
     bias = q["enhancement_bias_factor"]
     sigma = q["q_total_fractional_sigma"]
@@ -292,24 +355,9 @@ def _active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
         ),
     )
 
-    # Scope caveat: single plume vs the cluster total. Fractions are real ratios.
+    scope = _scope_caveat(event, meas, ours_central, nasa_central)
     ref_total = meas.value
     n_sources = meas.n_sources or 0
-    frac_low = nasa_central / ref_total * 100.0
-    frac_high = ours_central / ref_total * 100.0
-    scope = ScopeCaveat(
-        reference_total_t_hr=ref_total,
-        reference_uncertainty_t_hr=meas.uncertainty or 0.0,
-        n_sources=n_sources,
-        fraction_low_pct=frac_low,
-        fraction_high_pct=frac_high,
-        text=(
-            f"This is one source-connected plume. Thorpe et al. 2023 report "
-            f"{ref_total:g} ± {meas.uncertainty:g} t/hr for the full {n_sources}-source "
-            f"cluster. A single-plume estimate is not comparable to the cluster total — "
-            f"expected ≈{round(frac_low)}–{round(frac_high)}% of it."
-        ),
-    )
 
     provenance = Provenance(
         acquisition_utc=a["acquisition_utc"],

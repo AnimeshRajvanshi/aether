@@ -30,16 +30,24 @@ date_range:
   start: "2022-08-26T17:46:00Z"
   end: "2022-08-26T17:48:00Z"
 
-# Location approximately 10 miles southeast of Carlsbad, NM. The plume extended
-# ~2 miles (3.3 km) northward from the source per NASA's October 2022 release.
+# Location + bbox pinned to NASA's published L2B CH4PLM plume complex
+# **000524** for this granule (CMR GPolygon footprint: lon [-104.0997,
+# -104.0742], lat [32.3504, 32.3916]); peak enhancement 5631 ppm·m at
+# (32.357 N, -104.092 E) in the L2B CH4ENH raster. This is the iconic ~3.3 km
+# press-release plume. (Sprint 7 Stage B correction: the earlier values here —
+# location -104.15/32.25, bbox -104.20..-104.10/32.20..32.30 — were an
+# approximate "10 mi SE of Carlsbad" guess that did NOT overlap the actual
+# complex; replaced with the authoritative complex-000524 footprint. The
+# secondary complex 000525 sits at ~(32.243 N, -104.054 E) and is not the
+# press-release plume.)
 location:
-  lon: -104.15
-  lat: 32.25
+  lon: -104.092
+  lat: 32.357
 bbox:
-  min_lon: -104.20
-  min_lat: 32.20
-  max_lon: -104.10
-  max_lat: 32.30
+  min_lon: -104.104
+  min_lat: 32.346
+  max_lon: -104.070
+  max_lat: 32.396
 
 known_measurements:
   emission_rate_metric_tonnes_per_hr:

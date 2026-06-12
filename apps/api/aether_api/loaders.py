@@ -287,6 +287,20 @@ def _summary(event_id: str) -> EventSummary:
 # --------------------------------------------------------------------------- #
 # Source attribution (Sprint 4 artifact)
 # --------------------------------------------------------------------------- #
+def hypotheses_path(event_id: str) -> Path | None:
+    """Committed attribution artifact path IF the event is live and it exists.
+
+    Sprint 10 raw-streaming split: the endpoint streams these exact bytes
+    (byte-identity through the stack); ``get_hypotheses`` keeps the schema
+    validation, which now runs at app startup + in the guard suite instead of
+    per-request.
+    """
+    if not _is_active(event_id):
+        return None
+    path = config.hypotheses_json(event_id)
+    return path if path.exists() else None
+
+
 def get_hypotheses(event_id: str) -> HypothesisSet | None:
     """Load + validate the committed attribution artifact, or None if absent.
 
@@ -299,10 +313,8 @@ def get_hypotheses(event_id: str) -> HypothesisSet | None:
     land the event is PENDING and the API surfaces no hypotheses — never fabricated,
     and not prematurely exposed ahead of the UI gate.
     """
-    if not _is_active(event_id):
-        return None
-    path = config.hypotheses_json(event_id)
-    if not path.exists():
+    path = hypotheses_path(event_id)
+    if path is None:
         return None
     return HypothesisSet.model_validate_json(path.read_text())
 
@@ -670,12 +682,18 @@ def factor_hypotheses_json(event_id: str) -> Path:
     return config.data_root() / "attribution_outputs" / event_id / "factor_hypotheses.json"
 
 
-def get_factor_hypotheses(event_id: str) -> FactorHypothesisSet | None:
-    """Committed Stage C factor artifact, served verbatim once the event is live."""
+def factor_hypotheses_path(event_id: str) -> Path | None:
+    """Committed Stage C factor artifact path IF the event is live and it exists."""
     if not _is_active(event_id):
         return None
     path = factor_hypotheses_json(event_id)
-    if not path.exists():
+    return path if path.exists() else None
+
+
+def get_factor_hypotheses(event_id: str) -> FactorHypothesisSet | None:
+    """Committed Stage C factor artifact, served verbatim once the event is live."""
+    path = factor_hypotheses_path(event_id)
+    if path is None:
         return None
     return FactorHypothesisSet.model_validate_json(path.read_text())
 

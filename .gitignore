@@ -67,10 +67,12 @@ node_modules/
 .AppleDouble
 .LSOverride
 
-# Environment / secrets
+# Environment / secrets — every .env variant is ignored (Sprint 10 F5: the old
+# patterns missed non-.local names like .env.production); the committed schema
+# template is the single exception.
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 *.pem
 
 # Data / caches (we never check in raw scenes)

@@ -13,7 +13,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type * as CesiumNS from "cesium";
-import type { EventSummary, RasterBounds, RetrievalLayer } from "@/lib/types";
+import type { EventSummary, RasterBounds } from "@/lib/types";
 import { maskGeoJsonUrl, rasterUrl } from "@/lib/api";
 import { FLY_DURATION_S } from "@/lib/motion";
 
@@ -33,8 +33,10 @@ interface Props {
   events: EventSummary[];
   body: "earth" | "moon" | "mars";
   flyTarget: FlyTarget | null;
-  raster: { eventId: string; bounds: RasterBounds } | null;
-  layer: RetrievalLayer;
+  // hasMask: methane events drape a plume-mask outline; area (heat) events get
+  // a bbox outline instead (there is no mask for an area phenomenon).
+  raster: { eventId: string; bounds: RasterBounds; hasMask: boolean } | null;
+  layer: string;
   onSelect: (ev: EventSummary) => void;
   onArrived: () => void;
   onReturned: () => void;
@@ -257,6 +259,7 @@ export default function CesiumGlobe({
         viewer.dataSources.remove(maskDsRef.current, true);
         maskDsRef.current = null;
       }
+      viewer.entities.removeById("area-outline");
       if (!raster) {
         if (baseLayerRef.current) baseLayerRef.current.brightness = 1.0;
         return;
@@ -279,15 +282,37 @@ export default function CesiumGlobe({
       lyr.alpha = 0.94;
       rasterLayerRef.current = lyr;
 
-      const ds = await Cesium.GeoJsonDataSource.load(maskGeoJsonUrl(raster.eventId), {
-        stroke: Cesium.Color.fromCssColorString("#35d6c3"),
-        fill: Cesium.Color.fromCssColorString("#35d6c3").withAlpha(0.05),
-        strokeWidth: 3,
-        clampToGround: true,
-      });
-      if (cancelled || !viewer) return;
-      viewer.dataSources.add(ds);
-      maskDsRef.current = ds;
+      if (raster.hasMask) {
+        const ds = await Cesium.GeoJsonDataSource.load(maskGeoJsonUrl(raster.eventId), {
+          stroke: Cesium.Color.fromCssColorString("#35d6c3"),
+          fill: Cesium.Color.fromCssColorString("#35d6c3").withAlpha(0.05),
+          strokeWidth: 3,
+          clampToGround: true,
+        });
+        if (cancelled || !viewer) return;
+        viewer.dataSources.add(ds);
+        maskDsRef.current = ds;
+      } else {
+        // Area phenomenon: outline the analysis bbox (the region the field
+        // covers) — the area glyph, not a plume mask.
+        viewer.entities.removeById("area-outline");
+        viewer.entities.add({
+          id: "area-outline",
+          rectangle: {
+            coordinates: Cesium.Rectangle.fromDegrees(
+              raster.bounds.west,
+              raster.bounds.south,
+              raster.bounds.east,
+              raster.bounds.north,
+            ),
+            fill: false,
+            outline: true,
+            outlineColor: Cesium.Color.fromCssColorString("#ffb347"),
+            outlineWidth: 2,
+            height: 0,
+          },
+        });
+      }
     }
     void apply();
     return () => {
@@ -303,6 +328,7 @@ export default function CesiumGlobe({
         {body === "earth" &&
           events.map((e) => {
             const isActive = e.status === "active";
+            const isArea = e.phenomenon_type === "heat_wave";
             return (
               <div
                 key={e.event_id}
@@ -310,7 +336,9 @@ export default function CesiumGlobe({
                   if (el) markerEls.current.set(e.event_id, el);
                   else markerEls.current.delete(e.event_id);
                 }}
-                className={"marker " + (isActive ? "active" : "pending disabled")}
+                className={
+                  "marker " + (isActive ? "active" : "pending disabled") + (isArea ? " area" : "")
+                }
                 style={{ display: "none" }}
                 onClick={isActive ? () => cb.current.onSelect(e) : undefined}
               >

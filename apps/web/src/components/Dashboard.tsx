@@ -8,8 +8,14 @@ import { useCallback, useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import type { FlyTarget } from "./CesiumGlobe";
 import Inspector from "./Inspector";
-import { fetchEvent, fetchEvents, fetchHypotheses } from "@/lib/api";
-import type { EventDetail, EventSummary, HypothesisSet, RetrievalLayer } from "@/lib/types";
+import { fetchEvent, fetchEvents, fetchFactorHypotheses, fetchHypotheses } from "@/lib/api";
+import type {
+  EventDetail,
+  EventSummary,
+  FactorHypothesisSet,
+  HypothesisSet,
+  RetrievalLayer,
+} from "@/lib/types";
 import {
   clampPanelWidth,
   FLY_DURATION_S,
@@ -25,10 +31,15 @@ const CesiumGlobe = dynamic(() => import("./CesiumGlobe"), { ssr: false });
 type Phase = "globe" | "mounting" | "flying" | "detail" | "returning";
 type QCal = "ours" | "nasa";
 
-const RETRIEVAL_LABELS: Record<RetrievalLayer, string> = {
+// Layer toggle labels — methane retrieval layers + heat field layers. A layer
+// key missing here falls back to its raw key (never hidden).
+const LAYER_LABELS: Record<string, string> = {
   enhancement: "Our Retrieval",
   nasa: "NASA L2B",
   diff: "Δ Diff",
+  air_anomaly: "T2M Anomaly",
+  air_baseline: "Baseline 1991-2020",
+  lst_anomaly: "LST Anomaly",
 };
 
 /** "2022-08-15T04:28:38Z" -> "2022-08-15 04:28:38 UTC" (the granule overpass). */
@@ -43,9 +54,14 @@ export default function Dashboard() {
   const [phase, setPhase] = useState<Phase>("globe");
   const [detail, setDetail] = useState<EventDetail | null>(null);
   const [hypotheses, setHypotheses] = useState<HypothesisSet | null>(null);
+  const [factors, setFactors] = useState<FactorHypothesisSet | null>(null);
   const [flyTarget, setFlyTarget] = useState<FlyTarget | null>(null);
-  const [raster, setRaster] = useState<{ eventId: string; bounds: { west: number; south: number; east: number; north: number } } | null>(null);
-  const [layer, setLayer] = useState<RetrievalLayer>("enhancement");
+  const [raster, setRaster] = useState<{
+    eventId: string;
+    bounds: { west: number; south: number; east: number; north: number };
+    hasMask: boolean;
+  } | null>(null);
+  const [layer, setLayer] = useState<string>("enhancement");
   const [qcal, setQcal] = useState<QCal>("ours");
   const [error, setError] = useState<string | null>(null);
   const [panelWidth, setPanelWidth] = useState(PANEL_DEFAULT_W);
@@ -60,24 +76,30 @@ export default function Dashboard() {
   // exact flyTo duration — one synchronized motion, no pop-in.
   const handleSelect = useCallback(async (ev: EventSummary) => {
     try {
-      // Prefetch detail + the attribution artifact together so the populated
-      // panel (incl. Source Attribution) is fully rendered as it slides in.
-      const [d, hyp] = await Promise.all([
+      // Prefetch detail + both attribution artifacts together so the populated
+      // panel (incl. attribution sections) is fully rendered as it slides in.
+      const [d, hyp, fac] = await Promise.all([
         fetchEvent(ev.event_id),
         fetchHypotheses(ev.event_id),
+        fetchFactorHypotheses(ev.event_id),
       ]);
-      setLayer("enhancement");
+      // Default layer = the event's own first layer (state isolation across
+      // phenomenon types: "enhancement" was a CH4-shaped default).
+      const bounds = d.heat ? d.heat.heat_raster.bounds : d.raster?.bounds;
+      const layers = d.heat ? d.heat.heat_raster.layers : (d.raster?.layers ?? []);
+      setLayer(layers[0] ?? "enhancement");
       setQcal("ours");
       setDetail(d);
       setHypotheses(hyp);
-      if (d.raster) setRaster({ eventId: d.event_id, bounds: d.raster.bounds });
+      setFactors(fac);
+      if (bounds) setRaster({ eventId: d.event_id, bounds, hasMask: !d.heat });
       // Frame 1: mount the populated panel off-screen (display:block, slid out).
       setPhase("mounting");
       // Frame 2: begin the slide-in AND the camera flight together — synced.
       requestAnimationFrame(() =>
         requestAnimationFrame(() => {
           setPhase("flying");
-          setFlyTarget({ lon: ev.lon, lat: ev.lat, bounds: d.raster?.bounds });
+          setFlyTarget({ lon: ev.lon, lat: ev.lat, bounds });
         }),
       );
     } catch (e) {
@@ -99,6 +121,7 @@ export default function Dashboard() {
     setPhase("globe");
     setDetail(null);
     setHypotheses(null);
+    setFactors(null);
   }, []);
 
   // Drag the inspector's left edge to resize; clamped so neither side collapses.
@@ -209,12 +232,28 @@ export default function Dashboard() {
               </span>
             </div>
             <div className="ro-row">
-              <span className="ro-k">Species</span>
-              <span className="ro-v">CH₄ · HYPERSPECTRAL</span>
+              <span className="ro-k">Quantities</span>
+              {/* derived from the live catalog, not hardcoded to CH4 (Sprint 9) */}
+              <span className="ro-v">
+                {[
+                  events.some((e) => e.phenomenon_type === "emission_event") && "CH₄ PLUME",
+                  events.some((e) => e.phenomenon_type === "heat_wave") && "T2M / LST ANOM",
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "—"}
+              </span>
             </div>
             <div className="ro-row">
-              <span className="ro-k">Product</span>
-              <span className="ro-v">EMIT · L2B CH4ENH</span>
+              <span className="ro-k">Products</span>
+              <span className="ro-v">
+                {[
+                  events.some((e) => e.phenomenon_type === "emission_event") && "EMIT L2B",
+                  events.some((e) => e.phenomenon_type === "heat_wave") &&
+                    "ERA5 · MOD11A1 · ISD",
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "—"}
+              </span>
             </div>
           </div>
 
@@ -265,16 +304,35 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
-              {detail?.raster && (
+              {detail?.heat && (
+                <div className="hud" style={{ top: 54, left: 16 }}>
+                  <div className="coord-box">
+                    {/* AREA event: a region centroid, not a source point */}
+                    <div className="ttl">Region Centroid · Area Event</div>
+                    <div className="coord-row">
+                      <span>
+                        LAT <b>{detail.lat.toFixed(2)}°N</b>
+                      </span>
+                      <span>
+                        LON <b>{detail.lon.toFixed(2)}°E</b>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {(detail?.raster || detail?.heat) && (
                 <div className="hud" style={{ top: 14, right: 16 }}>
                   <div className="seg">
-                    {detail.raster.layers.map((l) => (
+                    {(detail.heat
+                      ? detail.heat.heat_raster.layers
+                      : detail.raster?.layers ?? []
+                    ).map((l) => (
                       <button
                         key={l}
                         className={layer === l ? "on" : ""}
-                        onClick={() => setLayer(l as RetrievalLayer)}
+                        onClick={() => setLayer(l)}
                       >
-                        {RETRIEVAL_LABELS[l as RetrievalLayer]}
+                        {LAYER_LABELS[l] ?? l}
                       </button>
                     ))}
                   </div>
@@ -286,6 +344,7 @@ export default function Dashboard() {
               <Inspector
                 detail={detail}
                 hypotheses={hypotheses}
+                factors={factors}
                 qcal={qcal}
                 onQcal={setQcal}
                 onResizeStart={onResizeStart}

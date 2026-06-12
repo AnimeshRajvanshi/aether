@@ -1466,3 +1466,58 @@ button {
 .cesium-credit-logoContainer img {
   opacity: 0.4;
 }
+
+/* ---------------------------------------------------------------------------
+   Sprint 9 Stage D — heat vertical
+   --------------------------------------------------------------------------- */
+
+/* area-event marker: square reticle ring distinguishes an area phenomenon
+   from the circular point-source markers */
+.marker.area .ring { border-radius: 4px; border-color: #ffb347; }
+.marker.area .dot { background: #ffb347; border-radius: 2px; }
+.marker.area .reticle { border-radius: 6px; border-color: rgba(255, 179, 71, 0.65); }
+
+/* per-quantity tier rows */
+.qt-row { padding: 8px 0 10px; border-bottom: 1px dashed var(--line, #232a35); }
+.qt-row:last-child { border-bottom: none; }
+.qt-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.qt-q { font-weight: 700; font-size: 11px; opacity: 0.85; letter-spacing: 0.06em; }
+.qt-label { font-size: 12px; flex: 1; }
+.qt-value { font-size: 12px; margin-top: 4px; opacity: 0.95; }
+.qt-criterion { font-size: 10.5px; margin-top: 2px; color: #ffb347; letter-spacing: 0.02em; }
+.qt-explainer { font-size: 11px; opacity: 0.72; margin: 4px 0 0; line-height: 1.45; }
+
+/* tier badges for the heat verdict vocabulary */
+.tier-badge.tier-per-quantity { background: rgba(120, 160, 255, 0.16); color: #9db8ff; border-color: #4a5f96; }
+.tier-badge.tier-validated { background: rgba(84, 214, 123, 0.14); color: #6fe09a; border-color: #2f7c4d; }
+.tier-badge.tier-not-validated { background: rgba(255, 122, 122, 0.10); color: #ff9d9d; border-color: #84403e; }
+.tier-badge.tier-consistency-not-claimed { background: rgba(255, 179, 71, 0.10); color: #ffc985; border-color: #8a6430; }
+.tier-badge.tier-cross-checked--ceiling- { background: rgba(53, 214, 195, 0.10); color: #6fd9cb; border-color: #2c6e66; }
+
+/* lane chips: AIR vs LST, visually disjoint everywhere they appear */
+.lane-chip { font-size: 9.5px; padding: 1px 6px; border-radius: 3px; letter-spacing: 0.08em; }
+.lane-chip.lane-air { background: rgba(120, 160, 255, 0.14); color: #9db8ff; }
+.lane-chip.lane-lst { background: rgba(255, 179, 71, 0.14); color: #ffc985; }
+.lane-block { border-left: 3px solid #9db8ff; }
+.lst-caveat { border-left: 3px solid #ffb347; margin: 8px 0; }
+.episode-criterion { color: #ffb347; }
+
+/* factor attribution */
+.role-chip { font-size: 9.5px; padding: 1px 6px; border-radius: 3px; letter-spacing: 0.06em; }
+.role-chip.role-warming_contributor { background: rgba(255, 122, 90, 0.14); color: #ff9d83; }
+.role-chip.role-severity_framing { background: rgba(160, 160, 180, 0.14); color: #b9bdd1; }
+.role-chip.role-counter_evidence { background: rgba(120, 200, 255, 0.16); color: #8fd2ff; border: 1px solid #2e5d7d; }
+.hypo.counter-evidence { border-left: 3px solid #8fd2ff; background: rgba(120, 200, 255, 0.04); }
+.attr-boundary { border: 1px dashed #5a4a7a; padding: 8px 10px; margin: 8px 0; font-size: 11px; }
+.attr-boundary .ch { color: #b9a3e8; font-size: 10px; letter-spacing: 0.08em; margin-bottom: 4px; }
+.diag-list { margin: 6px 0; }
+.diag { display: grid; grid-template-columns: auto auto 1fr; gap: 8px; font-size: 10.5px; padding: 2px 0; align-items: baseline; }
+.diag-name { font-family: var(--mono, monospace); color: #8fd2ff; }
+.diag-val { font-weight: 700; }
+.diag-def { opacity: 0.6; }
+
+/* cited external attribution — visually distinct from computed factors */
+.ext-attr { border: 1px solid #5a4a7a; background: rgba(122, 96, 170, 0.07); padding: 10px 12px; margin-top: 10px; }
+.ext-attr .ch { color: #b9a3e8; font-size: 10px; letter-spacing: 0.1em; margin-bottom: 6px; }
+.ext-attr-item p { font-size: 11.5px; margin: 0 0 4px; }
+.ext-attr-src { opacity: 0.65; font-size: 10.5px; }

@@ -135,6 +135,7 @@ export interface EventDetail {
   provenance: Provenance | null;
   references: Reference[];
   pending_reason: string | null;
+  heat: HeatBlock | null; // Sprint 9: populated for heat_wave events only
 }
 
 export type RetrievalLayer = "enhancement" | "nasa" | "diff";
@@ -199,5 +200,112 @@ export interface HypothesisSet {
   plume_summary: Record<string, string>;
   global_assumptions: string[];
   hypotheses: SourceHypothesis[];
+  provenance: Record<string, string>;
+}
+
+// ---------------------------------------------------------------------------
+// Heat vertical (Sprint 9 Stage D) — mirrors the additive API models
+// ---------------------------------------------------------------------------
+
+export interface QuantityTierRow {
+  quantity: string;
+  label: string;
+  value_display: string;
+  tier: string;
+  explainer: string;
+  criterion_dataset: string | null;
+  lane: string; // "AIR" | "LST"
+}
+
+export interface HeatLayerMeta {
+  key: string;
+  label: string;
+  colormap: string;
+  vmin: number;
+  vmax: number;
+  unit: string;
+  lane: string;
+}
+
+export interface HeatRasterMeta {
+  bounds: RasterBounds;
+  layers: string[];
+  layer_meta: HeatLayerMeta[];
+  lst_view_time_local_h: number;
+  rendering: string;
+}
+
+export interface HeatEpisode {
+  window_start: string;
+  window_end: string;
+  episode_start: string;
+  episode_end: string;
+  episode_days: number;
+  criterion: string;
+  note: string;
+}
+
+export interface HeatLstBlock {
+  window_mean_anomaly_k: number;
+  view_time_local_h: number;
+  observation_time_statement: string;
+  composite_baseline_residual_k: number;
+  uhi_window_mean_k: number;
+  uhi_window_std_k: number;
+  uhi_finding: string;
+}
+
+export interface HeatBlock {
+  peak_tmax_c: number;
+  peak_date: string;
+  window_mean_regional_anomaly_k: number;
+  peak_day_extent_km2: number;
+  episode: HeatEpisode;
+  quantity_tiers: QuantityTierRow[];
+  lst: HeatLstBlock;
+  lst_vs_air: string;
+  budget_terms: UncertaintyTerm[];
+  heat_raster: HeatRasterMeta;
+}
+
+// Factor attribution (Stage C artifact, served verbatim)
+export interface FactorDiagnostic {
+  name: string;
+  value: number;
+  unit: string;
+  definition: string;
+  source: { dataset: string; locator: string; ogim_id: number | null; ogim_layer: string | null };
+}
+
+export interface FactorHypothesis {
+  id: string;
+  rank: number;
+  factor_name: string;
+  role: "warming_contributor" | "severity_framing" | "counter_evidence";
+  claim: string;
+  confidence_tier: string;
+  confidence_rationale: string;
+  score: number;
+  score_components: ScoreComponent[];
+  diagnostics: FactorDiagnostic[];
+  evidence: EvidenceItem[];
+  assumptions: string[];
+  counter_considerations: string[];
+  falsification: string;
+  generation_method: string;
+}
+
+export interface FactorHypothesisSet {
+  event_id: string;
+  phenomenon: string;
+  generated_method: string;
+  headline_finding: string;
+  scoring_disclaimer: string;
+  confidence_cap: string;
+  attribution_boundary: string;
+  event_summary: Record<string, string>;
+  global_assumptions: string[];
+  factors: FactorHypothesis[];
+  external_published_attribution: EvidenceItem[];
   provenance: Record<string, string>;
 }

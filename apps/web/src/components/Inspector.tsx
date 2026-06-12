@@ -2,8 +2,9 @@
 
 // The right-hand inspector. Pure presentation of one EventDetail — every number
 // is read from the prop (sourced by the API from committed Stage A/B files).
+import FactorAttribution from "./FactorAttribution";
 import SourceAttribution from "./SourceAttribution";
-import type { EventDetail, HypothesisSet } from "@/lib/types";
+import type { EventDetail, FactorHypothesisSet, HypothesisSet } from "@/lib/types";
 
 type QCal = "ours" | "nasa";
 
@@ -15,12 +16,14 @@ const fmtRate = (n: number) => (Math.abs(n) < 1 ? n.toFixed(2) : n.toFixed(1));
 export default function Inspector({
   detail,
   hypotheses,
+  factors,
   qcal,
   onQcal,
   onResizeStart,
 }: {
   detail: EventDetail;
   hypotheses: HypothesisSet | null;
+  factors: FactorHypothesisSet | null;
   qcal: QCal;
   onQcal: (c: QCal) => void;
   onResizeStart: (e: React.PointerEvent) => void;
@@ -61,11 +64,16 @@ export default function Inspector({
 
         {detail.status === "pending"
           ? renderPending(detail)
-          : renderActive(detail, qcal, onQcal)}
+          : detail.heat
+            ? renderHeat(detail)
+            : renderActive(detail, qcal, onQcal)}
 
         {/* Source attribution renders the committed Sprint 4 artifact verbatim;
             absent for pending events (the API returns no artifact). */}
         {hypotheses && <SourceAttribution data={hypotheses} />}
+
+        {/* Factor attribution (heat events): the committed Stage C artifact. */}
+        {factors && <FactorAttribution data={factors} />}
 
         {detail.references.length > 0 && (
           <div className="panel">
@@ -221,6 +229,128 @@ function renderActive(detail: EventDetail, qcal: QCal, onQcal: (c: QCal) => void
           <p>{detail.brief}</p>
         </div>
       )}
+    </>
+  );
+}
+
+function renderHeat(detail: EventDetail) {
+  const h = detail.heat!;
+  return (
+    <>
+      {/* LST vs AIR — the first-class two-lane block, before any number */}
+      <div className="caveat lane-block">
+        <div className="ch">Two Temperatures · Read Before Anything Else</div>
+        <p>{h.lst_vs_air}</p>
+      </div>
+
+      <div className="panel">
+        <div className="panel-h">
+          <span className="tag">Air Lane · 2 m Temperature (ERA5 · stations · IMD)</span>
+          <span className="line" />
+        </div>
+        <div className="q-big">
+          <span className="num">+{h.window_mean_regional_anomaly_k.toFixed(2)}</span>
+          <span className="unit">K window-mean anomaly</span>
+        </div>
+        <Drow k="Peak 2 m Tmax" v={`${h.peak_tmax_c.toFixed(2)} (${h.peak_date})`} u="°C" />
+        <Drow
+          k="Peak-day extent"
+          v={h.peak_day_extent_km2.toLocaleString("en-US")}
+          u="km² (criterion-bound)"
+        />
+        <Drow
+          k="Analysis window"
+          v={`${h.episode.window_start} → ${h.episode.window_end}`}
+          u=""
+        />
+        <Drow
+          k="Episode (criterion run)"
+          v={`${h.episode.episode_start} → ${h.episode.episode_end} · ${h.episode.episode_days} d`}
+          u=""
+        />
+        <p className="vtext">{h.episode.note}</p>
+        <p className="vtext episode-criterion">Criterion: {h.episode.criterion}</p>
+      </div>
+
+      <div className="panel">
+        <div className="panel-h">
+          <span className="tag">Per-Quantity Validation Tiers</span>
+          <span className="line" />
+        </div>
+        {h.quantity_tiers.map((r) => (
+          <div className="qt-row" key={r.quantity}>
+            <div className="qt-head">
+              <span className="qt-q">{r.quantity}</span>
+              <span className="qt-label">{r.label}</span>
+              <span
+                className={`tier-badge tier-${r.tier.toLowerCase().replace(/[^a-z]/g, "-")}`}
+              >
+                {r.tier}
+              </span>
+              <span className={`lane-chip lane-${r.lane.toLowerCase()}`}>{r.lane}</span>
+            </div>
+            <div className="qt-value">{r.value_display}</div>
+            {r.criterion_dataset && (
+              <div className="qt-criterion">criterion · {r.criterion_dataset}</div>
+            )}
+            <p className="qt-explainer">{r.explainer}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="panel">
+        <div className="panel-h">
+          <span className="tag">Anomaly Budget · window-mean regional anomaly</span>
+          <span className="line" />
+        </div>
+        {h.budget_terms.map((t) => (
+          <div className={`ubar ${t.kind === "systematic" ? "sys" : ""}`} key={t.key}>
+            <div className="ubar-top">
+              <span className="k">{t.label}</span>
+              <span className="v">{t.display}</span>
+            </div>
+            <div className="ubar-track">
+              <div
+                className="ubar-fill"
+                style={{ width: `${Math.round(t.bar_fraction * 100)}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="panel">
+        <div className="panel-h">
+          <span className="tag">LST Lane · Skin Temperature (MODIS Terra)</span>
+          <span className="line" />
+        </div>
+        <Drow
+          k="Window-mean LST anomaly"
+          v={`+${h.lst.window_mean_anomaly_k.toFixed(2)}`}
+          u="K"
+        />
+        <Drow
+          k="Observed at"
+          v={`~${h.lst.view_time_local_h.toFixed(2)} h local solar`}
+          u=""
+        />
+        <Drow
+          k="Composite-baseline residual"
+          v={h.lst.composite_baseline_residual_k.toFixed(2)}
+          u="K"
+        />
+        {/* the observation-time caveat is first-class, never collapsed */}
+        <div className="caveat lst-caveat">
+          <div className="ch">Observation Time · Not a Daily Maximum</div>
+          <p>{h.lst.observation_time_statement}</p>
+        </div>
+        <Drow
+          k="Delhi daytime surface UHI"
+          v={`${h.lst.uhi_window_mean_k > 0 ? "+" : ""}${h.lst.uhi_window_mean_k.toFixed(2)} ± ${h.lst.uhi_window_std_k.toFixed(2)}`}
+          u="K"
+        />
+        <p className="vtext">{h.lst.uhi_finding}</p>
+      </div>
     </>
   );
 }

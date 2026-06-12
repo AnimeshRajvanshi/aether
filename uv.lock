@@ -148,29 +148,34 @@ name = "aether-eval"
 version = "0.1.0"
 source = { editable = "eval/harness" }
 dependencies = [
-    { name = "aether-data-spine" },
-    { name = "aether-detection" },
     { name = "aether-ontology" },
-    { name = "numpy" },
     { name = "pydantic" },
     { name = "pyyaml" },
     { name = "rich" },
-    { name = "rioxarray" },
     { name = "typer" },
+]
+
+[package.optional-dependencies]
+pipeline = [
+    { name = "aether-data-spine" },
+    { name = "aether-detection" },
+    { name = "numpy" },
+    { name = "rioxarray" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "aether-data-spine", editable = "packages/data_spine" },
-    { name = "aether-detection", editable = "packages/detection" },
+    { name = "aether-data-spine", marker = "extra == 'pipeline'", editable = "packages/data_spine" },
+    { name = "aether-detection", marker = "extra == 'pipeline'", editable = "packages/detection" },
     { name = "aether-ontology", editable = "packages/ontology" },
-    { name = "numpy", specifier = ">=1.26" },
+    { name = "numpy", marker = "extra == 'pipeline'", specifier = ">=1.26" },
     { name = "pydantic", specifier = ">=2.7" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "rich", specifier = ">=13.7" },
-    { name = "rioxarray", specifier = ">=0.15" },
+    { name = "rioxarray", marker = "extra == 'pipeline'", specifier = ">=0.15" },
     { name = "typer", specifier = ">=0.12" },
 ]
+provides-extras = ["pipeline"]
 
 [[package]]
 name = "aether-ontology"

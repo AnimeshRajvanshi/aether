@@ -1,0 +1,212 @@
+{
+  "composed_endpoints": {
+    "/api/events": {
+      "sources": [
+        "apps/api/aether_api/assets/india_nw_heatwave_2022_04/bounds.json",
+        "apps/api/aether_api/assets/permian_basin_2022/bounds.json",
+        "apps/api/aether_api/assets/turkmenistan_goturdepe_2022_08_15/bounds.json",
+        "eval/benchmark/india_nw_heatwave_2022_04.yaml",
+        "eval/benchmark/permian_basin_2022.yaml",
+        "eval/benchmark/turkmenistan_goturdepe_2022_08_15.yaml",
+        "stage_a_outputs/permian_basin_2022/hitran_k/hitran_k_sat_provenance.json",
+        "stage_a_outputs/permian_basin_2022/stage_a_report.json",
+        "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/hitran_k/hitran_k_sat_provenance.json",
+        "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/stage_a_report.json",
+        "stage_b_outputs/india_nw_heatwave_2022_04/air_lane.json",
+        "stage_b_outputs/india_nw_heatwave_2022_04/lst_lane.json",
+        "stage_b_outputs/india_nw_heatwave_2022_04/uhi.json",
+        "stage_b_outputs/india_nw_heatwave_2022_04/validation.json",
+        "stage_b_outputs/permian_basin_2022/diagnostics.json",
+        "stage_b_outputs/permian_basin_2022/q_estimate.json",
+        "stage_b_outputs/turkmenistan_goturdepe_2022_08_15/q_estimate.json"
+      ]
+    },
+    "/api/events/india_nw_heatwave_2022_04": {
+      "sources": [
+        "apps/api/aether_api/assets/india_nw_heatwave_2022_04/bounds.json",
+        "eval/benchmark/india_nw_heatwave_2022_04.yaml",
+        "stage_b_outputs/india_nw_heatwave_2022_04/air_lane.json",
+        "stage_b_outputs/india_nw_heatwave_2022_04/lst_lane.json",
+        "stage_b_outputs/india_nw_heatwave_2022_04/uhi.json",
+        "stage_b_outputs/india_nw_heatwave_2022_04/validation.json"
+      ]
+    },
+    "/api/events/permian_basin_2022": {
+      "sources": [
+        "apps/api/aether_api/assets/permian_basin_2022/bounds.json",
+        "eval/benchmark/permian_basin_2022.yaml",
+        "stage_a_outputs/permian_basin_2022/hitran_k/hitran_k_sat_provenance.json",
+        "stage_a_outputs/permian_basin_2022/stage_a_report.json",
+        "stage_b_outputs/permian_basin_2022/diagnostics.json",
+        "stage_b_outputs/permian_basin_2022/q_estimate.json"
+      ]
+    },
+    "/api/events/turkmenistan_goturdepe_2022_08_15": {
+      "sources": [
+        "apps/api/aether_api/assets/turkmenistan_goturdepe_2022_08_15/bounds.json",
+        "eval/benchmark/turkmenistan_goturdepe_2022_08_15.yaml",
+        "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/hitran_k/hitran_k_sat_provenance.json",
+        "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/stage_a_report.json",
+        "stage_b_outputs/turkmenistan_goturdepe_2022_08_15/q_estimate.json"
+      ]
+    }
+  },
+  "composed_sources": {
+    "apps/api/aether_api/assets/india_nw_heatwave_2022_04/bounds.json": {
+      "bytes": 1607,
+      "sha256": "5d3e9f99d664c8b3a0d3c2c4a8ba1414e363449d630515e2743f5306cd6b0233"
+    },
+    "apps/api/aether_api/assets/permian_basin_2022/bounds.json": {
+      "bytes": 927,
+      "sha256": "a1236c6be4e93b695a6fc196dd76b176bf6cca776a54fb9a9662d572c47b576f"
+    },
+    "apps/api/aether_api/assets/turkmenistan_goturdepe_2022_08_15/bounds.json": {
+      "bytes": 817,
+      "sha256": "87ddd55c716183e6eae0f4227798fa8c3918a841e7e37342aca72f24c70d073c"
+    },
+    "eval/benchmark/india_nw_heatwave_2022_04.yaml": {
+      "bytes": 15178,
+      "sha256": "96863e7a4c2f6f8065f62796a33df66a237b42cb0a43dc99d0e68fa7e51fe87a"
+    },
+    "eval/benchmark/permian_basin_2022.yaml": {
+      "bytes": 7260,
+      "sha256": "661f1de813858460fc01d16d9cdd308ff395b13bf7025835f2fccda80672c839"
+    },
+    "eval/benchmark/turkmenistan_goturdepe_2022_08_15.yaml": {
+      "bytes": 8861,
+      "sha256": "31e7189f2d9688b24d47469294a1d4e8453de2592baf14219f643d4f86da1a7d"
+    },
+    "stage_a_outputs/permian_basin_2022/hitran_k/hitran_k_sat_provenance.json": {
+      "bytes": 1634,
+      "sha256": "1938d7ea306a9c3d5d2fd0c78d86015f8f5bfb46628071e3cce5c921b2fc199b"
+    },
+    "stage_a_outputs/permian_basin_2022/stage_a_report.json": {
+      "bytes": 2790,
+      "sha256": "9a0709fd962b8d8961320d0b5038c083ba5f1051245195aeed0ea0ad49c8a891"
+    },
+    "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/hitran_k/hitran_k_sat_provenance.json": {
+      "bytes": 1401,
+      "sha256": "eda223842bbe6f06c411e283b545f14b42e5ecbe7f668624770f4d821cef28e7"
+    },
+    "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/stage_a_report.json": {
+      "bytes": 2735,
+      "sha256": "539c14d275df7d713a850057f5610775dfe4ba8b32f8200d8d9b7a3984e3dda3"
+    },
+    "stage_b_outputs/india_nw_heatwave_2022_04/air_lane.json": {
+      "bytes": 6669,
+      "sha256": "9c6d75d08e334be9f8413092d15c9805585a0dd90062f328de03ce49744afd0d"
+    },
+    "stage_b_outputs/india_nw_heatwave_2022_04/lst_lane.json": {
+      "bytes": 9375,
+      "sha256": "2ed3ed8769bb1b8b89499856bff4e38764b2b585dc7b839532f635dd7a5fc86b"
+    },
+    "stage_b_outputs/india_nw_heatwave_2022_04/uhi.json": {
+      "bytes": 4290,
+      "sha256": "010380e6254e680cf6cc0217f891bb0cfb795af1c3c518f2e6f90858fa27d706"
+    },
+    "stage_b_outputs/india_nw_heatwave_2022_04/validation.json": {
+      "bytes": 4582,
+      "sha256": "03cff320ba64957df75108dff53af5eb726e7ac3776203263111477c26a49e4a"
+    },
+    "stage_b_outputs/permian_basin_2022/diagnostics.json": {
+      "bytes": 791,
+      "sha256": "4b33f1b956dd24c4fd9d152ee4cc98729178c27ce7abd7b01df5fe684dbdca6a"
+    },
+    "stage_b_outputs/permian_basin_2022/q_estimate.json": {
+      "bytes": 3591,
+      "sha256": "2ec6f17cbf003cac389f63811335c6b551ed50ef313b8add18800783a5920a01"
+    },
+    "stage_b_outputs/turkmenistan_goturdepe_2022_08_15/q_estimate.json": {
+      "bytes": 2255,
+      "sha256": "6222b8dfa4893b5df7e47e1c2c7a33e27f615b196c94e31a617fe6e4933ef1aa"
+    }
+  },
+  "generated_at_commit": "115af07a235d8b8f177c14c011396ce3388dab9c",
+  "raw_endpoints": {
+    "/api/events/india_nw_heatwave_2022_04/bounds": {
+      "bytes": 1607,
+      "sha256": "5d3e9f99d664c8b3a0d3c2c4a8ba1414e363449d630515e2743f5306cd6b0233",
+      "source": "apps/api/aether_api/assets/india_nw_heatwave_2022_04/bounds.json"
+    },
+    "/api/events/india_nw_heatwave_2022_04/factor-hypotheses": {
+      "bytes": 22704,
+      "sha256": "4022a740930d379e1407d1cbde08b091bf1db7ec828ccf2dbda2ee3a2c5eed6e",
+      "source": "attribution_outputs/india_nw_heatwave_2022_04/factor_hypotheses.json"
+    },
+    "/api/events/india_nw_heatwave_2022_04/layers/air_anomaly.png": {
+      "bytes": 6203,
+      "sha256": "bfcd1f163c2342caa7a8e3e5f1d5dc7839bab1295e86dfa294dc3a6933f4374f",
+      "source": "apps/api/aether_api/assets/india_nw_heatwave_2022_04/air_anomaly.png"
+    },
+    "/api/events/india_nw_heatwave_2022_04/layers/air_baseline.png": {
+      "bytes": 4255,
+      "sha256": "68629d5b04c02e8fd8958d962780aee56ecb2dee9fe61cbc554713b4302af45e",
+      "source": "apps/api/aether_api/assets/india_nw_heatwave_2022_04/air_baseline.png"
+    },
+    "/api/events/india_nw_heatwave_2022_04/layers/lst_anomaly.png": {
+      "bytes": 3019122,
+      "sha256": "877347b0e5917d5c4329187f3a87c5a93b38eb2410aee80726dd6399ba132cfe",
+      "source": "apps/api/aether_api/assets/india_nw_heatwave_2022_04/lst_anomaly.png"
+    },
+    "/api/events/permian_basin_2022/bounds": {
+      "bytes": 927,
+      "sha256": "a1236c6be4e93b695a6fc196dd76b176bf6cca776a54fb9a9662d572c47b576f",
+      "source": "apps/api/aether_api/assets/permian_basin_2022/bounds.json"
+    },
+    "/api/events/permian_basin_2022/diff.png": {
+      "bytes": 3339,
+      "sha256": "5c0d81b57e736636d60ceb603b322ff81cf2fec67678be11b61643de51bdf706",
+      "source": "apps/api/aether_api/assets/permian_basin_2022/diff.png"
+    },
+    "/api/events/permian_basin_2022/enhancement.png": {
+      "bytes": 2842,
+      "sha256": "4b806a73dd9939b08d77ee861a59ea4bd56e06fb8b3bd62cf53c1118473f6abd",
+      "source": "apps/api/aether_api/assets/permian_basin_2022/enhancement.png"
+    },
+    "/api/events/permian_basin_2022/hypotheses": {
+      "bytes": 17989,
+      "sha256": "bfee2bac3edbf0d4e41b6fee413c3dde110c200a91dd3754c57dc4ea672cd0f6",
+      "source": "attribution_outputs/permian_basin_2022/hypotheses.json"
+    },
+    "/api/events/permian_basin_2022/mask.geojson": {
+      "bytes": 15398,
+      "sha256": "0f10cf0ec623db9a9f23bd6ead174a2329c2510a48191675c1d7ed3bb015356a",
+      "source": "apps/api/aether_api/assets/permian_basin_2022/mask.geojson"
+    },
+    "/api/events/permian_basin_2022/nasa.png": {
+      "bytes": 12153,
+      "sha256": "6f2b70c657cf8fd25d8b3c2a69329fb73779ef8ce7686b2ae924c4cfe8a8fb59",
+      "source": "apps/api/aether_api/assets/permian_basin_2022/nasa.png"
+    },
+    "/api/events/turkmenistan_goturdepe_2022_08_15/bounds": {
+      "bytes": 817,
+      "sha256": "87ddd55c716183e6eae0f4227798fa8c3918a841e7e37342aca72f24c70d073c",
+      "source": "apps/api/aether_api/assets/turkmenistan_goturdepe_2022_08_15/bounds.json"
+    },
+    "/api/events/turkmenistan_goturdepe_2022_08_15/diff.png": {
+      "bytes": 2335234,
+      "sha256": "b6a1a138bb65ed7ed1bc7e26efd2794765f43aa518291048aa3bf33d82123ac7",
+      "source": "apps/api/aether_api/assets/turkmenistan_goturdepe_2022_08_15/diff.png"
+    },
+    "/api/events/turkmenistan_goturdepe_2022_08_15/enhancement.png": {
+      "bytes": 1385884,
+      "sha256": "0c60d85984d747f1131f3edbe3912c191658fe1372bdba46f3904c150c58fed5",
+      "source": "apps/api/aether_api/assets/turkmenistan_goturdepe_2022_08_15/enhancement.png"
+    },
+    "/api/events/turkmenistan_goturdepe_2022_08_15/hypotheses": {
+      "bytes": 15468,
+      "sha256": "4a27a4081b6c821d9e4f00a04da2dc5e419f4c99bc2a471e6dd2ef20dffc9434",
+      "source": "attribution_outputs/turkmenistan_goturdepe_2022_08_15/hypotheses.json"
+    },
+    "/api/events/turkmenistan_goturdepe_2022_08_15/mask.geojson": {
+      "bytes": 190629,
+      "sha256": "d36bf9e112797a4d61743114973663c43a5729682f0ae7409d02ce3808f0992f",
+      "source": "apps/api/aether_api/assets/turkmenistan_goturdepe_2022_08_15/mask.geojson"
+    },
+    "/api/events/turkmenistan_goturdepe_2022_08_15/nasa.png": {
+      "bytes": 951123,
+      "sha256": "bacb54adee83f7e4b8f5cdda6abf81b140599751428e0a960ee434ee6932eb93",
+      "source": "apps/api/aether_api/assets/turkmenistan_goturdepe_2022_08_15/nasa.png"
+    }
+  }
+}

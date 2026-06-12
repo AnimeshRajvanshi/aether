@@ -1,0 +1,74 @@
+{
+  "event_id": "india_nw_heatwave_2022_04",
+  "clim_years": [
+    1991,
+    2020
+  ],
+  "z500": {
+    "window_mean_2022_m": 5871.4,
+    "cross_store_offset_m": -4.4,
+    "cross_store_offset_per_year_m": [
+      -3.3,
+      -5.5
+    ],
+    "window_mean_2022_corrected_m": 5875.8,
+    "clim_window_mean_m": 5814.2,
+    "clim_window_std_m": 21.2,
+    "anomaly_m": 61.6,
+    "anomaly_uncorrected_m": 57.2,
+    "percentile_vs_30_window_means": 1.0,
+    "days_above_pooled_p90": 10,
+    "n_window_days": 10,
+    "pooled_day_percentile_of_window_mean": 0.983,
+    "grids": "2022 from 0.25-deg v3 (regional mean); climatology from the 1.5-deg conservative store; the measured cross-store offset (overlap years 2019-2020) is subtracted from the 2022 value before ranking; 06:00 UTC samples"
+  },
+  "soil_moisture": {
+    "antecedent_march_2022_m3m3": 0.1565,
+    "antecedent_clim_mean_m3m3": 0.1661,
+    "antecedent_percentile": 0.433,
+    "window_2022_m3m3": 0.1387,
+    "window_clim_mean_m3m3": 0.1512,
+    "window_percentile": 0.133,
+    "layer": "volumetric_soil_water_layer_1 (0-7 cm), bbox land cells, 06 UTC"
+  },
+  "winds": {
+    "window_mean_u_ms": 1.41,
+    "window_mean_v_ms": 0.11,
+    "window_mean_speed_ms": 1.41,
+    "window_from_direction_deg": 265.6,
+    "clim_mean_u_ms": 1.02,
+    "clim_mean_v_ms": 0.04,
+    "clim_from_direction_deg": 267.5,
+    "anomaly_vector_ms": [
+      0.39,
+      0.06
+    ],
+    "anomaly_magnitude_ms": 0.39,
+    "convention": "meteorological FROM-direction; bbox area mean, 06 UTC"
+  },
+  "dewpoint": {
+    "window_mean_2022_k": 280.18,
+    "clim_mean_k": 280.05,
+    "anomaly_k": 0.13,
+    "percentile": 0.533,
+    "scope": "bbox land mean, 06 UTC \u2014 severity framing only, not a warming driver"
+  },
+  "uhi": {
+    "window_mean_uhi_k": -0.77,
+    "window_std_uhi_k": 0.8,
+    "n_valid_days": 10,
+    "sensitivity_range_k": [
+      -1.05,
+      -0.74
+    ],
+    "observed_time": "Terra ~10:30 local snapshot (the only observed daytime LST time)",
+    "source_artifact": "stage_b_outputs/india_nw_heatwave_2022_04/uhi.json"
+  },
+  "provenance": {
+    "era5_v3": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+    "era5_coarse": "gs://gcp-public-data-arco-era5/ar/1959-2022-6h-240x121_equiangular_with_poles_conservative.zarr",
+    "uhi_artifact": "stage_b_outputs/india_nw_heatwave_2022_04/uhi.json",
+    "fetch_script": "scripts/sprint9_fetch_factors.py",
+    "sample_hour_utc": "06 (11:30 IST)"
+  }
+}

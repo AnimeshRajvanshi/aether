@@ -1,0 +1,382 @@
+{
+  "event_id": "india_nw_heatwave_2022_04",
+  "phenomenon": "heat_wave",
+  "generated_method": "aether_causal.heat_factors v1 — deterministic, no LLM",
+  "headline_finding": "F1 (Persistent synoptic ridge) leads F2 by 0.69 (>0.15) under the documented heuristic — a ranking, not an established apportionment. The expected ridge-vs-dry-soil entanglement did NOT materialize for this event because the diagnostics argue against several popular priors: antecedent soil moisture was near climatology (dryness rank 57% — the pre-dried-land narrative is unsupported), low-level flow was essentially climatological (anomaly 0.39 m/s), airmass humidity was near-normal (rank 47% dry), and the urban-fabric prior is argued AGAINST by the measured negative daytime surface UHI (-0.77 K). What remains, by these diagnostics, is a rare and persistent synoptic ridge (+61.6 m, above all 30 climatology windows, 10/10 days above the pooled p90) over a region whose in-window drying followed the heat.",
+  "scoring_disclaimer": "Scores are documented heuristics over computed diagnostics — weighted presence/rarity/persistence indices, NOT calibrated probabilities and NOT contribution fractions. Use the tiers and the headline, not the decimals.",
+  "confidence_cap": "Warming-contributor tiers are capped at moderate: diagnostics establish presence and rarity of co-varying factors but cannot causally separate them without counterfactual experiments (out of scope). HIGH is reserved and unearned.",
+  "attribution_boundary": "This engine ranks PHYSICAL CONTRIBUTING FACTORS with computed diagnostics. It does NOT perform probabilistic extreme-event attribution (anthropogenic influence). The published attribution result below is cited external evidence — never computed here, never blended into factor scores.",
+  "event_summary": {
+    "event": "NW/central India heat wave, canonical window 2022-04-02..11",
+    "air_anomaly": "window-mean regional Tmax anomaly +5.10 K (VALIDATED, Stage B)",
+    "peak": "46.68 degC (2022-04-10; VALIDATED vs stations, Stage B)"
+  },
+  "global_assumptions": [
+    "All reanalysis diagnostics are ERA5 (one model family): a coherent but non-independent evidence base; cross-product replication of diagnostics is a future-work item.",
+    "06:00 UTC (11:30 IST) sampling for every factor variable (consistent across factors and climatologies).",
+    "Climatology period 1991-2020 with the Stage B baseline caveat (the warming trend inside the normals period was measured at 0.40 K half-spread for Tmax anomalies)."
+  ],
+  "factors": [
+    {
+      "id": "F1",
+      "rank": 1,
+      "factor_name": "Persistent synoptic ridge / anticyclonic mid-troposphere",
+      "role": "warming_contributor",
+      "claim": "A persistent mid-tropospheric ridge sat over the region: window-mean regional 500 hPa height 5871.4 m vs climatology 5814.2 m (+61.6 m, 100% percentile of 30 same-window years; 10/10 days above the pooled p90). Anticyclonic subsidence and clear skies under such ridges are an established heatwave driver; the diagnostic establishes presence and rarity, not a quantified temperature contribution.",
+      "confidence_tier": "moderate",
+      "confidence_rationale": "Heuristic score 1.00 (band above ceiling, CAPPED to moderate) — the ridge is present, rare, and persistent by diagnostic, but diagnostics cannot separate its contribution from the co-varying land-surface state (see headline).",
+      "score": 1.0,
+      "score_components": [
+        {
+          "name": "ridge_anomaly_percentile",
+          "value": 1.0,
+          "weight": 0.6,
+          "rationale": "window-mean regional z500 (5871.4 m, anomaly +61.6 m) ranks at the 100% percentile of the 1991-2020 same-window means",
+          "contribution": 0.6
+        },
+        {
+          "name": "ridge_persistence",
+          "value": 1.0,
+          "weight": 0.4,
+          "rationale": "10 of 10 window days exceed the pooled climatological p90 of daily regional z500",
+          "contribution": 0.4
+        }
+      ],
+      "diagnostics": [
+        {
+          "name": "z500_window_mean_anomaly",
+          "value": 61.6,
+          "unit": "m",
+          "definition": "2022 window-mean regional z500 minus 1991-2020 same-window mean",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#z500",
+            "ogim_id": null,
+            "ogim_layer": null
+          }
+        },
+        {
+          "name": "z500_percentile_vs_30_window_means",
+          "value": 1.0,
+          "unit": "fraction",
+          "definition": "rank of the 2022 window mean among 30 climatology window means",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#z500",
+            "ogim_id": null,
+            "ogim_layer": null
+          }
+        },
+        {
+          "name": "z500_days_above_pooled_p90",
+          "value": 10.0,
+          "unit": "days",
+          "definition": "window days with daily regional z500 above the pooled clim p90",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#z500",
+            "ogim_id": null,
+            "ogim_layer": null
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "reanalysis_diagnostic",
+          "statement": "Regional z500 anomaly +61.6 m (21.2 m climatological std of window means).",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#z500",
+            "ogim_id": null,
+            "ogim_layer": null
+          },
+          "temporal_caveat": null
+        }
+      ],
+      "assumptions": [
+        "ERA5 z500 is well constrained by assimilated upper-air observations over South Asia (radiosondes, aircraft, satellites).",
+        "The 2022 value (0.25-deg store) and the climatology (1.5-deg conservative store) are comparable as regional MEANS; conservative regridding preserves area means (cross-store caveat stated in diagnostics.json).",
+        "06:00 UTC sampling represents the window's synoptic state (ridges evolve on multi-day timescales)."
+      ],
+      "counter_considerations": [
+        "Ridge presence co-occurs with (and is amplified by) dry land surfaces — presence does not apportion contribution.",
+        "A single regional-mean index can under-represent ridge structure (amplitude vs extent)."
+      ],
+      "falsification": "Independent upper-air analyses (radiosonde geopotential heights) or a higher-resolution reanalysis showing no anomalous ridge over the region during the window would falsify the presence claim.",
+      "generation_method": "aether_causal.heat_factors v1 (deterministic templating)"
+    },
+    {
+      "id": "F2",
+      "rank": 2,
+      "factor_name": "Antecedent soil-moisture deficit (land-surface preconditioning)",
+      "role": "warming_contributor",
+      "claim": "The popular pre-dried-soil narrative is NOT supported by this diagnostic: March 2022 regional soil moisture was near climatology (dryness rank 57%). In-window soil moisture was drier than 87% of years, but in-window drying is concurrent with — and plausibly caused by — the heat itself, so it cannot establish preconditioning. Dry soils amplify heat via suppressed evaporative cooling; for THIS event the antecedent diagnostic carries the preconditioning question, and it reads near-normal.",
+      "confidence_tier": "low",
+      "confidence_rationale": "Heuristic score 0.31 — dryness is real by diagnostic, but ERA5 soil moisture is a model product and the factor co-varies with the ridge (see headline).",
+      "score": 0.314,
+      "score_components": [
+        {
+          "name": "antecedent_dryness_rarity",
+          "value": 0.134,
+          "weight": 0.7,
+          "rationale": "March 2022 regional soil moisture 0.1565 m3/m3 vs climatology 0.1661 — dryness rank 57% (rarity support 0.13: near-median antecedent moisture earns near zero)",
+          "contribution": 0.0938
+        },
+        {
+          "name": "window_dryness_rarity",
+          "value": 0.734,
+          "weight": 0.3,
+          "rationale": "window soil moisture 0.1387 vs climatology 0.1512 — dryness rank 87%; weighted low because in-window drying is partly the heat's own effect (concurrent, not preconditioning)",
+          "contribution": 0.2202
+        }
+      ],
+      "diagnostics": [
+        {
+          "name": "antecedent_march_soil_moisture",
+          "value": 0.1565,
+          "unit": "m3/m3",
+          "definition": "March 2022 mean volumetric soil water (0-7 cm), bbox land",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#soil_moisture",
+            "ogim_id": null,
+            "ogim_layer": null
+          }
+        },
+        {
+          "name": "antecedent_dryness_percentile",
+          "value": 0.567,
+          "unit": "fraction",
+          "definition": "1 - percentile of 2022 March soil moisture among 1991-2020",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#soil_moisture",
+            "ogim_id": null,
+            "ogim_layer": null
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "reanalysis_diagnostic",
+          "statement": "Antecedent (March) and in-window soil moisture both anomalously low (drier than 57% / 87% of climatology).",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#soil_moisture",
+            "ogim_id": null,
+            "ogim_layer": null
+          },
+          "temporal_caveat": null
+        }
+      ],
+      "assumptions": [
+        "ERA5 volumetric soil water is a land-surface-model product, only weakly constrained by observations — treated as a physically consistent index, not a measurement.",
+        "Layer 1 (0-7 cm) dryness is representative of the evaporative regime at event timescales."
+      ],
+      "counter_considerations": [
+        "Soil dryness is partly CAUSED by the same circulation pattern (rainfall deficit under persistent ridging) — circularity with F1 is intrinsic and is why the engine does not claim discrimination.",
+        "No in-situ or independent satellite soil-moisture diagnostic was computed in this stage (SMAP/ASCAT are out of the locked source list)."
+      ],
+      "falsification": "Independent soil-moisture observations (in-situ networks, satellite retrievals) showing normal antecedent moisture over the region would falsify the preconditioning claim.",
+      "generation_method": "aether_causal.heat_factors v1 (deterministic templating)"
+    },
+    {
+      "id": "F3",
+      "rank": 3,
+      "factor_name": "Low-level advection from the arid continental sector",
+      "role": "warming_contributor",
+      "claim": "Window-mean near-surface flow was FROM 266 deg at 1.41 m/s, vs climatology FROM 268 deg — anomaly vector magnitude 0.39 m/s: essentially climatological flow — no anomalous advective contribution is indicated. The arid-sector direction is the climatological norm here and is reported as state, not as event evidence (no trajectory analysis in scope).",
+      "confidence_tier": "low",
+      "confidence_rationale": "Heuristic score 0.28 — a bulk vector diagnostic only; back-trajectories were not computed.",
+      "score": 0.277,
+      "score_components": [
+        {
+          "name": "flow_anomaly_magnitude",
+          "value": 0.277,
+          "weight": 1.0,
+          "rationale": "wind anomaly vector magnitude 0.39 m/s vs window-mean speed 1.41 m/s — how unusual the flow was; direction alone is climatology and earns nothing",
+          "contribution": 0.277
+        }
+      ],
+      "diagnostics": [
+        {
+          "name": "window_from_direction",
+          "value": 265.6,
+          "unit": "deg",
+          "definition": "meteorological FROM-direction of the window-mean 10 m wind",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#winds",
+            "ogim_id": null,
+            "ogim_layer": null
+          }
+        },
+        {
+          "name": "wind_anomaly_magnitude",
+          "value": 0.39,
+          "unit": "m/s",
+          "definition": "magnitude of (2022 window-mean vector - climatology vector)",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#winds",
+            "ogim_id": null,
+            "ogim_layer": null
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "reanalysis_diagnostic",
+          "statement": "Mean flow from 266 deg vs climatological 268 deg.",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#winds",
+            "ogim_id": null,
+            "ogim_layer": null
+          },
+          "temporal_caveat": null
+        }
+      ],
+      "assumptions": [
+        "A bbox-mean 10 m vector meaningfully summarizes low-level flow at synoptic scale (it averages over sea-breeze and orographic detail).",
+        "The W-N sector proxies arid-source advection (Thar/Baluchistan) without an explicit trajectory model."
+      ],
+      "counter_considerations": [
+        "10 m winds under a ridge are weak; advection may be secondary to subsidence + local heating.",
+        "No air-mass trajectory analysis was computed — sector membership is a coarse proxy."
+      ],
+      "falsification": "Back-trajectory analysis (e.g., HYSPLIT on reanalysis winds) showing air-mass origins outside the arid sector for most window days would falsify the advective contribution.",
+      "generation_method": "aether_causal.heat_factors v1 (deterministic templating)"
+    },
+    {
+      "id": "F4",
+      "rank": 4,
+      "factor_name": "Airmass humidity (severity framing, not a warming driver)",
+      "role": "severity_framing",
+      "claim": "Airmass humidity was near climatology (dewpoint anomaly +0.13 K, dryness rank 47%). Neither a dry-heat mitigation nor a humid-heat amplification of experienced severity is indicated by this diagnostic — the framing factor is NOT active for this event at the sampled hour. This factor frames experienced severity and is NOT ranked as a temperature driver.",
+      "confidence_tier": "insufficient",
+      "confidence_rationale": "Severity-framing role (never a temperature driver): tier reflects whether the humidity diagnostic is anomalous enough to frame severity at all — near-median humidity grades INSUFFICIENT (not active).",
+      "score": 0.066,
+      "score_components": [
+        {
+          "name": "humidity_anomaly_rarity",
+          "value": 0.066,
+          "weight": 1.0,
+          "rationale": "window-mean 2 m dewpoint 280.18 K (+0.13 K vs climatology; dryness rank 47%) — two-sided rarity above the median; near-median humidity earns near zero",
+          "contribution": 0.066
+        }
+      ],
+      "diagnostics": [
+        {
+          "name": "dewpoint_window_anomaly",
+          "value": 0.13,
+          "unit": "K",
+          "definition": "2022 window-mean 2 m dewpoint minus 1991-2020 same-window mean",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#dewpoint",
+            "ogim_id": null,
+            "ogim_layer": null
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "reanalysis_diagnostic",
+          "statement": "Dewpoint anomaly +0.13 K (dry airmass).",
+          "source": {
+            "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+            "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#dewpoint",
+            "ogim_id": null,
+            "ogim_layer": null
+          },
+          "temporal_caveat": null
+        }
+      ],
+      "assumptions": [
+        "ERA5 2 m dewpoint is adequate for a regional-mean dryness index (assimilation-constrained like t2m)."
+      ],
+      "counter_considerations": [
+        "Dryness interacts with the soil-moisture factor (same land-atmosphere coupling); it is not independent evidence."
+      ],
+      "falsification": "Station dewpoint/wet-bulb observations contradicting the dry-airmass anomaly would falsify the framing.",
+      "generation_method": "aether_causal.heat_factors v1 (deterministic templating)"
+    },
+    {
+      "id": "F5",
+      "rank": 5,
+      "factor_name": "Urban fabric (daytime surface signal NEGATIVE at the observed time)",
+      "role": "counter_evidence",
+      "claim": "The measured Delhi daytime SURFACE urban-rural delta during the window is NEGATIVE: -0.77 K (±0.8 K day-to-day, n=10; sign robust across sensitivity range -1.05..-0.74 K) at Terra ~10:30 local snapshot (the only observed daytime LST time). The data therefore argues AGAINST urban heat as a daytime warming factor for this event at the only observed time — the urban core read COOLER than its dry rural surroundings. The nighttime and 2 m air-temperature urban roles are EXPLICITLY UNASSESSED: no diagnostic for them exists in this stack (no nighttime analysis, no intra-urban air-temperature network).",
+      "confidence_tier": "insufficient",
+      "confidence_rationale": "As a WARMING contributor: insufficient — the only computed diagnostic is counter-evidence at the observed time. As a measured negative daytime surface signal: the diagnostic itself is sign-robust (Stage B). The tier grades the warming role, not the measurement.",
+      "score": 0.0,
+      "score_components": [
+        {
+          "name": "daytime_surface_uhi_support",
+          "value": 0.0,
+          "weight": 1.0,
+          "rationale": "measured daytime surface UHI -0.77 K is negative — zero support for daytime urban warming; nighttime/air roles carry no diagnostic and contribute no score in either direction",
+          "contribution": 0.0
+        }
+      ],
+      "diagnostics": [
+        {
+          "name": "window_mean_daytime_surface_uhi",
+          "value": -0.77,
+          "unit": "K",
+          "definition": "Delhi urban-core minus rural-ring MODIS LST, window mean, Terra ~10:30 local (committed Stage B artifact)",
+          "source": {
+            "dataset": "MOD11A1 v061 + ESA WorldCover v200 (Stage B)",
+            "locator": "stage_b_outputs/india_nw_heatwave_2022_04/uhi.json",
+            "ogim_id": null,
+            "ogim_layer": null
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "committed_artifact",
+          "statement": "Stage B UHI analysis: -0.77 ± 0.8 K over 10 days; sign robust to all pre-registered sensitivities; Landsat sign-agrees on 2 of 3 scenes.",
+          "source": {
+            "dataset": "stage_b_outputs (Sprint 9 Stage B, gate-approved)",
+            "locator": "stage_b_outputs/india_nw_heatwave_2022_04/uhi.json",
+            "ogim_id": null,
+            "ogim_layer": null
+          },
+          "temporal_caveat": "Valid at the Terra ~10:30 local snapshot only — the single observed daytime LST time; says nothing about night or 2 m air."
+        }
+      ],
+      "assumptions": [
+        "The Stage B UHI definition (WorldCover masks, 20/20-40 km geometry) represents Delhi's urban fabric adequately at 1 km.",
+        "Skin temperature is the relevant quantity for a *surface* urban signal (2 m air is a different quantity — cardinal rule 2)."
+      ],
+      "counter_considerations": [
+        "Urban heat islands are classically strongest at NIGHT and in 2 m air — neither was observed in this stack; absence of a daytime surface signal does not refute a nighttime/air urban contribution.",
+        "One city (Delhi) is not the whole event region."
+      ],
+      "falsification": "A nighttime LST analysis (MOD11A1 LST_Night) or an intra-urban air-temperature comparison showing a positive urban signal during the window would establish the unassessed roles this factor explicitly leaves open.",
+      "generation_method": "aether_causal.heat_factors v1 (deterministic templating)"
+    }
+  ],
+  "external_published_attribution": [
+    {
+      "kind": "external_published_attribution",
+      "statement": "Zachariah et al. (2023): human-induced climate change made the March-April 2022 India-Pakistan heatwave about 30 times more likely and ~1 degC hotter than in a preindustrial climate (~1-in-100-year event in the 2022 climate). CITED EXTERNAL RESULT — not computed by Aether, not part of any factor score.",
+      "source": {
+        "dataset": "Zachariah, M., et al. (2023). Environmental Research: Climate, 2(4), 045005. doi:10.1088/2752-5295/acf4b6",
+        "locator": "https://doi.org/10.1088/2752-5295/acf4b6",
+        "ogim_id": null,
+        "ogim_layer": null
+      },
+      "temporal_caveat": null
+    }
+  ],
+  "provenance": {
+    "era5_v3": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+    "era5_coarse": "gs://gcp-public-data-arco-era5/ar/1959-2022-6h-240x121_equiangular_with_poles_conservative.zarr",
+    "uhi_artifact": "stage_b_outputs/india_nw_heatwave_2022_04/uhi.json",
+    "fetch_script": "scripts/sprint9_fetch_factors.py",
+    "sample_hour_utc": "06 (11:30 IST)"
+  }
+}

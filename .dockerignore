@@ -85,3 +85,23 @@ out/
 
 *~
 
+# Sprint 10: keep the build context honest and small — no caches, no env
+# files, no credentials, no web app (the API image needs none of them).
+.aether_cache/
+.env
+.env.*
+.netrc
+apps/web/
+docs/
+.github/
+.claude/
+# Mirror the repo's never-commit-data rule (CLAUDE.md): the image bakes the
+# COMMITTED artifact tree only. Local working trees carry gitignored .npz/.DS_Store
+# intermediates; CI checkouts are clean, but the image must not depend on that.
+**/*.npz
+**/*.tif
+**/*.zarr
+**/*.nc
+**/*.h5
+**/.DS_Store
+**/_pre_loocv

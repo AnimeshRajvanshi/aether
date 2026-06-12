@@ -309,3 +309,9 @@ export interface FactorHypothesisSet {
   external_published_attribution: EvidenceItem[];
   provenance: Record<string, string>;
 }
+
+/** /api/version — the deployed-integrity anchor (git SHA baked at build). */
+export interface VersionInfo {
+  git_sha: string;
+  app_version: string;
+}

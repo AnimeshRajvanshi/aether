@@ -8,13 +8,20 @@ import { useCallback, useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import type { FlyTarget } from "./CesiumGlobe";
 import Inspector from "./Inspector";
-import { fetchEvent, fetchEvents, fetchFactorHypotheses, fetchHypotheses } from "@/lib/api";
+import {
+  fetchEvent,
+  fetchEvents,
+  fetchFactorHypotheses,
+  fetchHypotheses,
+  fetchVersion,
+} from "@/lib/api";
 import type {
   EventDetail,
   EventSummary,
   FactorHypothesisSet,
   HypothesisSet,
   RetrievalLayer,
+  VersionInfo,
 } from "@/lib/types";
 import {
   clampPanelWidth,
@@ -65,9 +72,13 @@ export default function Dashboard() {
   const [qcal, setQcal] = useState<QCal>("ours");
   const [error, setError] = useState<string | null>(null);
   const [panelWidth, setPanelWidth] = useState(PANEL_DEFAULT_W);
+  const [version, setVersion] = useState<VersionInfo | null>(null);
 
   useEffect(() => {
     fetchEvents().then(setEvents).catch((e) => setError(String(e)));
+    // Deployed SHA for the statusbar — fetched from /api/version, never
+    // hardcoded. On failure the chip is simply absent (no invented build).
+    fetchVersion().then(setVersion).catch(() => setVersion(null));
   }, []);
 
   // Select: fetch + populate the panel and drape the plume NOW, then start the
@@ -355,12 +366,25 @@ export default function Dashboard() {
       </div>
 
       {/* Persistent provenance declaration: this dashboard renders committed,
-          reviewed artifacts — there is no live feed, and the chrome says so. */}
+          reviewed artifacts — there is no live feed, and the chrome says so.
+          Sprint 10 adds (a) the imagery/data attribution the license audit
+          requires (Powered by Esri + the current Esri credit line; ERA5 CC-BY
+          line) and (b) the deployed build SHA, fetched from /api/version —
+          absent when unknown, never invented. */}
       <div className="statusbar">
         <span>AETHER · PLANETARY ENGINE</span>
+        {/* "Powered by Esri" is the manual half of the Esri attribution
+            requirement; the data-source credit line ("Source: Esri, Vantor,
+            Earthstar Geographics, and the GIS User Community") is rendered by
+            Cesium's credit display on the globe, which we never suppress. */}
+        <span className="sb-attrib">
+          POWERED BY ESRI · CONTAINS MODIFIED COPERNICUS CLIMATE CHANGE SERVICE INFORMATION
+          (ERA5)
+        </span>
         <span className="sb-honesty">
           ALL VALUES FROM COMMITTED, REVIEWED ARTIFACTS · NO LIVE TELEMETRY
         </span>
+        {version && <span className="sb-build">BUILD {version.git_sha.slice(0, 7)}</span>}
       </div>
     </div>
   );

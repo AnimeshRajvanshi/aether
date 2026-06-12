@@ -1521,3 +1521,17 @@ button {
 .ext-attr .ch { color: #b9a3e8; font-size: 10px; letter-spacing: 0.1em; margin-bottom: 6px; }
 .ext-attr-item p { font-size: 11.5px; margin: 0 0 4px; }
 .ext-attr-src { opacity: 0.65; font-size: 10.5px; }
+
+/* Sprint 10: statusbar additions — imagery/data attribution (license audit)
+   and the deployed build SHA (fetched from /api/version; absent when unknown). */
+.statusbar .sb-attrib {
+  color: var(--text-3);
+  flex: 1;
+  min-width: 0;
+}
+.statusbar .sb-build {
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 2px;
+}

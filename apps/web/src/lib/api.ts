@@ -5,6 +5,7 @@ import type {
   EventSummary,
   FactorHypothesisSet,
   HypothesisSet,
+  VersionInfo,
 } from "./types";
 
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
@@ -19,6 +20,13 @@ async function getJSON<T>(path: string): Promise<T> {
 
 export function fetchEvents(): Promise<EventSummary[]> {
   return getJSON<EventSummary[]>("/api/events");
+}
+
+/** Deployed git SHA + app version, fetched from the API (never hardcoded).
+ *  Callers omit the build chip on failure — an unknown build is left blank,
+ *  not invented (the no-fake-liveness rule). */
+export function fetchVersion(): Promise<VersionInfo> {
+  return getJSON<VersionInfo>("/api/version");
 }
 
 export function fetchEvent(eventId: string): Promise<EventDetail> {

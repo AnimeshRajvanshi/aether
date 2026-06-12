@@ -1,0 +1,152 @@
+{
+  "event_id": "india_nw_heatwave_2022_04",
+  "pre_registration": "docs/science/sprint9_heat_validation.md",
+  "computed_after_pre_registration_commit": true,
+  "v1_station_peak_bracket": {
+    "era5_peak_c": 46.68,
+    "max_station_window_tmax_c": 45.0,
+    "bracket_k": 2.5,
+    "pass_v1": true,
+    "framing": "instrument validation of the EVENT's temperatures (stations are truth)"
+  },
+  "v2_era5_station_consistency": {
+    "n_stations": 10,
+    "n_excluded_lt7days": 100,
+    "n_station_days": 100,
+    "median_bias_k": 0.37,
+    "rmsd_k": 1.05,
+    "pearson_r": 0.728,
+    "thresholds": {
+      "median_bias_k": 1.5,
+      "rmsd_k": 2.5,
+      "pearson_r": 0.85
+    },
+    "pass_v2": false,
+    "framing": "CONSISTENCY at the truth anchor, NOT independent verification: ERA5 assimilates synoptic stations, including these."
+  },
+  "v3_imd_anomaly_agreement": {
+    "era5_window_mean_regional_anomaly_k_common_grid": 4.501,
+    "imd_window_mean_regional_anomaly_k_common_grid": 4.307,
+    "abs_difference_k": 0.194,
+    "threshold_k": 1.0,
+    "pattern_pearson_r": 0.874,
+    "pattern_r_threshold": 0.6,
+    "n_common_cells": 130,
+    "pass_v3a": true,
+    "pass_v3b": true
+  },
+  "v4_duration_extent": {
+    "duration_era5_days": 26,
+    "duration_imd_days": 7,
+    "imd_run": {
+      "start": "2022-04-05",
+      "end": "2022-04-11",
+      "hit_data_boundary": false
+    },
+    "pass_v4a": false,
+    "peak_day": "2022-04-08",
+    "extent_common_grid_era5_km2": 887700.0,
+    "extent_common_grid_imd_km2": 606300.0,
+    "relative_difference": 0.464,
+    "pass_v4b": false
+  },
+  "per_station": [
+    {
+      "station_id": "42071099999",
+      "name": "AMRITSAR",
+      "lat": 31.71,
+      "lon": 74.797,
+      "n_days": 10,
+      "station_window_max_c": 41.0,
+      "mean_bias_era5_minus_station_k": 0.55
+    },
+    {
+      "station_id": "42181099999",
+      "name": "INDIRA GANDHI INTL",
+      "lat": 28.567,
+      "lon": 77.103,
+      "n_days": 10,
+      "station_window_max_c": 42.2,
+      "mean_bias_era5_minus_station_k": 0.56
+    },
+    {
+      "station_id": "42348099999",
+      "name": "JAIPUR",
+      "lat": 26.824,
+      "lon": 75.812,
+      "n_days": 10,
+      "station_window_max_c": 42.0,
+      "mean_bias_era5_minus_station_k": 0.62
+    },
+    {
+      "station_id": "42369099999",
+      "name": "LUCKNOW / CHAUDHARY CHARAN SINGH INTL",
+      "lat": 26.761,
+      "lon": 80.889,
+      "n_days": 10,
+      "station_window_max_c": 41.2,
+      "mean_bias_era5_minus_station_k": 0.08
+    },
+    {
+      "station_id": "42479099999",
+      "name": "LAL BAHADUR SHASTRI VARANASI INTL",
+      "lat": 25.45,
+      "lon": 82.867,
+      "n_days": 10,
+      "station_window_max_c": 42.0,
+      "mean_bias_era5_minus_station_k": -0.32
+    },
+    {
+      "station_id": "42542099999",
+      "name": "UDAIPUR / MAHARANA PRATAP",
+      "lat": 24.618,
+      "lon": 73.896,
+      "n_days": 10,
+      "station_window_max_c": 41.0,
+      "mean_bias_era5_minus_station_k": 0.43
+    },
+    {
+      "station_id": "42647099999",
+      "name": "AHMEDABAD / SARDAR VALLABHBHAI PATEL INTL",
+      "lat": 23.077,
+      "lon": 72.635,
+      "n_days": 10,
+      "station_window_max_c": 45.0,
+      "mean_bias_era5_minus_station_k": -2.53
+    },
+    {
+      "station_id": "42667099999",
+      "name": "BHOPAL / RAJA BHOJ",
+      "lat": 23.287,
+      "lon": 77.337,
+      "n_days": 10,
+      "station_window_max_c": 41.6,
+      "mean_bias_era5_minus_station_k": 0.45
+    },
+    {
+      "station_id": "42675099999",
+      "name": "JABALPUR",
+      "lat": 23.178,
+      "lon": 80.052,
+      "n_days": 10,
+      "station_window_max_c": 42.0,
+      "mean_bias_era5_minus_station_k": -0.56
+    },
+    {
+      "station_id": "42754099999",
+      "name": "DEVI AHILYABAI HOLKAR",
+      "lat": 22.722,
+      "lon": 75.801,
+      "n_days": 10,
+      "station_window_max_c": 40.5,
+      "mean_bias_era5_minus_station_k": 0.89
+    }
+  ],
+  "provenance": {
+    "isd_source": "NOAA NCEI global-hourly (anonymous), accessed 2026-06-12",
+    "isd_license_verbatim": "The non-U.S. data in ISD are subject to WMO Resolution 40 restrictions, and cannot be redistributed to other users or customers.",
+    "isd_handling": "raw station files in gitignored cache only; this artifact carries derived comparison statistics (per-station bias/window-max summaries), never a re-hosted observation series (interim review ruling)",
+    "imd_source": "IMD Pune gridded daily Tmax 1.0 deg (maxtemp.php), accessed 2026-06-12",
+    "imd_handling": "raw .grd files in gitignored cache only; derived statistics committed"
+  }
+}

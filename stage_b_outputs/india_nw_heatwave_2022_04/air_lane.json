@@ -1,0 +1,287 @@
+{
+  "event_id": "india_nw_heatwave_2022_04",
+  "pre_registration": "docs/science/sprint9_heat_validation.md (committed before computation)",
+  "lane": "AIR (2 m air temperature) \u2014 never to be conflated with LST",
+  "era5_store": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+  "window": [
+    "2022-04-02",
+    "2022-04-11"
+  ],
+  "computable_days": [
+    "2022-03-23",
+    "2022-04-21"
+  ],
+  "c1_peak_tmax": {
+    "value_c": 46.68,
+    "date": "2022-04-10",
+    "lat": 29.0,
+    "lon": 72.5,
+    "definition": "max over window days x bbox land cells of ERA5 daily Tmax (06-13 UTC)"
+  },
+  "c2_anomaly": {
+    "peak_regional_mean_anomaly_k": 5.67,
+    "peak_regional_mean_anomaly_date": "2022-04-08",
+    "window_mean_regional_mean_anomaly_k": 5.103,
+    "peak_cell_anomaly_k": 11.88,
+    "definition": "anomaly vs own 1991-2020 +/-10d climatology, daily Tmax 06-13 UTC"
+  },
+  "c3_duration": {
+    "n_days": 26,
+    "start": "2022-03-26",
+    "end": "2022-04-20",
+    "hit_data_boundary": false,
+    "criterion": "area_frac >= 0.05 (IMD-style qualifying cells)"
+  },
+  "c4_extent": {
+    "peak_day": "2022-04-08",
+    "extent_km2": 889700.0,
+    "area_frac": 0.4748
+  },
+  "daily": [
+    {
+      "date": "2022-03-23",
+      "area_frac": 0.0,
+      "regional_mean_anomaly_k": 3.435
+    },
+    {
+      "date": "2022-03-24",
+      "area_frac": 0.0022,
+      "regional_mean_anomaly_k": 3.104
+    },
+    {
+      "date": "2022-03-25",
+      "area_frac": 0.0011,
+      "regional_mean_anomaly_k": 3.418
+    },
+    {
+      "date": "2022-03-26",
+      "area_frac": 0.0671,
+      "regional_mean_anomaly_k": 3.731
+    },
+    {
+      "date": "2022-03-27",
+      "area_frac": 0.1322,
+      "regional_mean_anomaly_k": 5.145
+    },
+    {
+      "date": "2022-03-28",
+      "area_frac": 0.1786,
+      "regional_mean_anomaly_k": 5.461
+    },
+    {
+      "date": "2022-03-29",
+      "area_frac": 0.2029,
+      "regional_mean_anomaly_k": 5.447
+    },
+    {
+      "date": "2022-03-30",
+      "area_frac": 0.2105,
+      "regional_mean_anomaly_k": 5.029
+    },
+    {
+      "date": "2022-03-31",
+      "area_frac": 0.1572,
+      "regional_mean_anomaly_k": 4.698
+    },
+    {
+      "date": "2022-04-01",
+      "area_frac": 0.127,
+      "regional_mean_anomaly_k": 4.757
+    },
+    {
+      "date": "2022-04-02",
+      "area_frac": 0.1961,
+      "regional_mean_anomaly_k": 5.123
+    },
+    {
+      "date": "2022-04-03",
+      "area_frac": 0.2177,
+      "regional_mean_anomaly_k": 4.578
+    },
+    {
+      "date": "2022-04-04",
+      "area_frac": 0.1601,
+      "regional_mean_anomaly_k": 4.812
+    },
+    {
+      "date": "2022-04-05",
+      "area_frac": 0.1871,
+      "regional_mean_anomaly_k": 4.808
+    },
+    {
+      "date": "2022-04-06",
+      "area_frac": 0.2845,
+      "regional_mean_anomaly_k": 5.1
+    },
+    {
+      "date": "2022-04-07",
+      "area_frac": 0.3671,
+      "regional_mean_anomaly_k": 5.341
+    },
+    {
+      "date": "2022-04-08",
+      "area_frac": 0.4748,
+      "regional_mean_anomaly_k": 5.671
+    },
+    {
+      "date": "2022-04-09",
+      "area_frac": 0.4347,
+      "regional_mean_anomaly_k": 5.48
+    },
+    {
+      "date": "2022-04-10",
+      "area_frac": 0.3944,
+      "regional_mean_anomaly_k": 5.18
+    },
+    {
+      "date": "2022-04-11",
+      "area_frac": 0.3499,
+      "regional_mean_anomaly_k": 4.934
+    },
+    {
+      "date": "2022-04-12",
+      "area_frac": 0.1472,
+      "regional_mean_anomaly_k": 3.796
+    },
+    {
+      "date": "2022-04-13",
+      "area_frac": 0.0534,
+      "regional_mean_anomaly_k": 3.531
+    },
+    {
+      "date": "2022-04-14",
+      "area_frac": 0.0702,
+      "regional_mean_anomaly_k": 3.22
+    },
+    {
+      "date": "2022-04-15",
+      "area_frac": 0.0601,
+      "regional_mean_anomaly_k": 3.042
+    },
+    {
+      "date": "2022-04-16",
+      "area_frac": 0.1567,
+      "regional_mean_anomaly_k": 3.254
+    },
+    {
+      "date": "2022-04-17",
+      "area_frac": 0.1649,
+      "regional_mean_anomaly_k": 3.4
+    },
+    {
+      "date": "2022-04-18",
+      "area_frac": 0.1785,
+      "regional_mean_anomaly_k": 3.574
+    },
+    {
+      "date": "2022-04-19",
+      "area_frac": 0.1196,
+      "regional_mean_anomaly_k": 3.083
+    },
+    {
+      "date": "2022-04-20",
+      "area_frac": 0.0778,
+      "regional_mean_anomaly_k": 2.769
+    },
+    {
+      "date": "2022-04-21",
+      "area_frac": 0.0,
+      "regional_mean_anomaly_k": 0.372
+    }
+  ],
+  "sensitivities": {
+    "s1_baseline_halves": {
+      "1991-2005": {
+        "window_mean_regional_mean_anomaly_k": 5.506,
+        "peak_day_extent_km2": 1001100.0
+      },
+      "2006-2020": {
+        "window_mean_regional_mean_anomaly_k": 4.7,
+        "peak_day_extent_km2": 761800.0
+      }
+    },
+    "s2_window_pm15": {
+      "window_mean_regional_mean_anomaly_k": 5.159
+    },
+    "s3_hour_set": {
+      "mean_residual_k": 0.0004,
+      "p99_residual_k": 0.0,
+      "max_residual_k": 0.618,
+      "note": "true 24h daily max minus the pre-registered 06-13 UTC max, window days"
+    },
+    "s4_criterion": {
+      "peak_day_extent_km2_p95_criterion": 1509200.0,
+      "peak_day_extent_km2_imd_criterion": 889700.0
+    }
+  },
+  "budgets": {
+    "window_mean_regional_anomaly_k": {
+      "central": 5.103,
+      "baseline_halves_half_spread_k": 0.403,
+      "day_window_pm15_shift_k": 0.056,
+      "hour_set_residual_k": 0.0004,
+      "era5_vs_station_median_bias_k": 0.37
+    },
+    "peak_day_extent_km2": {
+      "central": 889700.0,
+      "baseline_halves": [
+        1001100.0,
+        761800.0
+      ],
+      "criterion_p95_vs_imd": {
+        "peak_day_extent_km2_p95_criterion": 1509200.0,
+        "peak_day_extent_km2_imd_criterion": 889700.0
+      },
+      "grid_1deg_vs_native": [
+        887700.0,
+        889700.0
+      ]
+    },
+    "duration_days": {
+      "central": 26,
+      "imd_lane": 7
+    }
+  },
+  "imd_lane_daily_window": [
+    {
+      "date": "2022-04-02",
+      "regional_mean_anomaly_k": 3.858
+    },
+    {
+      "date": "2022-04-03",
+      "regional_mean_anomaly_k": 4.076
+    },
+    {
+      "date": "2022-04-04",
+      "regional_mean_anomaly_k": 4.119
+    },
+    {
+      "date": "2022-04-05",
+      "regional_mean_anomaly_k": 3.949
+    },
+    {
+      "date": "2022-04-06",
+      "regional_mean_anomaly_k": 4.149
+    },
+    {
+      "date": "2022-04-07",
+      "regional_mean_anomaly_k": 4.461
+    },
+    {
+      "date": "2022-04-08",
+      "regional_mean_anomaly_k": 5.076
+    },
+    {
+      "date": "2022-04-09",
+      "regional_mean_anomaly_k": 4.845
+    },
+    {
+      "date": "2022-04-10",
+      "regional_mean_anomaly_k": 4.241
+    },
+    {
+      "date": "2022-04-11",
+      "regional_mean_anomaly_k": 4.151
+    }
+  ]
+}

@@ -1,0 +1,419 @@
+{
+  "event_id": "india_nw_heatwave_2022_04",
+  "lane": "LST (satellite skin temperature) \u2014 ceiling CROSS-CHECKED",
+  "observation_time_caveat": {
+    "measured_mean_day_view_time_local_h": 10.68,
+    "statement": "All daytime LST values are Terra snapshots at ~10.7 h local solar time \u2014 BEFORE the diurnal LST peak. The Aqua ~13:30 pass is absent for this window (measured gap 2022-04-01..16). Nothing in this lane is a daily maximum."
+  },
+  "anomaly_baseline": {
+    "construction": "MOD11A2 2013-2021 same-composite-period mean, QC-good only",
+    "n_years": 9,
+    "samples_per_tile_period": {
+      "h23v05_081": 7,
+      "h23v05_089": 9,
+      "h23v05_097": 9,
+      "h23v06_081": 7,
+      "h23v06_089": 9,
+      "h23v06_097": 9,
+      "h24v05_081": 7,
+      "h24v05_089": 9,
+      "h24v05_097": 9,
+      "h24v06_081": 7,
+      "h24v06_089": 9,
+      "h24v06_097": 9,
+      "h25v05_081": 7,
+      "h25v05_089": 9,
+      "h25v05_097": 9,
+      "h25v06_081": 7,
+      "h25v06_089": 9,
+      "h25v06_097": 9
+    },
+    "composite_vs_daily_residual_k_2022": -0.91
+  },
+  "daily_bbox_mean_anomaly_k": {
+    "2022-04-02": 4.0,
+    "2022-04-03": 3.68,
+    "2022-04-04": 4.09,
+    "2022-04-05": 5.55,
+    "2022-04-06": 5.87,
+    "2022-04-07": 5.14,
+    "2022-04-08": 5.59,
+    "2022-04-09": 4.94,
+    "2022-04-10": 4.04,
+    "2022-04-11": 3.13
+  },
+  "window_mean_bbox_anomaly_k": 4.6,
+  "per_granule": [
+    {
+      "date": "2022-04-02",
+      "tile": "h23v05",
+      "valid_frac": 0.471,
+      "mean_anomaly_k": 5.87
+    },
+    {
+      "date": "2022-04-02",
+      "tile": "h23v06",
+      "valid_frac": 0.602,
+      "mean_anomaly_k": 5.05
+    },
+    {
+      "date": "2022-04-02",
+      "tile": "h24v05",
+      "valid_frac": 0.843,
+      "mean_anomaly_k": 3.81
+    },
+    {
+      "date": "2022-04-02",
+      "tile": "h24v06",
+      "valid_frac": 0.546,
+      "mean_anomaly_k": 1.85
+    },
+    {
+      "date": "2022-04-02",
+      "tile": "h25v05",
+      "valid_frac": 0.897,
+      "mean_anomaly_k": 5.89
+    },
+    {
+      "date": "2022-04-02",
+      "tile": "h25v06",
+      "valid_frac": 0.844,
+      "mean_anomaly_k": 1.79
+    },
+    {
+      "date": "2022-04-03",
+      "tile": "h23v05",
+      "valid_frac": 0.516,
+      "mean_anomaly_k": 7.24
+    },
+    {
+      "date": "2022-04-03",
+      "tile": "h23v06",
+      "valid_frac": 0.543,
+      "mean_anomaly_k": 6.33
+    },
+    {
+      "date": "2022-04-03",
+      "tile": "h24v05",
+      "valid_frac": 0.583,
+      "mean_anomaly_k": 2.84
+    },
+    {
+      "date": "2022-04-03",
+      "tile": "h24v06",
+      "valid_frac": 0.637,
+      "mean_anomaly_k": 3.81
+    },
+    {
+      "date": "2022-04-03",
+      "tile": "h25v05",
+      "valid_frac": 0.441,
+      "mean_anomaly_k": 0.57
+    },
+    {
+      "date": "2022-04-03",
+      "tile": "h25v06",
+      "valid_frac": 0.751,
+      "mean_anomaly_k": 1.67
+    },
+    {
+      "date": "2022-04-04",
+      "tile": "h23v05",
+      "valid_frac": 0.627,
+      "mean_anomaly_k": 7.92
+    },
+    {
+      "date": "2022-04-04",
+      "tile": "h23v06",
+      "valid_frac": 0.548,
+      "mean_anomaly_k": 4.74
+    },
+    {
+      "date": "2022-04-04",
+      "tile": "h24v05",
+      "valid_frac": 0.791,
+      "mean_anomaly_k": 4.27
+    },
+    {
+      "date": "2022-04-04",
+      "tile": "h24v06",
+      "valid_frac": 0.585,
+      "mean_anomaly_k": 3.18
+    },
+    {
+      "date": "2022-04-04",
+      "tile": "h25v05",
+      "valid_frac": 0.728,
+      "mean_anomaly_k": 4.04
+    },
+    {
+      "date": "2022-04-04",
+      "tile": "h25v06",
+      "valid_frac": 0.836,
+      "mean_anomaly_k": 1.31
+    },
+    {
+      "date": "2022-04-05",
+      "tile": "h23v05",
+      "valid_frac": 0.677,
+      "mean_anomaly_k": 9.37
+    },
+    {
+      "date": "2022-04-05",
+      "tile": "h23v06",
+      "valid_frac": 0.457,
+      "mean_anomaly_k": 6.19
+    },
+    {
+      "date": "2022-04-05",
+      "tile": "h24v05",
+      "valid_frac": 0.884,
+      "mean_anomaly_k": 7.03
+    },
+    {
+      "date": "2022-04-05",
+      "tile": "h24v06",
+      "valid_frac": 0.533,
+      "mean_anomaly_k": 3.5
+    },
+    {
+      "date": "2022-04-05",
+      "tile": "h25v05",
+      "valid_frac": 0.596,
+      "mean_anomaly_k": 4.53
+    },
+    {
+      "date": "2022-04-05",
+      "tile": "h25v06",
+      "valid_frac": 0.899,
+      "mean_anomaly_k": 2.77
+    },
+    {
+      "date": "2022-04-06",
+      "tile": "h23v05",
+      "valid_frac": 0.652,
+      "mean_anomaly_k": 9.36
+    },
+    {
+      "date": "2022-04-06",
+      "tile": "h23v06",
+      "valid_frac": 0.496,
+      "mean_anomaly_k": 3.5
+    },
+    {
+      "date": "2022-04-06",
+      "tile": "h24v05",
+      "valid_frac": 0.852,
+      "mean_anomaly_k": 7.37
+    },
+    {
+      "date": "2022-04-06",
+      "tile": "h24v06",
+      "valid_frac": 0.563,
+      "mean_anomaly_k": 4.28
+    },
+    {
+      "date": "2022-04-06",
+      "tile": "h25v05",
+      "valid_frac": 0.921,
+      "mean_anomaly_k": 8.17
+    },
+    {
+      "date": "2022-04-06",
+      "tile": "h25v06",
+      "valid_frac": 0.744,
+      "mean_anomaly_k": 1.01
+    },
+    {
+      "date": "2022-04-07",
+      "tile": "h23v05",
+      "valid_frac": 0.454,
+      "mean_anomaly_k": 7.51
+    },
+    {
+      "date": "2022-04-07",
+      "tile": "h23v06",
+      "valid_frac": 0.598,
+      "mean_anomaly_k": 4.48
+    },
+    {
+      "date": "2022-04-07",
+      "tile": "h24v05",
+      "valid_frac": 0.885,
+      "mean_anomaly_k": 8.1
+    },
+    {
+      "date": "2022-04-07",
+      "tile": "h24v06",
+      "valid_frac": 0.505,
+      "mean_anomaly_k": 1.81
+    },
+    {
+      "date": "2022-04-07",
+      "tile": "h25v05",
+      "valid_frac": 0.687,
+      "mean_anomaly_k": 7.21
+    },
+    {
+      "date": "2022-04-07",
+      "tile": "h25v06",
+      "valid_frac": 0.847,
+      "mean_anomaly_k": 1.55
+    },
+    {
+      "date": "2022-04-08",
+      "tile": "h23v05",
+      "valid_frac": 0.485,
+      "mean_anomaly_k": 6.69
+    },
+    {
+      "date": "2022-04-08",
+      "tile": "h23v06",
+      "valid_frac": 0.456,
+      "mean_anomaly_k": 4.03
+    },
+    {
+      "date": "2022-04-08",
+      "tile": "h24v05",
+      "valid_frac": 0.825,
+      "mean_anomaly_k": 8.94
+    },
+    {
+      "date": "2022-04-08",
+      "tile": "h24v06",
+      "valid_frac": 0.645,
+      "mean_anomaly_k": 5.7
+    },
+    {
+      "date": "2022-04-08",
+      "tile": "h25v05",
+      "valid_frac": 0.793,
+      "mean_anomaly_k": 6.49
+    },
+    {
+      "date": "2022-04-08",
+      "tile": "h25v06",
+      "valid_frac": 0.57,
+      "mean_anomaly_k": -0.3
+    },
+    {
+      "date": "2022-04-09",
+      "tile": "h23v05",
+      "valid_frac": 0.44,
+      "mean_anomaly_k": 6.95
+    },
+    {
+      "date": "2022-04-09",
+      "tile": "h23v06",
+      "valid_frac": 0.585,
+      "mean_anomaly_k": 5.0
+    },
+    {
+      "date": "2022-04-09",
+      "tile": "h24v05",
+      "valid_frac": 0.673,
+      "mean_anomaly_k": 7.86
+    },
+    {
+      "date": "2022-04-09",
+      "tile": "h24v06",
+      "valid_frac": 0.549,
+      "mean_anomaly_k": 1.21
+    },
+    {
+      "date": "2022-04-09",
+      "tile": "h25v05",
+      "valid_frac": 0.707,
+      "mean_anomaly_k": 8.13
+    },
+    {
+      "date": "2022-04-09",
+      "tile": "h25v06",
+      "valid_frac": 0.787,
+      "mean_anomaly_k": 1.0
+    },
+    {
+      "date": "2022-04-10",
+      "tile": "h23v05",
+      "valid_frac": 0.373,
+      "mean_anomaly_k": 7.33
+    },
+    {
+      "date": "2022-04-10",
+      "tile": "h23v06",
+      "valid_frac": 0.372,
+      "mean_anomaly_k": 3.92
+    },
+    {
+      "date": "2022-04-10",
+      "tile": "h24v05",
+      "valid_frac": 0.438,
+      "mean_anomaly_k": 6.58
+    },
+    {
+      "date": "2022-04-10",
+      "tile": "h24v06",
+      "valid_frac": 0.627,
+      "mean_anomaly_k": 4.61
+    },
+    {
+      "date": "2022-04-10",
+      "tile": "h25v05",
+      "valid_frac": 0.208,
+      "mean_anomaly_k": 5.43
+    },
+    {
+      "date": "2022-04-10",
+      "tile": "h25v06",
+      "valid_frac": 0.606,
+      "mean_anomaly_k": -0.83
+    },
+    {
+      "date": "2022-04-11",
+      "tile": "h23v05",
+      "valid_frac": 0.332,
+      "mean_anomaly_k": 4.69
+    },
+    {
+      "date": "2022-04-11",
+      "tile": "h23v06",
+      "valid_frac": 0.568,
+      "mean_anomaly_k": 2.66
+    },
+    {
+      "date": "2022-04-11",
+      "tile": "h24v05",
+      "valid_frac": 0.621,
+      "mean_anomaly_k": 6.31
+    },
+    {
+      "date": "2022-04-11",
+      "tile": "h24v06",
+      "valid_frac": 0.277,
+      "mean_anomaly_k": 1.33
+    },
+    {
+      "date": "2022-04-11",
+      "tile": "h25v05",
+      "valid_frac": 0.454,
+      "mean_anomaly_k": 3.56
+    },
+    {
+      "date": "2022-04-11",
+      "tile": "h25v06",
+      "valid_frac": 0.684,
+      "mean_anomaly_k": 0.31
+    }
+  ],
+  "l3_product_consistency": {
+    "n_days": 10,
+    "mean_diff_modis_minus_era5skt_k": -5.31,
+    "std_diff_k": 1.32,
+    "era5_hour_utc": 6,
+    "framing": "product consistency between DISTINCT-BUT-NOT-INDEPENDENT skin-temperature products (MODIS retrieval vs reanalysis surface energy balance); spatial aggregation differs (QC-valid 1 km pixels vs all land cells) \u2014 a coherence check, not a validation"
+  },
+  "source": {
+    "products": "MOD11A1/MOD11A2 v061 (NASA), COG mirror: Microsoft Planetary Computer",
+    "route_note": "LP DAAC HDF4 verified accessible (Stage A) but unreadable here (no GDAL HDF4 driver \u2014 probed); MPC serves the same v061 product as COGs. Accessed 2026-06-12"
+  }
+}

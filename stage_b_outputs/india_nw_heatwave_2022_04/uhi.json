@@ -1,0 +1,157 @@
+{
+  "event_id": "india_nw_heatwave_2022_04",
+  "lane": "LST (skin temperature) \u2014 Terra ~10:30-local snapshots; NOT daily max",
+  "definition": {
+    "urban": "WorldCover built-up fraction >= 0.5 within 20.0 km of Delhi center",
+    "rural": "built-up <= 0.1, ring 20.0-40.0 km, water/wetland-majority excluded",
+    "grid": "MODIS 1 km sinusoidal; WorldCover average-aggregated onto it"
+  },
+  "daily": [
+    {
+      "date": "2022-04-02",
+      "uhi_k": 0.65,
+      "urban_mean_k": 309.58,
+      "rural_mean_k": 308.93,
+      "n_urban_px": 100,
+      "n_rural_px": 2609
+    },
+    {
+      "date": "2022-04-03",
+      "uhi_k": -0.19,
+      "urban_mean_k": 313.47,
+      "rural_mean_k": 313.66,
+      "n_urban_px": 102,
+      "n_rural_px": 2614
+    },
+    {
+      "date": "2022-04-04",
+      "uhi_k": -1.32,
+      "urban_mean_k": 306.06,
+      "rural_mean_k": 307.38,
+      "n_urban_px": 91,
+      "n_rural_px": 2132
+    },
+    {
+      "date": "2022-04-05",
+      "uhi_k": 0.04,
+      "urban_mean_k": 314.05,
+      "rural_mean_k": 314.0,
+      "n_urban_px": 104,
+      "n_rural_px": 2615
+    },
+    {
+      "date": "2022-04-06",
+      "uhi_k": -1.02,
+      "urban_mean_k": 311.4,
+      "rural_mean_k": 312.42,
+      "n_urban_px": 98,
+      "n_rural_px": 2231
+    },
+    {
+      "date": "2022-04-07",
+      "uhi_k": -0.61,
+      "urban_mean_k": 313.69,
+      "rural_mean_k": 314.3,
+      "n_urban_px": 107,
+      "n_rural_px": 2617
+    },
+    {
+      "date": "2022-04-08",
+      "uhi_k": -2.06,
+      "urban_mean_k": 313.61,
+      "rural_mean_k": 315.66,
+      "n_urban_px": 97,
+      "n_rural_px": 2615
+    },
+    {
+      "date": "2022-04-09",
+      "uhi_k": -0.19,
+      "urban_mean_k": 312.17,
+      "rural_mean_k": 312.36,
+      "n_urban_px": 99,
+      "n_rural_px": 2614
+    },
+    {
+      "date": "2022-04-10",
+      "uhi_k": -1.39,
+      "urban_mean_k": 314.81,
+      "rural_mean_k": 316.19,
+      "n_urban_px": 101,
+      "n_rural_px": 2613
+    },
+    {
+      "date": "2022-04-11",
+      "uhi_k": -1.58,
+      "urban_mean_k": 308.25,
+      "rural_mean_k": 309.83,
+      "n_urban_px": 37,
+      "n_rural_px": 1620
+    }
+  ],
+  "window_mean_uhi_k": -0.77,
+  "window_std_uhi_k": 0.8,
+  "n_valid_days": 10,
+  "sensitivities": {
+    "urban_frac_0.4": {
+      "mean_uhi_k": -0.81,
+      "n_days": 10
+    },
+    "urban_frac_0.6": {
+      "mean_uhi_k": -0.74,
+      "n_days": 10
+    },
+    "ring_25_45km": {
+      "mean_uhi_k": -1.05,
+      "n_days": 10
+    }
+  },
+  "classification_uncertainty": {
+    "worldcover_version": "v200 (2021 map)",
+    "stationarity_assumption": "2021 land cover applied to April 2022 (stated)",
+    "accuracy_note": "WorldCover v200's own reported accuracy is cited in the Stage B report from the product documentation; the threshold sensitivities above are this analysis's empirical handle on classification error."
+  },
+  "elevation_guard": {
+    "applied": false,
+    "reason": "no 1 km elevation source in this stack; the Delhi region is low-relief alluvial plain, so the urban-rural elevation confound is expected small but is NOT quantified here"
+  },
+  "landsat_cross_check": [
+    {
+      "id": "LC08_L2SP_147040_20220411_02_T1",
+      "datetime": "2022-04-11T05:24:51.146597Z",
+      "platform": "landsat-8",
+      "cloud_pct": 1.68,
+      "uhi_k": -6.75,
+      "urban_mean_k": 312.09,
+      "rural_mean_k": 318.84,
+      "n_urban_px": 455,
+      "n_rural_px": 1322
+    },
+    {
+      "id": "LC08_L2SP_146040_20220404_02_T1",
+      "datetime": "2022-04-04T05:18:36.185832Z",
+      "platform": "landsat-8",
+      "cloud_pct": 0.01,
+      "uhi_k": 0.13,
+      "urban_mean_k": 313.26,
+      "rural_mean_k": 313.14,
+      "n_urban_px": 847,
+      "n_rural_px": 2417
+    },
+    {
+      "id": "LC09_L2SP_147040_20220403_02_T1",
+      "datetime": "2022-04-03T05:24:58.637094Z",
+      "platform": "landsat-9",
+      "cloud_pct": 0.0,
+      "uhi_k": -2.31,
+      "urban_mean_k": 315.07,
+      "rural_mean_k": 317.38,
+      "n_urban_px": 545,
+      "n_rural_px": 1448
+    }
+  ],
+  "provenance": {
+    "modis": "MOD11A1 v061 COGs via Planetary Computer, accessed 2026-06-12",
+    "worldcover": "ESA WorldCover v200 2021 (CC BY 4.0), tile N27E075, accessed 2026-06-12",
+    "landsat": "Landsat C2L2 via Planetary Computer (lwir11 ST), accessed 2026-06-12"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "exploratory": "MIN_OBS_PER_DAY=3 (pre-registered verdicts use 4)",
+  "n_stations": 36,
+  "n_excluded": 74,
+  "n_station_days": 341,
+  "max_station_window_tmax_c": 45.0,
+  "median_bias_k": 0.23,
+  "rmsd_k": 1.67,
+  "pearson_r": 0.946
+}

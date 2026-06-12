@@ -16,6 +16,9 @@ from fastapi.testclient import TestClient
 
 client = TestClient(app)
 RUBRIC_TIERS = {"VALIDATED", "CROSS-CHECKED", "DEMONSTRATION"}
+# Heat extension (rubric doc): area events carry PER-QUANTITY at event level,
+# with each quantity's tier in EventDetail.heat.quantity_tiers (guards below).
+EVENT_LEVEL_TIERS = RUBRIC_TIERS | {"PER-QUANTITY"}
 
 
 def _active_details() -> list[dict]:
@@ -45,7 +48,9 @@ def test_no_active_event_is_validated() -> None:
 
 def test_every_tier_is_in_the_rubric() -> None:
     for d in _active_details():
-        assert d["validation_tier"] in RUBRIC_TIERS
+        assert d["validation_tier"] in EVENT_LEVEL_TIERS
+        if d["phenomenon_type"] == "emission_event":
+            assert d["validation_tier"] in RUBRIC_TIERS  # flux rubric unchanged
 
 
 def test_cross_checked_traces_to_a_real_reference() -> None:
@@ -59,3 +64,65 @@ def test_cross_checked_traces_to_a_real_reference() -> None:
         explainer = d["tier_explainer"].lower()
         assert "cross-checked" in explainer
         assert "no independent flux" in explainer or "no per-source" in explainer
+
+
+# ---- heat-vertical extension (Sprint 9 Stage D): PER-QUANTITY tiers ---------
+
+
+def _heat_details() -> list[dict]:
+    return [d for d in _active_details() if d["phenomenon_type"] == "heat_wave"]
+
+
+def test_heat_events_carry_per_quantity_badge() -> None:
+    """Area events must NOT carry an event-level VALIDATED (it would overstate
+    C3/C4); the rubric's heat extension assigns PER-QUANTITY at event level."""
+    for d in _heat_details():
+        assert d["validation_tier"] == "PER-QUANTITY"
+        assert "per quantity" in d["tier_explainer"].lower()
+
+
+def test_heat_validated_rows_trace_to_committed_pass_flags() -> None:
+    """VALIDATED may appear ONLY on quantity rows whose pre-registered checks
+    passed in the committed validation.json — never asserted at render time."""
+    import json as _json
+
+    for d in _heat_details():
+        val = _json.loads(
+            (
+                config.data_root() / "stage_b_outputs" / d["event_id"] / "validation.json"
+            ).read_text()
+        )
+        passes = {
+            "C1": val["v1_station_peak_bracket"]["pass_v1"],
+            "C2": val["v3_imd_anomaly_agreement"]["pass_v3a"]
+            and val["v3_imd_anomaly_agreement"]["pass_v3b"],
+            "C3": val["v4_duration_extent"]["pass_v4a"],
+            "C4": val["v4_duration_extent"]["pass_v4b"],
+        }
+        for row in d["heat"]["quantity_tiers"]:
+            if row["tier"] == "VALIDATED":
+                assert passes.get(row["quantity"]) is True, (
+                    f"{row['quantity']} served VALIDATED without a committed pass flag"
+                )
+            if row["quantity"] in passes and not passes[row["quantity"]]:
+                assert row["tier"] != "VALIDATED"
+            if row["lane"] == "LST":
+                assert "CROSS-CHECKED" in row["tier"]  # the LST ceiling
+
+
+def test_heat_duration_extent_carry_criterion_and_dataset() -> None:
+    """Stage B gate rendering rule: duration/extent never render without their
+    criterion and source dataset attached."""
+    for d in _heat_details():
+        rows = {r["quantity"]: r for r in d["heat"]["quantity_tiers"]}
+        for q in ("C3", "C4"):
+            assert rows[q]["criterion_dataset"], f"{q} rendered without criterion+dataset"
+            assert "ERA5" in rows[q]["value_display"] and "IMD" in rows[q]["value_display"]
+
+
+def test_methane_rubric_unchanged_by_heat() -> None:
+    """The flux rubric still holds for emission events: no VALIDATED, tiers in set."""
+    for d in _active_details():
+        if d["phenomenon_type"] == "emission_event":
+            assert d["validation_tier"] in RUBRIC_TIERS
+            assert d["validation_tier"] != "VALIDATED"

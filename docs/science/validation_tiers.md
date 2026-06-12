@@ -54,3 +54,27 @@ future no-reference granule is labelled honestly.)
 - Sprint 7 Stage D first shipped Goturdepe as VALIDATED; the Stage D review corrected
   this to CROSS-CHECKED (strong) on the rationale above — VALIDATED requires
   per-source flux truth Goturdepe does not have. Both events are CROSS-CHECKED.
+
+## Heat-vertical extension — PER-QUANTITY tiers (Sprint 9 Stage D)
+
+Area events earn tiers **per quantity**, not per event (Stage B gate ruling:
+VALIDATED is earnable for 2 m air-temperature claims specifically; the Stage D
+gate ordered per-quantity badges). For `india_nw_heatwave_2022_04`:
+
+| quantity | tier | basis |
+|---|---|---|
+| C1 peak 2 m Tmax | **VALIDATED** | pre-registered V1 vs ISD station instruments (criteria committed before computation — docs/science/sprint9_heat_validation.md) |
+| C2 regional Tmax anomaly | **VALIDATED** | pre-registered V3 vs the ERA5-independent IMD station-gridded product |
+| C3 duration / C4 extent | NOT VALIDATED | pre-registered V4 failed across two station-true datasets (criterion-edge fragility — the finding); always rendered with criterion + dataset attached |
+| ERA5↔station consistency | NOT CLAIMED | V2 failed its pooled-r criterion; permanently not-claimed for this event (gate ruling) |
+| LST quantities (anomaly, UHI) | ≤ CROSS-CHECKED | no in-situ skin-temperature truth; Terra ~10:41 local snapshot only, never a daily maximum |
+
+**The event-level badge for an area event is `PER-QUANTITY`** — an event-level
+VALIDATED badge would overstate C3/C4, and an event-level NOT-VALIDATED badge
+would bury C1/C2. The marker badge points at the per-quantity table; the
+methane (flux) rubric above is unchanged, and VALIDATED at event level remains
+reserved and held by no event. Encoding: heat events serve
+`validation_tier = "PER-QUANTITY"` with `EventDetail.heat.quantity_tiers`
+carrying each quantity's tier; `test_tier_rubric.py` enforces that VALIDATED
+appears ONLY on quantity rows whose committed pass flags
+(`stage_b_outputs/<id>/validation.json`) are true.

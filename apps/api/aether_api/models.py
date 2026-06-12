@@ -205,3 +205,92 @@ class EventDetail(_Base):
     provenance: Provenance | None = None
     references: list[Reference] = Field(default_factory=list)
     pending_reason: str | None = None
+    # Heat vertical (Sprint 9 Stage D): populated for heat_wave events; None for
+    # methane events — the methane payload is bit-identical to pre-Sprint-9.
+    heat: HeatBlock | None = None
+
+
+# --------------------------------------------------------------------------- #
+# Heat vertical (Sprint 9 Stage D) — additive models; methane DTOs untouched
+# --------------------------------------------------------------------------- #
+
+
+class QuantityTierRow(_Base):
+    """One per-quantity tier badge row (the heat vertical's tier extension).
+
+    Tiers are PER QUANTITY for area events (docs/science/validation_tiers.md,
+    heat extension): C1/C2 carry VALIDATED; C3/C4 carry their honest
+    not-validated state with the criterion+dataset attached (Stage B gate
+    rendering rule); LST quantities are capped at CROSS-CHECKED.
+    """
+
+    quantity: str  # "C1" | "C2" | "C3" | "C4" | "LST" | "UHI"
+    label: str
+    value_display: str
+    tier: str  # VALIDATED | NOT VALIDATED | CROSS-CHECKED | CONSISTENCY NOT CLAIMED
+    explainer: str
+    criterion_dataset: str | None = None  # mandatory for duration/extent rows
+    lane: str  # "AIR" | "LST"
+
+
+class HeatLayerMeta(_Base):
+    key: str
+    label: str
+    colormap: str
+    vmin: float
+    vmax: float
+    unit: str
+    lane: str
+
+
+class HeatRasterMeta(_Base):
+    """Bounds + layers for the heat overlay (air anomaly / baseline / LST)."""
+
+    bounds: RasterBounds
+    layers: list[str]
+    layer_meta: list[HeatLayerMeta]
+    lst_view_time_local_h: float
+    rendering: str
+
+
+class HeatEpisode(_Base):
+    """Episode (criterion run) vs canonical analysis window — kept distinct."""
+
+    window_start: str
+    window_end: str
+    episode_start: str
+    episode_end: str
+    episode_days: int
+    criterion: str
+    note: str
+
+
+class HeatLstBlock(_Base):
+    window_mean_anomaly_k: float
+    view_time_local_h: float
+    observation_time_statement: str  # first-class; from the committed artifact
+    composite_baseline_residual_k: float
+    uhi_window_mean_k: float
+    uhi_window_std_k: float
+    uhi_finding: str
+
+
+class HeatBlock(_Base):
+    """Everything heat-specific the inspector renders. All values from
+    committed Stage B/C artifacts; nothing computed at render time."""
+
+    peak_tmax_c: float
+    peak_date: str
+    window_mean_regional_anomaly_k: float
+    peak_day_extent_km2: float
+    episode: HeatEpisode
+    quantity_tiers: list[QuantityTierRow]
+    lst: HeatLstBlock
+    lst_vs_air: str  # the first-class distinction block (verbatim framing)
+    budget_terms: list[UncertaintyTerm]
+    heat_raster: HeatRasterMeta
+
+
+# HeatBlock is defined after EventDetail (additive section); resolve the
+# deferred annotation now so validation works regardless of import order.
+EventDetail.model_rebuild()

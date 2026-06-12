@@ -44,7 +44,11 @@ from .models import (
 # Events surfaced on the globe, in display order. Goturdepe is the quantified
 # wedge; Permian is an honest "pending" — its benchmark exists but Sprint 2 could
 # not quantify it (no granule-matched target spectrum). See its YAML.
-EVENT_IDS = ["turkmenistan_goturdepe_2022_08_15", "permian_basin_2022"]
+EVENT_IDS = [
+    "turkmenistan_goturdepe_2022_08_15",
+    "permian_basin_2022",
+    "india_nw_heatwave_2022_04",
+]
 
 # Display-only labels (NOT scientific values). Coordinates, rates and citations
 # all come from files; these are just human-facing names/regions for the HUD.
@@ -56,6 +60,10 @@ _DISPLAY: dict[str, dict[str, str]] = {
     "permian_basin_2022": {
         "short_name": "PERMIAN BASIN",
         "region": "Carlsbad, NM · USA",
+    },
+    "india_nw_heatwave_2022_04": {
+        "short_name": "NW INDIA HEAT WAVE",
+        "region": "NW/Central India",
     },
 }
 
@@ -81,9 +89,13 @@ def _is_active(event_id: str) -> bool:
     integration), which is what produces the assets/<id>/bounds.json render set.
     Until those assets exist the event stays an honest PENDING.
     """
+    # Sprint 9 generality fix: the quantification artifact is phenomenon-shaped —
+    # q_estimate.json for plume events, air_lane.json for heat events. Either
+    # counts; the UI assets gate is shared.
     q_path = config.stage_b_dir(event_id) / "q_estimate.json"
+    air_path = config.stage_b_dir(event_id) / "air_lane.json"
     bounds_path = config.assets_dir(event_id) / "bounds.json"
-    return q_path.exists() and bounds_path.exists()
+    return (q_path.exists() or air_path.exists()) and bounds_path.exists()
 
 
 # Validation tier per event — see the rubric in docs/science/validation_tiers.md.
@@ -235,6 +247,9 @@ def _summary(event_id: str) -> EventSummary:
     disp = _DISPLAY[event_id]
     sensor_name, _ = _primary_sensor(event)
 
+    if event.phenomenon_type.value == "heat_wave" and _is_active(event_id):
+        return _heat_summary(event_id, event)
+
     if _is_active(event_id):
         q = _read_json(config.stage_b_dir(event_id) / "q_estimate.json")
         stage_a = _read_json(config.stage_a_dir(event_id) / "stage_a_report.json")
@@ -299,6 +314,10 @@ def get_event_detail(event_id: str) -> EventDetail | None:
     if event_id not in EVENT_IDS:
         return None
     event = load_event_file(config.benchmark_yaml(event_id))
+    if event.phenomenon_type.value == "heat_wave":
+        if _is_active(event_id):
+            return _heat_active_detail(event_id, event)
+        return _pending_detail(event_id, event)
     if _is_active(event_id):
         return _active_detail(event_id, event)
     return _pending_detail(event_id, event)
@@ -619,4 +638,344 @@ def _pending_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
         provenance=provenance,
         references=_references(event),
         pending_reason=reason,
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Heat vertical (Sprint 9 Stage D)
+# --------------------------------------------------------------------------- #
+# Every value below is read from a committed, gate-reviewed artifact:
+#   stage_b_outputs/<id>/air_lane.json / validation.json / lst_lane.json / uhi.json
+#   attribution_outputs/<id>/factor_hypotheses.json
+#   assets/<id>/bounds.json
+# Rendering rules from the Stage B/C gates are applied structurally here:
+# duration/extent always carry criterion+dataset; episode vs window stays
+# distinct; LST rows carry the measured view time; tiers are PER QUANTITY.
+
+from aether_causal.schema import FactorHypothesisSet  # noqa: E402
+
+from .models import (  # noqa: E402
+    HeatBlock,
+    HeatEpisode,
+    HeatLayerMeta,
+    HeatLstBlock,
+    HeatRasterMeta,
+    QuantityTierRow,
+)
+
+HEAT_TIER_LABEL = "PER-QUANTITY"
+
+
+def factor_hypotheses_json(event_id: str) -> Path:
+    return config.data_root() / "attribution_outputs" / event_id / "factor_hypotheses.json"
+
+
+def get_factor_hypotheses(event_id: str) -> FactorHypothesisSet | None:
+    """Committed Stage C factor artifact, served verbatim once the event is live."""
+    if not _is_active(event_id):
+        return None
+    path = factor_hypotheses_json(event_id)
+    if not path.exists():
+        return None
+    return FactorHypothesisSet.model_validate_json(path.read_text())
+
+
+def _heat_summary(event_id: str, event: BenchmarkEvent) -> EventSummary:
+    disp = _DISPLAY[event_id]
+    air = _read_json(config.stage_b_dir(event_id) / "air_lane.json")
+    return EventSummary(
+        event_id=event_id,
+        name=event.name,
+        short_name=disp["short_name"],
+        planetary_body=event.planetary_body,
+        phenomenon_type=event.phenomenon_type,
+        lat=event.location.lat,
+        lon=event.location.lon,
+        status=EventStatus.ACTIVE,
+        sensor="ERA5 + MODIS + ISD",
+        validation_tier=HEAT_TIER_LABEL,
+        headline=(
+            f"T2M +{air['c2_anomaly']['window_mean_regional_mean_anomaly_k']:.1f} K · "
+            f"peak {air['c1_peak_tmax']['value_c']:.1f} °C"
+        ),
+        # The canonical analysis window, not a single overpass — area events have
+        # no single acquisition; the window is the honest analogue.
+        acquisition_utc=f"{air['window'][0]} → {air['window'][1]} (window)",
+    )
+
+
+def _heat_quantity_tiers(
+    air: dict[str, Any], val: dict[str, Any], lst: dict[str, Any], uhi: dict[str, Any]
+) -> list[QuantityTierRow]:
+    v1 = val["v1_station_peak_bracket"]
+    v2 = val["v2_era5_station_consistency"]
+    v3 = val["v3_imd_anomaly_agreement"]
+    v4 = val["v4_duration_extent"]
+    c3 = air["c3_duration"]
+    view_t = lst["observation_time_caveat"]["measured_mean_day_view_time_local_h"]
+    rows = [
+        QuantityTierRow(
+            quantity="C1",
+            label="Peak 2 m air temperature",
+            value_display=(
+                f"{air['c1_peak_tmax']['value_c']:.2f} °C ({air['c1_peak_tmax']['date']})"
+            ),
+            tier="VALIDATED" if v1["pass_v1"] else "NOT VALIDATED",
+            explainer=(
+                "Pre-registered V1 (criteria committed before any station data was "
+                f"read): max station-day Tmax across {v2['n_stations']} qualifying ISD "
+                f"stations = {v1['max_station_window_tmax_c']:.1f} °C brackets the "
+                f"gridded peak within ±{v1['bracket_k']} K — the event's peak "
+                "temperature is instrument-validated. Stations are the truth anchor "
+                "(ERA5 assimilates them; this is ground-truth agreement, not "
+                "independent methodology confirmation)."
+            ),
+            lane="AIR",
+        ),
+        QuantityTierRow(
+            quantity="C2",
+            label="Window-mean regional Tmax anomaly",
+            value_display=(
+                f"+{air['c2_anomaly']['window_mean_regional_mean_anomaly_k']:.2f} K "
+                "(vs own 1991-2020 ±10d climatology)"
+            ),
+            tier="VALIDATED" if (v3["pass_v3a"] and v3["pass_v3b"]) else "NOT VALIDATED",
+            explainer=(
+                "Pre-registered V3: agrees with IMD's station-only gridded product "
+                f"(ERA5-independent) to {v3['abs_difference_k']:.2f} K on the common "
+                f"1° grid with pattern r {v3['pattern_pearson_r']:.3f}. Two products "
+                "with different error modes agreeing about the same upstream station "
+                "truth."
+            ),
+            lane="AIR",
+        ),
+        QuantityTierRow(
+            quantity="C3",
+            label="Duration (episode)",
+            value_display=(
+                f"{c3['n_days']} days (ERA5, {c3['criterion']}) vs "
+                f"{v4['duration_imd_days']} days (IMD gridded, same criterion)"
+            ),
+            tier="NOT VALIDATED",
+            explainer=(
+                "Pre-registered V4a FAILED: the two station-true datasets disagree "
+                "(Δ19 days) because a ~0.3-0.5 K systematic moves many cell-days "
+                "across the fixed 40 °C/+4.5 K criterion edge. Duration at this "
+                "criterion is dataset-fragile — that finding is the result. Always "
+                "read duration with its criterion and dataset attached."
+            ),
+            criterion_dataset=(
+                "area ≥5% of bbox land, IMD-style cells (≥40 °C & ≥+4.5 K) · "
+                "ERA5 vs IMD gridded"
+            ),
+            lane="AIR",
+        ),
+        QuantityTierRow(
+            quantity="C4",
+            label="Peak-day extent",
+            value_display=(
+                f"{air['c4_extent']['extent_km2']:,.0f} km² (ERA5 native) vs "
+                f"{v4['extent_common_grid_imd_km2']:,.0f} km² (IMD, common 1° grid)"
+            ),
+            tier="NOT VALIDATED",
+            explainer=(
+                "Pre-registered V4b FAILED (Δ46% > 30%): same criterion-edge "
+                "mechanism as duration. Extent is a criterion-semantics quantity; "
+                "it is never quoted without its criterion."
+            ),
+            criterion_dataset="IMD-style qualifying cells on 2022-04-08 · ERA5 vs IMD gridded",
+            lane="AIR",
+        ),
+        QuantityTierRow(
+            quantity="V2",
+            label="ERA5↔station consistency",
+            value_display=(
+                f"bias {v2['median_bias_k']:+.2f} K · RMSD {v2['rmsd_k']:.2f} K · "
+                f"r {v2['pearson_r']:.3f} ({v2['n_stations']} stations)"
+            ),
+            tier="CONSISTENCY NOT CLAIMED",
+            explainer=(
+                "Pre-registered V2 FAILED its pooled-r criterion (0.728 < 0.85) and "
+                "is permanently not-claimed for this event (gate ruling). Bias and "
+                "RMSD passed comfortably; the exploratory ≥3-obs diagnosis (r 0.946 "
+                "at 36 stations) is labeled exploratory and never upgrades the "
+                "verdict."
+            ),
+            lane="AIR",
+        ),
+        QuantityTierRow(
+            quantity="LST",
+            label="Window-mean LST anomaly",
+            value_display=(
+                f"+{lst['window_mean_bbox_anomaly_k']:.2f} K (Terra ~{view_t:.2f} h local)"
+            ),
+            tier="CROSS-CHECKED (ceiling)",
+            explainer=(
+                "Skin temperature, NOT air temperature, and a ~"
+                f"{view_t:.2f} h local-solar snapshot BEFORE the diurnal LST peak — "
+                "never a daily maximum (the Aqua 13:30 pass is absent for this "
+                "window, a measured gap). No in-situ skin-temperature truth exists "
+                "in this stack, so LST quantities cap at CROSS-CHECKED."
+            ),
+            lane="LST",
+        ),
+        QuantityTierRow(
+            quantity="UHI",
+            label="Delhi daytime surface urban-rural delta",
+            value_display=(
+                f"{uhi['window_mean_uhi_k']:+.2f} ± {uhi['window_std_uhi_k']:.2f} K "
+                f"({uhi['n_valid_days']} days)"
+            ),
+            tier="CROSS-CHECKED (ceiling)",
+            explainer=(
+                "NEGATIVE at the only observed daytime LST time — the urban core "
+                "read COOLER than its dry rural ring (sign robust to all "
+                "pre-registered sensitivities; Landsat sign-agrees 2 of 3 scenes). "
+                "Says nothing about the nighttime or 2 m-air urban roles, which are "
+                "explicitly unassessed."
+            ),
+            lane="LST",
+        ),
+    ]
+    return rows
+
+
+def _heat_active_detail(event_id: str, event: BenchmarkEvent) -> EventDetail:
+    air = _read_json(config.stage_b_dir(event_id) / "air_lane.json")
+    val = _read_json(config.stage_b_dir(event_id) / "validation.json")
+    lst = _read_json(config.stage_b_dir(event_id) / "lst_lane.json")
+    uhi = _read_json(config.stage_b_dir(event_id) / "uhi.json")
+    bounds = _read_json(config.assets_dir(event_id) / "bounds.json")
+    disp = _DISPLAY[event_id]
+
+    c3 = air["c3_duration"]
+    budgets = air["budgets"]["window_mean_regional_anomaly_k"]
+    central = budgets["central"]
+    # Budget bars: real half-widths in K, scaled against the largest term for
+    # bar width only (a visual scaling of the real number, not new data).
+    terms_k = {
+        "baseline_halves": (
+            "Baseline halves (1991-2005 vs 2006-2020)",
+            budgets["baseline_halves_half_spread_k"],
+            "symmetric",
+        ),
+        "day_window": (
+            "Day-window ±10 → ±15",
+            budgets["day_window_pm15_shift_k"],
+            "symmetric",
+        ),
+        "hour_set": (
+            "Hour set 06-13 UTC vs 24 h (measured)",
+            budgets["hour_set_residual_k"],
+            "symmetric",
+        ),
+        "station_bias": (
+            "ERA5 vs station median bias (systematic)",
+            budgets["era5_vs_station_median_bias_k"],
+            "systematic",
+        ),
+    }
+    max_term = max(abs(v) for _, v, _ in terms_k.values()) or 1.0
+    budget_terms = [
+        UncertaintyTerm(
+            key=key,
+            label=label,
+            kind=kind,
+            value_pct=None,
+            factor=None,
+            display=f"{value:+.3f} K" if kind == "systematic" else f"±{value:.3f} K",
+            bar_fraction=min(abs(value) / max_term, 1.0),
+        )
+        for key, (label, value, kind) in terms_k.items()
+    ]
+
+    layer_meta = [
+        HeatLayerMeta(
+            key=k,
+            label=str(m["label"]),
+            colormap=str(m["colormap"]),
+            vmin=float(m.get("vmin_k", m.get("vmin_c", 0.0))),
+            vmax=float(m.get("vmax_k", m.get("vmax_c", 1.0))),
+            unit="K" if "vmin_k" in m else "°C",
+            lane=str(m["lane"]),
+        )
+        for k, m in bounds["layer_meta"].items()
+    ]
+
+    heat = HeatBlock(
+        peak_tmax_c=air["c1_peak_tmax"]["value_c"],
+        peak_date=air["c1_peak_tmax"]["date"],
+        window_mean_regional_anomaly_k=central,
+        peak_day_extent_km2=air["c4_extent"]["extent_km2"],
+        episode=HeatEpisode(
+            window_start=air["window"][0],
+            window_end=air["window"][1],
+            episode_start=c3["start"],
+            episode_end=c3["end"],
+            episode_days=c3["n_days"],
+            criterion=c3["criterion"],
+            note=(
+                "The canonical 10-day window is the ANALYSIS window (probe-selected, "
+                "gate-approved); the episode is the consecutive criterion run "
+                "containing it — the upgraded daily-Tmax definition merges the "
+                "documented late-March wave into one episode. The two are never "
+                "conflated."
+            ),
+        ),
+        quantity_tiers=_heat_quantity_tiers(air, val, lst, uhi),
+        lst=HeatLstBlock(
+            window_mean_anomaly_k=lst["window_mean_bbox_anomaly_k"],
+            view_time_local_h=lst["observation_time_caveat"]["measured_mean_day_view_time_local_h"],
+            observation_time_statement=lst["observation_time_caveat"]["statement"],
+            composite_baseline_residual_k=lst["anomaly_baseline"]["composite_vs_daily_residual_k_2022"],
+            uhi_window_mean_k=uhi["window_mean_uhi_k"],
+            uhi_window_std_k=uhi["window_std_uhi_k"],
+            uhi_finding=(
+                "Daytime SURFACE urban-rural delta is NEGATIVE — the factor engine "
+                "carries urban fabric as counter-evidence at the observed time; "
+                "nighttime/2 m-air urban roles are explicitly unassessed."
+            ),
+        ),
+        lst_vs_air=(
+            "TWO LANES, NEVER CONFLATED: 2 m AIR temperature (ERA5, ISD stations, "
+            "IMD gridded — what people experience; VALIDATED claims live here) vs "
+            "satellite SKIN temperature (MODIS/Landsat LST — what the surface "
+            "radiates; capped at CROSS-CHECKED, observed only at the Terra "
+            "morning snapshot). No comparison crosses lanes; ERA5 skin temperature "
+            "is used only inside LST product-consistency checks."
+        ),
+        budget_terms=budget_terms,
+        heat_raster=HeatRasterMeta(
+            bounds=RasterBounds(**bounds["bounds"]),
+            layers=list(bounds["layers"]),
+            layer_meta=layer_meta,
+            lst_view_time_local_h=float(bounds["lst_view_time_local_h"]),
+            rendering=str(bounds["rendering"]),
+        ),
+    )
+
+    return EventDetail(
+        event_id=event_id,
+        name=event.name,
+        short_name=disp["short_name"],
+        planetary_body=event.planetary_body,
+        phenomenon_type=event.phenomenon_type,
+        lat=event.location.lat,
+        lon=event.location.lon,
+        status=EventStatus.ACTIVE,
+        location_label=disp["region"],
+        chips=_chips(event),
+        validation_tier=HEAT_TIER_LABEL,
+        tier_explainer=(
+            "Tiers are PER QUANTITY for this area event (the heat extension of the "
+            "tier rubric): the peak temperature (C1) and regional anomaly (C2) are "
+            "VALIDATED under pre-registered criteria committed BEFORE any station "
+            "data was read; duration (C3) and extent (C4) honestly FAILED their "
+            "cross-dataset checks (criterion-edge fragility — the finding); every "
+            "LST quantity is capped at CROSS-CHECKED (no in-situ skin truth; Terra "
+            "morning snapshot only). No event-level VALIDATED badge exists — that "
+            "would overstate C3/C4."
+        ),
+        references=_references(event),
+        heat=heat,
     )

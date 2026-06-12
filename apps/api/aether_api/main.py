@@ -105,3 +105,34 @@ def hypotheses(event_id: str) -> JSONResponse:
     if result is None:
         return JSONResponse(content={"hypotheses": None, "status": "pending"})
     return JSONResponse(content=result.model_dump(mode="json"))
+
+
+@app.get("/api/events/{event_id}/layers/{layer}.png")
+def layer_png(event_id: str, layer: str) -> FileResponse:
+    """Generic per-event raster layer (heat: air_anomaly/air_baseline/lst_anomaly).
+
+    Whitelisted against the event's own committed bounds.json layer list — the
+    route serves exactly the layers the asset build declared, nothing else.
+    """
+    bounds_path = config.assets_dir(event_id) / "bounds.json"
+    if not bounds_path.exists():
+        raise HTTPException(status_code=404, detail=f"No assets for {event_id}")
+    allowed = json.loads(bounds_path.read_text()).get("layers", [])
+    if layer not in allowed:
+        raise HTTPException(status_code=404, detail=f"No layer {layer} for {event_id}")
+    return _asset(event_id, f"{layer}.png", "image/png")
+
+
+@app.get("/api/events/{event_id}/factor-hypotheses")
+def factor_hypotheses(event_id: str) -> JSONResponse:
+    """The committed Stage C multi-factor attribution artifact (verbatim).
+
+    Heat events only; absent (honest) for events without a committed factor
+    artifact or before their UI gate.
+    """
+    if event_id not in loaders.EVENT_IDS:
+        raise HTTPException(status_code=404, detail=f"Unknown event_id: {event_id}")
+    result = loaders.get_factor_hypotheses(event_id)
+    if result is None:
+        return JSONResponse(content={"factors": None, "status": "pending"})
+    return JSONResponse(content=result.model_dump(mode="json"))

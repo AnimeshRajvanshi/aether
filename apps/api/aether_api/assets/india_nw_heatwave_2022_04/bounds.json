@@ -1,0 +1,46 @@
+{
+  "event_id": "india_nw_heatwave_2022_04",
+  "crs": "EPSG:4326",
+  "bounds": {
+    "west": 67.875,
+    "south": 22.375,
+    "east": 84.375,
+    "north": 32.875
+  },
+  "phenomenon": "heat_wave",
+  "layers": [
+    "air_anomaly",
+    "air_baseline",
+    "lst_anomaly"
+  ],
+  "layer_meta": {
+    "air_anomaly": {
+      "colormap": "inferno",
+      "vmin_k": 0.0,
+      "vmax_k": 8.0,
+      "label": "2 m air Tmax anomaly (K) vs 1991-2020 \u00b110d climatology",
+      "lane": "AIR"
+    },
+    "air_baseline": {
+      "colormap": "magma",
+      "vmin_c": 20.0,
+      "vmax_c": 45.0,
+      "label": "1991-2020 climatological daily Tmax (degC) \u2014 the anomaly baseline",
+      "lane": "AIR"
+    },
+    "lst_anomaly": {
+      "colormap": "inferno",
+      "vmin_k": -2.0,
+      "vmax_k": 10.0,
+      "label": "MODIS Terra LST anomaly (K) vs 2013-2021 same-period composites \u2014 ~10:41 local-solar snapshot, NOT a daily maximum",
+      "lane": "LST"
+    }
+  },
+  "lst_view_time_local_h": 10.68,
+  "rendering": "AIR layers: ERA5 0.25-deg bbox land cells (the Stage B analysis domain), window-mean over 2022-04-02..11; transparent off-land. LST layer: MOD11A1 Terra-only window-mean anomaly, QC mandatory-good pixels, native-sinusoidal mosaic warped to EPSG:4326; transparent where QC-failed/absent. Real pixels throughout; no interpolation beyond the warp.",
+  "source": {
+    "air": "~/.aether_cache/sprint9_heat_stage_b/era5_tmax_*.npz (ERA5 v3)",
+    "lst": "~/.aether_cache/sprint9_heat_stage_b/modis (MOD11A1/A2 v061 COGs)",
+    "view_time": "stage_b_outputs/india_nw_heatwave_2022_04/lst_lane.json"
+  }
+}

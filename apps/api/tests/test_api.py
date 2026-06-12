@@ -42,11 +42,13 @@ def test_health() -> None:
     assert client.get("/api/health").json()["status"] == "ok"
 
 
-def test_events_list_two_active_events_with_tiers() -> None:
-    # Stage D: both events are now active, each carrying its validation tier.
+def test_events_list_active_events_with_tiers() -> None:
+    # Sprint 7 Stage D: both methane events active with their tiers; Sprint 9
+    # Stage D adds the heat event (its own assertions live in test_api_heat /
+    # test_tier_rubric — this test pins the methane summaries unchanged).
     events = client.get("/api/events").json()
     by_id = {e["event_id"]: e for e in events}
-    assert set(by_id) == {GOTURDEPE, PERMIAN}
+    assert {GOTURDEPE, PERMIAN, "india_nw_heatwave_2022_04"} == set(by_id)
     assert by_id[GOTURDEPE]["status"] == "active"
     assert by_id[PERMIAN]["status"] == "active"
     # Per the rubric (docs/science/validation_tiers.md), VALIDATED is reserved for

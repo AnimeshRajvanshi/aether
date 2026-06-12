@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import StrEnum
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from aether_ontology.base import AetherBase
 from aether_ontology.spatial import BBox, GeoJSONGeometry, Point
@@ -73,6 +73,54 @@ class DetectionType(StrEnum):
     OTHER = "other"
 
 
+# Detection types that are anomalies against a climatological baseline. An
+# anomaly without a typed baseline is meaningless — the heat vertical's
+# analogue of a measurement without provenance (ADR 0003).
+ANOMALY_DETECTION_TYPES: frozenset[DetectionType] = frozenset(
+    {
+        DetectionType.THERMAL_ANOMALY,
+        DetectionType.AIR_TEMPERATURE_ANOMALY,
+        DetectionType.SST_ANOMALY,
+    }
+)
+
+
+class BaselineDefinition(BaseModel):
+    """The climatological baseline an anomaly detection is measured against.
+
+    Mandatory on anomaly-type detections (ADR 0003): an anomaly is only
+    meaningful relative to a stated baseline, so the baseline travels with the
+    detection the way Provenance travels with every entity.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    dataset: str = Field(..., description="e.g., 'ARCO-ERA5 v3 2m_temperature'")
+    period_start_year: int
+    period_end_year: int
+    day_window_days: int = Field(
+        ..., ge=0, description="± half-window (days) around the day of year"
+    )
+    statistic: str = Field(..., description="'mean' or 'percentile'")
+    percentile: float | None = Field(None, ge=0.0, le=100.0)
+    hours_utc: list[int] = Field(
+        default_factory=list,
+        description="UTC hours defining the daily statistic (empty = all hours)",
+    )
+    note: str | None = None
+
+    @model_validator(mode="after")
+    def _check_period_and_percentile(self) -> BaselineDefinition:
+        if self.period_end_year < self.period_start_year:
+            raise ValueError(
+                f"period_end_year ({self.period_end_year}) < "
+                f"period_start_year ({self.period_start_year})"
+            )
+        if self.statistic == "percentile" and self.percentile is None:
+            raise ValueError("statistic='percentile' requires a percentile value")
+        return self
+
+
 class Detection(AetherBase):
     """Something found in one or more observations.
 
@@ -81,6 +129,11 @@ class Detection(AetherBase):
         measurements = {"emission_rate_kg_per_hr": 543.0, "ime_kg": 215.0}
         measurement_units = {"emission_rate_kg_per_hr": "kg/hr", "ime_kg": "kg"}
         measurement_uncertainty = {"emission_rate_kg_per_hr": 120.0, "ime_kg": 40.0}
+
+    For AREA detections (anomaly types), `location` is the anomaly-weighted
+    centroid (the fly-to target, not a source point), `footprint` carries the
+    detected region and is required, and `baseline` states the climatology the
+    anomaly is measured against (ADR 0003).
     """
 
     detection_type: DetectionType
@@ -95,6 +148,29 @@ class Detection(AetherBase):
 
     algorithm: str = Field(..., description="Name of algorithm that produced this detection")
     algorithm_version: str
+
+    baseline: BaselineDefinition | None = Field(
+        None,
+        description="Required for anomaly detection types; None for plume/point types",
+    )
+
+    @model_validator(mode="after")
+    def _check_anomaly_requirements(self) -> Detection:
+        """Anomaly detections must state their baseline and their area (ADR 0003)."""
+        if self.detection_type in ANOMALY_DETECTION_TYPES:
+            if self.baseline is None:
+                raise ValueError(
+                    f"detection_type={self.detection_type.value!r} is an anomaly type "
+                    "and requires a BaselineDefinition (ADR 0003) — an anomaly without "
+                    "a stated baseline is not a measurement."
+                )
+            if self.footprint is None:
+                raise ValueError(
+                    f"detection_type={self.detection_type.value!r} is an area/anomaly "
+                    "type and requires a footprint (ADR 0003) — an area detection that "
+                    "cannot say what area it covers is not a detection."
+                )
+        return self
 
 
 # --------------------------------------------------------------------------- #

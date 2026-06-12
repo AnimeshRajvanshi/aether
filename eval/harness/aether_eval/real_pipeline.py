@@ -37,7 +37,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from aether_ontology import Detection, DetectionType, Point, Provenance
+from aether_ontology import Detection, DetectionType, PhenomenonType, Point, Provenance
 
 from aether_eval.pipelines import _granule_observation_uuid
 from aether_eval.runner import EventNotRunnable, PipelineOutput
@@ -363,7 +363,20 @@ def check_runnable(event: BenchmarkEvent) -> None:
     """Raise EventNotRunnable with the honest reason if the event can't be run.
 
     Pure data check (no scientific imports) so it is CI-testable.
+
+    Phenomenon-aware (Sprint 9 Stage B): the EMIT-coverage logic applies only to
+    emission events — a heat wave that "predates EMIT" was a true-but-irrelevant
+    reason (the Stage A report flagged it). Non-emission phenomena are runnable
+    iff a recipe is wired for them.
     """
+    if event.phenomenon_type is not PhenomenonType.EMISSION_EVENT:
+        if event.event_id not in _RECIPES:
+            raise EventNotRunnable(
+                f"no eval recipe is wired for phenomenon type "
+                f"'{event.phenomenon_type.value}' yet (event '{event.event_id}'); "
+                "add one to aether_eval.real_pipeline._RECIPES before scoring it"
+            )
+        return
     if event.canonical_acquisition is None:
         start = event.date_range.start
         start = start if start.tzinfo else start.replace(tzinfo=UTC)

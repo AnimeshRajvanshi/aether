@@ -3,8 +3,11 @@
 The matching logic is the single most consequential thing in this harness — it
 determines what counts as a "true positive." Three checks must all pass:
 
-1. Spatial: detection within the event's `location_precision_km` (or the global
-   `spatial_tolerance_m` fallback) of the event location (haversine).
+1. Spatial — point events: detection within the event's `location_precision_km`
+   (or the global `spatial_tolerance_m` fallback) of the event location
+   (haversine). Area events (ADR 0004: `AREA_PHENOMENON_TYPES`): detection
+   footprint bbox must overlap the event bbox by ≥ half the smaller box;
+   centroid distance is reported but is not a criterion.
 2. Temporal: detection time within ±`temporal_tolerance_minutes` of event date range.
 3. Type: detection.detection_type ∈ event.expected_detection_types.
 
@@ -25,11 +28,20 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 
-from aether_ontology import Detection
+from aether_ontology import Detection, GeoJSONGeometry, PhenomenonType
 
 from aether_eval.schema import BenchmarkEvent, ReferenceUsability
 
 EARTH_RADIUS_M = 6_371_008.8  # IUGG mean radius
+
+# Area phenomena are recall-matched by bbox OVERLAP, not centroid distance
+# (ADR 0004): two valid analyses of the same heatwave can centroid hundreds of
+# km apart while covering the same region. Extended deliberately, never inferred.
+AREA_PHENOMENON_TYPES: frozenset[PhenomenonType] = frozenset(
+    {PhenomenonType.HEAT_WAVE, PhenomenonType.MARINE_HEAT_WAVE}
+)
+# Minimum fraction of the smaller bbox that the intersection must cover.
+AREA_OVERLAP_MIN_FRACTION = 0.5
 
 
 def haversine_meters(lon1: float, lat1: float, lon2: float, lat2: float) -> float:
@@ -50,6 +62,55 @@ def haversine_meters(lon1: float, lat1: float, lon2: float, lat2: float) -> floa
 def _ensure_tzaware(dt: datetime) -> datetime:
     """Treat naive datetimes as UTC to avoid surprises when comparing."""
     return dt if dt.tzinfo is not None else dt.replace(tzinfo=UTC)
+
+
+def _geometry_bbox(geom: GeoJSONGeometry) -> tuple[float, float, float, float]:
+    """(min_lon, min_lat, max_lon, max_lat) of any GeoJSON geometry's coordinates."""
+    lons: list[float] = []
+    lats: list[float] = []
+
+    def walk(node: object) -> None:
+        if (
+            isinstance(node, list)
+            and len(node) >= 2
+            and all(isinstance(v, int | float) for v in node[:2])
+        ):
+            lons.append(float(node[0]))
+            lats.append(float(node[1]))
+        elif isinstance(node, list):
+            for child in node:
+                walk(child)
+
+    walk(geom.coordinates)
+    if not lons:
+        raise ValueError("geometry has no coordinates")
+    return min(lons), min(lats), max(lons), max(lats)
+
+
+def _bbox_area_km2(box: tuple[float, float, float, float]) -> float:
+    """Equirectangular bbox area — adequate at heatwave scales (ADR 0004)."""
+    min_lon, min_lat, max_lon, max_lat = box
+    mean_lat = math.radians((min_lat + max_lat) / 2.0)
+    km_per_deg = EARTH_RADIUS_M * math.pi / 180.0 / 1000.0
+    return (max_lon - min_lon) * km_per_deg * math.cos(mean_lat) * (max_lat - min_lat) * km_per_deg
+
+
+def area_overlap_match(
+    det_box: tuple[float, float, float, float],
+    event_box: tuple[float, float, float, float],
+) -> bool:
+    """ADR 0004: intersection covers ≥ AREA_OVERLAP_MIN_FRACTION of the smaller box."""
+    inter = (
+        max(det_box[0], event_box[0]),
+        max(det_box[1], event_box[1]),
+        min(det_box[2], event_box[2]),
+        min(det_box[3], event_box[3]),
+    )
+    if inter[0] >= inter[2] or inter[1] >= inter[3]:
+        return False
+    inter_area = _bbox_area_km2(inter)
+    smaller = min(_bbox_area_km2(det_box), _bbox_area_km2(event_box))
+    return inter_area >= AREA_OVERLAP_MIN_FRACTION * smaller
 
 
 def _detection_in_event_time_window(
@@ -127,13 +188,33 @@ def match_detections_to_event(
             unmatched.append(det)
             continue
 
-        # Spatial check
-        dist = haversine_meters(
-            det.location.lon, det.location.lat, event.location.lon, event.location.lat
-        )
-        if dist > spatial_tolerance_m:
-            unmatched.append(det)
-            continue
+        # Spatial check. Area phenomena match by bbox overlap (ADR 0004); a
+        # footprint-less detection of an area event does NOT match — an area
+        # detection that cannot say what area it covers is not a detection.
+        # Point events keep centroid-distance semantics bit-for-bit.
+        if event.phenomenon_type in AREA_PHENOMENON_TYPES:
+            if det.footprint is None:
+                unmatched.append(det)
+                continue
+            event_box = (
+                event.bbox.min_lon,
+                event.bbox.min_lat,
+                event.bbox.max_lon,
+                event.bbox.max_lat,
+            )
+            if not area_overlap_match(_geometry_bbox(det.footprint), event_box):
+                unmatched.append(det)
+                continue
+            dist = haversine_meters(
+                det.location.lon, det.location.lat, event.location.lon, event.location.lat
+            )  # recorded for reporting; not a matching criterion for area events
+        else:
+            dist = haversine_meters(
+                det.location.lon, det.location.lat, event.location.lon, event.location.lat
+            )
+            if dist > spatial_tolerance_m:
+                unmatched.append(det)
+                continue
 
         matched.append(MatchedPair(detection=det, event=event, spatial_distance_m=dist))
 

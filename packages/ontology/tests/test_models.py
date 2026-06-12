@@ -14,6 +14,7 @@ from uuid import uuid4
 
 import pytest
 from aether_ontology import (
+    BaselineDefinition,
     BBox,
     Brief,
     Confidence,
@@ -313,3 +314,105 @@ class TestJsonRoundTrip:
         )
         restored = Phenomenon.model_validate_json(p.model_dump_json())
         assert restored == p
+
+
+# --------------------------------------------------------------------------- #
+# Anomaly detections (ADR 0003 — area phenomena, heat vertical)
+# --------------------------------------------------------------------------- #
+
+
+class TestAnomalyDetections:
+    """An anomaly without a baseline (or an area without a footprint) must fail."""
+
+    @staticmethod
+    def _baseline() -> BaselineDefinition:
+        return BaselineDefinition(
+            dataset="ARCO-ERA5 v3 2m_temperature",
+            period_start_year=1991,
+            period_end_year=2020,
+            day_window_days=10,
+            statistic="mean",
+            hours_utc=[6, 7, 8, 9, 10, 11, 12, 13],
+        )
+
+    @staticmethod
+    def _footprint() -> GeoJSONGeometry:
+        return GeoJSONGeometry(
+            type="Polygon",
+            coordinates=[
+                [[68.0, 22.5], [84.5, 22.5], [84.5, 33.0], [68.0, 33.0], [68.0, 22.5]]
+            ],
+        )
+
+    def _detection(self, basic_provenance: Provenance, **overrides: object) -> Detection:
+        kwargs: dict[str, object] = dict(
+            detection_type=DetectionType.AIR_TEMPERATURE_ANOMALY,
+            observation_ids=[uuid4()],
+            location=Point(lon=74.0, lat=27.3),
+            footprint=self._footprint(),
+            time_range=TimeRange(
+                start=datetime(2022, 4, 2, tzinfo=UTC),
+                end=datetime(2022, 4, 11, tzinfo=UTC),
+            ),
+            algorithm="heat_anomaly_v1",
+            algorithm_version="0.1.0",
+            baseline=self._baseline(),
+            provenance=basic_provenance,
+        )
+        kwargs.update(overrides)
+        return Detection(**kwargs)  # type: ignore[arg-type]
+
+    def test_air_temperature_anomaly_valid(self, basic_provenance: Provenance) -> None:
+        det = self._detection(basic_provenance)
+        assert det.baseline is not None
+        assert det.baseline.period_start_year == 1991
+
+    def test_anomaly_without_baseline_rejected(self, basic_provenance: Provenance) -> None:
+        with pytest.raises(ValidationError, match="requires a BaselineDefinition"):
+            self._detection(basic_provenance, baseline=None)
+
+    def test_anomaly_without_footprint_rejected(self, basic_provenance: Provenance) -> None:
+        with pytest.raises(ValidationError, match="requires a footprint"):
+            self._detection(basic_provenance, footprint=None)
+
+    def test_thermal_anomaly_also_gated(self, basic_provenance: Provenance) -> None:
+        with pytest.raises(ValidationError, match="requires a BaselineDefinition"):
+            self._detection(
+                basic_provenance,
+                detection_type=DetectionType.THERMAL_ANOMALY,
+                baseline=None,
+            )
+
+    def test_plume_detection_unaffected(self, basic_provenance: Provenance) -> None:
+        det = self._detection(
+            basic_provenance,
+            detection_type=DetectionType.METHANE_PLUME,
+            baseline=None,
+            footprint=None,
+        )
+        assert det.baseline is None
+
+    def test_percentile_baseline_requires_value(self) -> None:
+        with pytest.raises(ValidationError, match="requires a percentile"):
+            BaselineDefinition(
+                dataset="x",
+                period_start_year=1991,
+                period_end_year=2020,
+                day_window_days=10,
+                statistic="percentile",
+            )
+
+    def test_baseline_period_order_enforced(self) -> None:
+        with pytest.raises(ValidationError, match="period_end_year"):
+            BaselineDefinition(
+                dataset="x",
+                period_start_year=2020,
+                period_end_year=1991,
+                day_window_days=10,
+                statistic="mean",
+            )
+
+    def test_anomaly_roundtrip(self, basic_provenance: Provenance) -> None:
+        det = self._detection(basic_provenance)
+        restored = Detection.model_validate_json(det.model_dump_json())
+        assert restored == det

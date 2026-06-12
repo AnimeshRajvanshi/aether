@@ -7,6 +7,8 @@ from aether_ontology.base import (
     Provenance,
 )
 from aether_ontology.entities import (
+    ANOMALY_DETECTION_TYPES,
+    BaselineDefinition,
     Brief,
     Detection,
     DetectionType,
@@ -22,8 +24,10 @@ from aether_ontology.spatial import BBox, GeoJSONGeometry, Point
 from aether_ontology.temporal import TimeRange
 
 __all__ = [
+    "ANOMALY_DETECTION_TYPES",
     "AetherBase",
     "BBox",
+    "BaselineDefinition",
     "Brief",
     "Confidence",
     "Detection",

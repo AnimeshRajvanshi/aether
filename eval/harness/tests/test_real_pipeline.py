@@ -172,3 +172,21 @@ class TestRealPipelineFullRun:
                 REPO_ROOT / "stage_b_outputs" / event_id / "q_estimate.json"
             ).read_text()
             assert after == before, f"{event_id} q_estimate.json was modified by the eval run"
+
+
+class TestHeatEventRunnability:
+    """Non-emission phenomena get a phenomenon-aware not-runnable reason (Sprint 9)."""
+
+    def test_heat_event_reason_is_not_emit_shaped(self) -> None:
+        event = load_event("india_nw_heatwave_2022_04", REPO_BENCHMARK_DIR)
+        with pytest.raises(EventNotRunnable) as exc:
+            check_runnable(event)
+        msg = str(exc.value)
+        assert "heat_wave" in msg
+        assert "no eval recipe is wired for phenomenon type" in msg
+        assert "EMIT" not in msg  # the Stage A staleness, fixed
+
+    def test_emission_event_reasons_unchanged(self) -> None:
+        aliso = load_event("aliso_canyon_2015", REPO_BENCHMARK_DIR)
+        with pytest.raises(EventNotRunnable, match="predates EMIT's July 2022 launch"):
+            check_runnable(aliso)

@@ -21,9 +21,11 @@ from aether_eval.schema import (
     ReferenceUsability,
 )
 from aether_ontology import (
+    BaselineDefinition,
     BBox,
     Detection,
     DetectionType,
+    GeoJSONGeometry,
     PhenomenonType,
     Point,
     Provenance,
@@ -169,11 +171,13 @@ class TestMatching:
 
     def test_wrong_detection_type(self) -> None:
         event = _event(detection_types=[DetectionType.METHANE_PLUME])
+        # FIRE, not THERMAL_ANOMALY: anomaly types now require a baseline +
+        # footprint (ADR 0003), and this test is about type mismatch, not that.
         det = _detection(
             lon=event.location.lon,
             lat=event.location.lat,
             when=event.date_range.start,
-            detection_type=DetectionType.THERMAL_ANOMALY,
+            detection_type=DetectionType.FIRE,
         )
         result = match_detections_to_event([det], event)
         assert not result.is_recalled
@@ -399,3 +403,117 @@ class TestAdr0002Semantics:
             when=pinned.date_range.start,
         )
         assert not match_detections_to_event([det2], pinned).is_recalled
+
+
+# --------------------------------------------------------------------------- #
+# Area-event overlap matching (ADR 0004)
+# --------------------------------------------------------------------------- #
+
+
+class TestAreaEventMatching:
+    """Heat-wave (area) events match by bbox overlap, never by centroid distance."""
+
+    @staticmethod
+    def _heat_event() -> BenchmarkEvent:
+        return BenchmarkEvent(
+            event_id="heat_evt",
+            name="Area event",
+            phenomenon_type=PhenomenonType.HEAT_WAVE,
+            expected_detection_types=[DetectionType.AIR_TEMPERATURE_ANOMALY],
+            date_range=TimeRange(
+                start=datetime(2022, 4, 2, tzinfo=UTC), end=datetime(2022, 4, 11, tzinfo=UTC)
+            ),
+            location=Point(lon=74.0, lat=27.3),
+            bbox=BBox(min_lon=67.875, min_lat=22.375, max_lon=84.375, max_lat=32.875),
+            references=[Reference(citation="Test")],
+            location_precision_km=300.0,
+        )
+
+    @staticmethod
+    def _area_detection(
+        box: tuple[float, float, float, float],
+        centroid: tuple[float, float],
+    ) -> Detection:
+        min_lon, min_lat, max_lon, max_lat = box
+        return Detection(
+            detection_type=DetectionType.AIR_TEMPERATURE_ANOMALY,
+            observation_ids=[uuid4()],
+            location=Point(lon=centroid[0], lat=centroid[1]),
+            footprint=GeoJSONGeometry(
+                type="Polygon",
+                coordinates=[
+                    [
+                        [min_lon, min_lat],
+                        [max_lon, min_lat],
+                        [max_lon, max_lat],
+                        [min_lon, max_lat],
+                        [min_lon, min_lat],
+                    ]
+                ],
+            ),
+            time_range=TimeRange(
+                start=datetime(2022, 4, 2, tzinfo=UTC), end=datetime(2022, 4, 11, tzinfo=UTC)
+            ),
+            algorithm="heat_anomaly_v1",
+            algorithm_version="0.1",
+            provenance=Provenance(source="test"),
+            baseline=BaselineDefinition(
+                dataset="test",
+                period_start_year=1991,
+                period_end_year=2020,
+                day_window_days=10,
+                statistic="mean",
+            ),
+        )
+
+    def test_overlapping_footprint_matches_despite_distant_centroid(self) -> None:
+        # Footprint covers most of the event bbox, but the centroid is ~500 km
+        # from the event location — centroid distance would reject this.
+        det = self._area_detection((70.0, 24.0, 84.0, 32.0), centroid=(80.0, 30.0))
+        result = match_detections_to_event([det], self._heat_event())
+        assert result.is_recalled
+
+    def test_disjoint_footprint_does_not_match(self) -> None:
+        det = self._area_detection((90.0, 8.0, 95.0, 12.0), centroid=(92.0, 10.0))
+        result = match_detections_to_event([det], self._heat_event())
+        assert not result.is_recalled
+
+    def test_small_edge_contact_does_not_match(self) -> None:
+        # Intersection is a sliver: under half of the (smaller) detection box.
+        det = self._area_detection((66.0, 21.0, 68.5, 23.0), centroid=(67.0, 22.0))
+        result = match_detections_to_event([det], self._heat_event())
+        assert not result.is_recalled
+
+    def test_footprintless_area_detection_does_not_match(self) -> None:
+        det = Detection(
+            detection_type=DetectionType.AIR_TEMPERATURE_ANOMALY,
+            observation_ids=[uuid4()],
+            location=Point(lon=74.0, lat=27.3),  # dead-center: distance would pass
+            footprint=GeoJSONGeometry(
+                type="Polygon",
+                coordinates=[[[73, 27], [75, 27], [75, 28], [73, 28], [73, 27]]],
+            ),
+            time_range=TimeRange(start=datetime(2022, 4, 5, tzinfo=UTC)),
+            algorithm="heat_anomaly_v1",
+            algorithm_version="0.1",
+            provenance=Provenance(source="test"),
+            baseline=BaselineDefinition(
+                dataset="test",
+                period_start_year=1991,
+                period_end_year=2020,
+                day_window_days=10,
+                statistic="mean",
+            ),
+        )
+        # Simulate footprint-less by stripping it via model_copy (the ontology
+        # validator forbids constructing an anomaly detection without one).
+        stripped = det.model_copy(update={"footprint": None})
+        result = match_detections_to_event([stripped], self._heat_event())
+        assert not result.is_recalled
+
+    def test_point_event_semantics_untouched(self) -> None:
+        event = _event(location_precision_km=3.0)
+        near = _detection(lon=-118.561, lat=34.315, when=datetime(2024, 6, 15, 18, 30, tzinfo=UTC))
+        far = _detection(lon=-118.0, lat=35.0, when=datetime(2024, 6, 15, 18, 30, tzinfo=UTC))
+        assert match_detections_to_event([near], event).is_recalled
+        assert not match_detections_to_event([far], event).is_recalled

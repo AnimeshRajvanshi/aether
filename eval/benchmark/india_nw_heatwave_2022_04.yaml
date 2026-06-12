@@ -62,10 +62,10 @@ bbox:
   min_lat: 22.375
   max_lon: 84.375
   max_lat: 32.875
-# Area event: the centroid is meaningful at the scale of the event region, not
-# at facility/footprint scale. 300 km is a placeholder pending the ADR 0002
-# extension for area events (overlap/IoU-based recall matching instead of
-# centroid distance) — flagged for Stage B in the Stage A report.
+# Area event: recall matching uses bbox OVERLAP, not centroid distance
+# (ADR 0004, landed in Stage B per the Stage A gate ruling). This value no
+# longer participates in matching for area events; it documents the scale at
+# which the centroid is meaningful (the event-region scale).
 location_precision_km: 300.0
 
 known_measurements:
@@ -267,12 +267,11 @@ notes: |
   peer-reviewed event definition (March-April 2022) contains the window
   entirely.
 
-  RUNNABILITY: not runnable by the current eval harness, whose check_runnable
-  is EMIT-shaped — verified reason reported by `aether-eval run`: "no EMIT
-  coverage: the event window predates EMIT's July 2022 launch" (the window
-  ends 2022-04-30). True about EMIT, irrelevant for a heat phenomenon. Stage B
-  makes check_runnable phenomenon-aware and wires a heat recipe; flagged in
-  docs/reports/sprint9_stage_a_report.md.
+  RUNNABILITY: check_runnable is phenomenon-aware as of Sprint 9 Stage B —
+  this event reports not_runnable with the honest reason "no eval recipe is
+  wired for phenomenon type 'heat_wave' yet" until the heat recipe lands
+  (this stage or later, with regression values vs committed artifacts).
+  The earlier EMIT-shaped reason (Stage A flag) is fixed and guard-tested.
 
   TIER (probe ruling, to be earned in Stage B): VALIDATED earnable for 2 m AIR
   temperature claims only (130 in-bbox ISD stations + ERA5-independent IMD

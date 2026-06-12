@@ -353,9 +353,158 @@ def _run_permian(event: BenchmarkEvent) -> dict[str, Any]:
     }
 
 
+_HEAT_INDIA_ID = "india_nw_heatwave_2022_04"
+_HEAT_CACHE = _CACHE / "sprint9_heat_stage_b"
+
+
+def _run_heat_india(event: BenchmarkEvent) -> PipelineOutput:
+    """Heat AIR-lane recipe: re-derive C1-C4 from the cached ERA5 daily-Tmax
+    set (offline once cached) and compare against the committed air_lane.json.
+
+    Mirrors scripts/run_heat_stage_b.py's lane computation exactly — the
+    pre-registered definitions live in aether_detection.heat_anomaly; this
+    recipe exists so the ADR-0002 regression family covers the heat vertical.
+    """
+    from datetime import date
+
+    import numpy as np
+    from aether_detection.heat_anomaly import (
+        cell_areas_km2,
+        day_window_climatology,
+        qualifying_mask,
+        run_containing,
+        window_dates,
+    )
+    from aether_ontology import BaselineDefinition, GeoJSONGeometry
+
+    years = range(1991, 2021)
+    grid_path = _HEAT_CACHE / f"era5_grid_{event.event_id}.npz"
+    missing = [
+        str(p)
+        for p in [grid_path, *(_HEAT_CACHE / f"era5_tmax_{y}.npz" for y in [*years, 2022])]
+        if not p.exists()
+    ]
+    if missing:
+        raise EventNotRunnable(
+            f"heat ERA5 cache incomplete ({len(missing)} files, first: {missing[0]}); "
+            "run scripts/sprint9_fetch_era5_tmax.py first"
+        )
+    grid = np.load(grid_path)
+    lats, lons, land = grid["lats"], grid["lons"], grid["land"]
+    base = np.stack(
+        [np.asarray(np.load(_HEAT_CACHE / f"era5_tmax_{y}.npz")["tmax"]) for y in years]
+    )
+    ev_arr = np.asarray(np.load(_HEAT_CACHE / "era5_tmax_2022.npz")["tmax"])
+
+    season = window_dates(date(2022, 3, 13), date(2022, 5, 1))
+    half = 10
+    areas = cell_areas_km2(lats, lons)
+    area_total = float((areas * land).sum())
+    dates_out: list[date] = []
+    fracs: list[float] = []
+    quals = []
+    anoms = []
+    tmaxs = []
+    for i in range(half, len(season) - half):
+        clim = day_window_climatology(base, i, half)
+        qual = qualifying_mask(ev_arr[i], clim, land)
+        dates_out.append(season[i])
+        fracs.append(float((areas * qual).sum() / area_total))
+        quals.append(qual)
+        anoms.append(ev_arr[i] - clim)
+        tmaxs.append(ev_arr[i])
+
+    window = [d for d in dates_out if date(2022, 4, 2) <= d <= date(2022, 4, 11)]
+    widx = [dates_out.index(d) for d in window]
+    win_tmax = np.where(land, np.stack([tmaxs[i] for i in widx]), np.nan)
+    c1_peak_c = float(np.nanmax(win_tmax)) - 273.15
+
+    def regional_mean(arr: np.ndarray) -> float:
+        w = np.where(land & ~np.isnan(arr), areas, 0.0)
+        return float(np.nansum(np.where(land, arr, np.nan) * w) / w.sum())
+
+    reg_anoms = [regional_mean(anoms[i]) for i in widx]
+    c2_window_mean = float(np.mean(reg_anoms))
+    run = run_containing(dates_out, fracs, date(2022, 4, 8), 0.05)
+    peak_i = widx[int(np.argmax([fracs[i] for i in widx]))]
+    c4_extent = float((areas * quals[peak_i]).sum())
+
+    # anomaly-weighted centroid + window-union qualifying bbox (the footprint)
+    union = np.any(np.stack([quals[i] for i in widx]), axis=0)
+    ii, jj = np.nonzero(union)
+    wmap = np.where(union, np.nanmean(np.stack([anoms[i] for i in widx]), axis=0), 0.0)
+    wsum = float(wmap.sum())
+    cen_lat = float((lats[:, None] * wmap).sum() / wsum)
+    cen_lon = float((lons[None, :] * wmap).sum() / wsum)
+    box = (
+        float(lons[jj.max()]) + 0.125,
+        float(lons[jj.min()]) - 0.125,
+        float(min(lats[ii.min()], lats[ii.max()])) - 0.125,
+        float(max(lats[ii.min()], lats[ii.max()])) + 0.125,
+    )
+    max_lon, min_lon, min_lat, max_lat = box
+    detection = Detection(
+        detection_type=DetectionType.AIR_TEMPERATURE_ANOMALY,
+        observation_ids=[_granule_observation_uuid("era5_" + event.event_id)],
+        location=Point(lon=cen_lon, lat=cen_lat),
+        footprint=GeoJSONGeometry(
+            type="Polygon",
+            coordinates=[
+                [
+                    [min_lon, min_lat],
+                    [max_lon, min_lat],
+                    [max_lon, max_lat],
+                    [min_lon, max_lat],
+                    [min_lon, min_lat],
+                ]
+            ],
+        ),
+        time_range=event.date_range,
+        measurements={
+            "peak_tmax_c": round(c1_peak_c, 2),
+            "window_mean_regional_anomaly_k": round(c2_window_mean, 3),
+            "duration_days": float(run.n_days),
+            "peak_day_extent_km2": round(c4_extent, -2),
+        },
+        measurement_units={
+            "peak_tmax_c": "degC",
+            "window_mean_regional_anomaly_k": "K",
+            "duration_days": "days",
+            "peak_day_extent_km2": "km^2",
+        },
+        algorithm=PIPELINE_NAME,
+        algorithm_version=PIPELINE_VERSION,
+        baseline=BaselineDefinition(
+            dataset="ARCO-ERA5 v3 2m_temperature",
+            period_start_year=1991,
+            period_end_year=2020,
+            day_window_days=10,
+            statistic="mean",
+            hours_utc=list(range(6, 14)),
+        ),
+        provenance=Provenance(
+            source="aether_detection.heat_anomaly",
+            source_id=event.event_id,
+            pipeline=PIPELINE_NAME,
+            pipeline_version=PIPELINE_VERSION,
+            notes="Fresh in-memory AIR-lane re-run for the ADR-0002 regression family.",
+        ),
+    )
+    return PipelineOutput(
+        detections=[detection],
+        regression_values={
+            "c1_peak_c": c1_peak_c,
+            "c2_window_mean_anomaly_k": c2_window_mean,
+            "c3_duration_days": float(run.n_days),
+            "c4_extent_km2": c4_extent,
+        },
+    )
+
+
 _RECIPES = {
     _GOTURDEPE_ID: _run_goturdepe,
     _PERMIAN_ID: _run_permian,
+    _HEAT_INDIA_ID: _run_heat_india,
 }
 
 
@@ -406,6 +555,10 @@ def real_emit_pipeline(event: BenchmarkEvent) -> PipelineOutput:
     values compared against the committed artifacts by the runner.
     """
     check_runnable(event)
+    if event.phenomenon_type is not PhenomenonType.EMISSION_EVENT:
+        # Area-phenomenon recipes build their own PipelineOutput (no EMIT
+        # acquisition, no plume detection construction).
+        return _RECIPES[event.event_id](event)  # type: ignore[return-value]
     values = _RECIPES[event.event_id](event)
 
     acq = event.canonical_acquisition

@@ -175,16 +175,30 @@ class TestRealPipelineFullRun:
 
 
 class TestHeatEventRunnability:
-    """Non-emission phenomena get a phenomenon-aware not-runnable reason (Sprint 9)."""
+    """Non-emission phenomena get phenomenon-aware runnability (Sprint 9)."""
 
-    def test_heat_event_reason_is_not_emit_shaped(self) -> None:
+    def test_heat_event_with_recipe_passes_check_runnable(self) -> None:
+        event = load_event("india_nw_heatwave_2022_04", REPO_BENCHMARK_DIR)
+        check_runnable(event)  # recipe is wired; no EMIT-shaped objection
+
+    def test_heat_recipe_honest_reason_when_cache_missing(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        import aether_eval.real_pipeline as rp
+
+        monkeypatch.setattr(rp, "_HEAT_CACHE", tmp_path)
         event = load_event("india_nw_heatwave_2022_04", REPO_BENCHMARK_DIR)
         with pytest.raises(EventNotRunnable) as exc:
-            check_runnable(event)
+            rp.real_emit_pipeline(event)
         msg = str(exc.value)
-        assert "heat_wave" in msg
-        assert "no eval recipe is wired for phenomenon type" in msg
-        assert "EMIT" not in msg  # the Stage A staleness, fixed
+        assert "heat ERA5 cache incomplete" in msg
+        assert "EMIT" not in msg
+
+    def test_unwired_area_phenomenon_gets_honest_reason(self) -> None:
+        event = load_event("india_nw_heatwave_2022_04", REPO_BENCHMARK_DIR)
+        unwired = event.model_copy(update={"event_id": "some_future_heat_event"})
+        with pytest.raises(EventNotRunnable, match="no eval recipe is wired for phenomenon type"):
+            check_runnable(unwired)
 
     def test_emission_event_reasons_unchanged(self) -> None:
         aliso = load_event("aliso_canyon_2015", REPO_BENCHMARK_DIR)

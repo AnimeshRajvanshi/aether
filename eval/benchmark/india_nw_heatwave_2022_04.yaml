@@ -267,11 +267,11 @@ notes: |
   peer-reviewed event definition (March-April 2022) contains the window
   entirely.
 
-  RUNNABILITY: check_runnable is phenomenon-aware as of Sprint 9 Stage B —
-  this event reports not_runnable with the honest reason "no eval recipe is
-  wired for phenomenon type 'heat_wave' yet" until the heat recipe lands
-  (this stage or later, with regression values vs committed artifacts).
-  The earlier EMIT-shaped reason (Stage A flag) is fixed and guard-tested.
+  RUNNABILITY: phenomenon-aware as of Sprint 9 Stage B, and the heat AIR-lane
+  recipe is wired into the harness (_RECIPES): the event is RUNNABLE on
+  machines with the ERA5 daily-Tmax cache (regression family vs the committed
+  air_lane.json) and reports not_runnable with the honest cache-incomplete
+  reason elsewhere. The Stage A EMIT-shaped reason is fixed and guard-tested.
 
   TIER (probe ruling, to be earned in Stage B): VALIDATED earnable for 2 m AIR
   temperature claims only (130 in-bbox ISD stations + ERA5-independent IMD

@@ -169,3 +169,37 @@ S5 UHI thresholds (§5).
 
 Deviations, if any become technically unavoidable, are recorded in the report
 under "Deviations from pre-registration" with the reason — never silently.
+
+---
+
+## Amendment v2 — station-comparison criteria (Stage B gate ruling, FUTURE comparisons only)
+
+**Status:** ratified at the Stage B review. **Scope: applies to comparisons
+designed after this amendment.** The Stage B verdicts for
+`india_nw_heatwave_2022_04` are FINAL under the v1 criteria above: V2 for this
+event is **permanently not-claimed**, and the `validation_exploratory_minobs3`
+artifact remains labeled exploratory wherever cited — it never upgrades the
+verdict.
+
+Changes for future station comparisons (v2):
+
+1. **Station-day qualification: ≥ 3 valid observations in 06–13 UTC** (was
+   ≥ 4). Rationale (measured, Stage B): the Indian synoptic majority reports
+   3-hourly, so exactly three observations (06/09/12 UTC) fall in the hour
+   range; the v1 rule silently excluded 100 of 110 stations.
+2. **Replace the single-event pooled-r criterion with non-degenerate
+   metrics.** Pooled Pearson r over one short window is range-restricted and
+   fragile at small station counts (measured: r 0.728 at 10 stations / 100
+   pairs vs 0.946 at 36 stations / 341 pairs, with bias and RMSD nearly
+   unchanged). v2 consistency metrics: |median bias| ≤ 1.5 K, RMSD ≤ 2.5 K
+   (unchanged), plus **station-count-robust agreement**: ≥ 80% of station-days
+   within ±2.5 K. No correlation criterion on single-event windows.
+
+## Rendering rules ratified at the Stage B gate
+
+- **Duration and extent are criterion-fragile quantities**: every rendered
+  duration/extent value (reports, API, UI) carries its criterion AND source
+  dataset inline; the episode (criterion run) vs canonical analysis window
+  distinction is preserved wherever either appears.
+- **V1 geography limit stands as stated** (bbox-wide gridded peak vs Indian
+  stations only); no post-hoc station expansion.

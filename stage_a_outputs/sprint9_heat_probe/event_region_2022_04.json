@@ -1,0 +1,159 @@
+{
+  "window": [
+    "2022-04-02",
+    "2022-04-11"
+  ],
+  "criterion": {
+    "abs_threshold_k": 313.15,
+    "departure_k": 4.5
+  },
+  "peak_area_date": "2022-04-08",
+  "peak_day_cluster_bbox": {
+    "min_lon": 67.875,
+    "max_lon": 84.375,
+    "min_lat": 22.375,
+    "max_lat": 32.875
+  },
+  "days": [
+    {
+      "date": "2022-04-02",
+      "qualifying_cells": 544,
+      "largest_cluster_cells": 514,
+      "cluster_bbox": {
+        "min_lon": 67.875,
+        "max_lon": 76.125,
+        "min_lat": 23.875,
+        "max_lat": 29.875
+      },
+      "mean_anom_over_qualifying_k": 6.02,
+      "max_anom_k": 9.23,
+      "max_proxy_c": 43.51
+    },
+    {
+      "date": "2022-04-03",
+      "qualifying_cells": 640,
+      "largest_cluster_cells": 632,
+      "cluster_bbox": {
+        "min_lon": 67.875,
+        "max_lon": 82.125,
+        "min_lat": 23.875,
+        "max_lat": 29.625
+      },
+      "mean_anom_over_qualifying_k": 5.42,
+      "max_anom_k": 7.26,
+      "max_proxy_c": 42.83
+    },
+    {
+      "date": "2022-04-04",
+      "qualifying_cells": 583,
+      "largest_cluster_cells": 270,
+      "cluster_bbox": {
+        "min_lon": 68.625,
+        "max_lon": 75.625,
+        "min_lat": 25.125,
+        "max_lat": 29.375
+      },
+      "mean_anom_over_qualifying_k": 5.05,
+      "max_anom_k": 7.51,
+      "max_proxy_c": 42.97
+    },
+    {
+      "date": "2022-04-05",
+      "qualifying_cells": 521,
+      "largest_cluster_cells": 390,
+      "cluster_bbox": {
+        "min_lon": 67.875,
+        "max_lon": 75.875,
+        "min_lat": 25.625,
+        "max_lat": 31.875
+      },
+      "mean_anom_over_qualifying_k": 5.66,
+      "max_anom_k": 8.45,
+      "max_proxy_c": 43.8
+    },
+    {
+      "date": "2022-04-06",
+      "qualifying_cells": 763,
+      "largest_cluster_cells": 634,
+      "cluster_bbox": {
+        "min_lon": 67.875,
+        "max_lon": 77.125,
+        "min_lat": 23.375,
+        "max_lat": 32.125
+      },
+      "mean_anom_over_qualifying_k": 5.85,
+      "max_anom_k": 9.56,
+      "max_proxy_c": 44.5
+    },
+    {
+      "date": "2022-04-07",
+      "qualifying_cells": 1006,
+      "largest_cluster_cells": 950,
+      "cluster_bbox": {
+        "min_lon": 67.875,
+        "max_lon": 81.625,
+        "min_lat": 22.625,
+        "max_lat": 32.375
+      },
+      "mean_anom_over_qualifying_k": 6.42,
+      "max_anom_k": 9.76,
+      "max_proxy_c": 45.33
+    },
+    {
+      "date": "2022-04-08",
+      "qualifying_cells": 1330,
+      "largest_cluster_cells": 1307,
+      "cluster_bbox": {
+        "min_lon": 67.875,
+        "max_lon": 84.375,
+        "min_lat": 22.375,
+        "max_lat": 32.875
+      },
+      "mean_anom_over_qualifying_k": 6.64,
+      "max_anom_k": 11.28,
+      "max_proxy_c": 45.14
+    },
+    {
+      "date": "2022-04-09",
+      "qualifying_cells": 1188,
+      "largest_cluster_cells": 1185,
+      "cluster_bbox": {
+        "min_lon": 67.875,
+        "max_lon": 84.875,
+        "min_lat": 22.875,
+        "max_lat": 33.125
+      },
+      "mean_anom_over_qualifying_k": 6.74,
+      "max_anom_k": 11.8,
+      "max_proxy_c": 45.49
+    },
+    {
+      "date": "2022-04-10",
+      "qualifying_cells": 1126,
+      "largest_cluster_cells": 1118,
+      "cluster_bbox": {
+        "min_lon": 67.875,
+        "max_lon": 85.125,
+        "min_lat": 22.875,
+        "max_lat": 33.125
+      },
+      "mean_anom_over_qualifying_k": 6.79,
+      "max_anom_k": 11.31,
+      "max_proxy_c": 45.49
+    },
+    {
+      "date": "2022-04-11",
+      "qualifying_cells": 1013,
+      "largest_cluster_cells": 990,
+      "cluster_bbox": {
+        "min_lon": 67.875,
+        "max_lon": 84.375,
+        "min_lat": 22.375,
+        "max_lat": 33.125
+      },
+      "mean_anom_over_qualifying_k": 6.49,
+      "max_anom_k": 12.12,
+      "max_proxy_c": 44.36
+    }
+  ]
+}

@@ -1,0 +1,382 @@
+{
+  "full_37-1h-0p25deg-chunk-1.zarr-v3": {
+    "uri": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+    "time_start": "1900-01-01T00:00:00.000000000",
+    "time_end": "2050-12-31T23:00:00.000000000",
+    "n_time": 1323648,
+    "grid": {
+      "n_lat": 721,
+      "n_lon": 1440
+    },
+    "variables": {
+      "2m_temperature": {
+        "dims": [
+          "time",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      },
+      "2m_dewpoint_temperature": {
+        "dims": [
+          "time",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      },
+      "10m_u_component_of_wind": {
+        "dims": [
+          "time",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      },
+      "10m_v_component_of_wind": {
+        "dims": [
+          "time",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      },
+      "surface_pressure": {
+        "dims": [
+          "time",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      },
+      "geopotential": {
+        "dims": [
+          "time",
+          "level",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          37,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          37,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      },
+      "volumetric_soil_water_layer_1": {
+        "dims": [
+          "time",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      },
+      "volumetric_soil_water_layer_2": {
+        "dims": [
+          "time",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      },
+      "volumetric_soil_water_layer_3": {
+        "dims": [
+          "time",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      },
+      "volumetric_soil_water_layer_4": {
+        "dims": [
+          "time",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      },
+      "mean_sea_level_pressure": {
+        "dims": [
+          "time",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      },
+      "total_precipitation": {
+        "dims": [
+          "time",
+          "latitude",
+          "longitude"
+        ],
+        "shape": [
+          1323648,
+          721,
+          1440
+        ],
+        "chunks": [
+          1,
+          721,
+          1440
+        ],
+        "dtype": "float32"
+      }
+    },
+    "missing": []
+  },
+  "1959-2022-1h-360x181_equiangular_with_poles_conservative.zarr": {
+    "uri": "gs://gcp-public-data-arco-era5/ar/1959-2022-1h-360x181_equiangular_with_poles_conservative.zarr",
+    "time_start": "1959-01-01T00:00:00.000000000",
+    "time_end": "2021-12-31T23:00:00.000000000",
+    "n_time": 552264,
+    "grid": {
+      "n_lat": 181,
+      "n_lon": 360
+    },
+    "variables": {
+      "2m_temperature": {
+        "dims": [
+          "time",
+          "longitude",
+          "latitude"
+        ],
+        "shape": [
+          552264,
+          360,
+          181
+        ],
+        "chunks": [
+          8,
+          360,
+          181
+        ],
+        "dtype": "float32"
+      },
+      "10m_u_component_of_wind": {
+        "dims": [
+          "time",
+          "longitude",
+          "latitude"
+        ],
+        "shape": [
+          552264,
+          360,
+          181
+        ],
+        "chunks": [
+          8,
+          360,
+          181
+        ],
+        "dtype": "float32"
+      },
+      "10m_v_component_of_wind": {
+        "dims": [
+          "time",
+          "longitude",
+          "latitude"
+        ],
+        "shape": [
+          552264,
+          360,
+          181
+        ],
+        "chunks": [
+          8,
+          360,
+          181
+        ],
+        "dtype": "float32"
+      },
+      "surface_pressure": {
+        "dims": [
+          "time",
+          "longitude",
+          "latitude"
+        ],
+        "shape": [
+          552264,
+          360,
+          181
+        ],
+        "chunks": [
+          8,
+          360,
+          181
+        ],
+        "dtype": "float32"
+      },
+      "geopotential": {
+        "dims": [
+          "time",
+          "level",
+          "longitude",
+          "latitude"
+        ],
+        "shape": [
+          552264,
+          37,
+          360,
+          181
+        ],
+        "chunks": [
+          8,
+          37,
+          360,
+          181
+        ],
+        "dtype": "float32"
+      },
+      "mean_sea_level_pressure": {
+        "dims": [
+          "time",
+          "longitude",
+          "latitude"
+        ],
+        "shape": [
+          552264,
+          360,
+          181
+        ],
+        "chunks": [
+          8,
+          360,
+          181
+        ],
+        "dtype": "float32"
+      },
+      "total_precipitation": {
+        "dims": [
+          "time",
+          "longitude",
+          "latitude"
+        ],
+        "shape": [
+          552264,
+          360,
+          181
+        ],
+        "chunks": [
+          8,
+          360,
+          181
+        ],
+        "dtype": "float32"
+      }
+    },
+    "missing": [
+      "2m_dewpoint_temperature",
+      "volumetric_soil_water_layer_1",
+      "volumetric_soil_water_layer_2",
+      "volumetric_soil_water_layer_3",
+      "volumetric_soil_water_layer_4"
+    ]
+  }
+}

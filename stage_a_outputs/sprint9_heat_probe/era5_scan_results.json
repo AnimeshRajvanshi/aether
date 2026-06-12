@@ -1,0 +1,7227 @@
+{
+  "design": {
+    "store": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
+    "proxy_hours_utc": [
+      9,
+      10
+    ],
+    "baseline_years": [
+      1991,
+      2020
+    ],
+    "scan_years": [
+      2013,
+      2026
+    ],
+    "percentile": 95.0,
+    "window_half_days": 10,
+    "area_frac_threshold_p95": 0.1,
+    "imd_style": {
+      "abs_threshold_k": 313.15,
+      "departure_k": 4.5,
+      "area_frac_threshold": 0.05
+    },
+    "domain": {
+      "lat": [
+        6.5,
+        37.5
+      ],
+      "lon": [
+        68.0,
+        97.5
+      ],
+      "mask": "lsm>0.5"
+    }
+  },
+  "candidates_imd_style": [
+    {
+      "start": "2019-06-02",
+      "end": "2019-06-16",
+      "n_days": 13,
+      "score": 7.739,
+      "peak_area_frac": 0.2064,
+      "peak_area_date": "2019-06-10",
+      "peak_anom_k": 10.1,
+      "mean_centroid": [
+        23.91,
+        78.15
+      ],
+      "days": [
+        {
+          "date": "2019-06-02",
+          "year": 2019,
+          "area_frac": 0.1035,
+          "severity_k": 5.156,
+          "centroid": [
+            25.13,
+            74.06
+          ],
+          "peak_anom_k": 6.56,
+          "peak_cell": [
+            28.75,
+            69.75
+          ]
+        },
+        {
+          "date": "2019-06-03",
+          "year": 2019,
+          "area_frac": 0.0846,
+          "severity_k": 5.064,
+          "centroid": [
+            26.89,
+            73.86
+          ],
+          "peak_anom_k": 6.38,
+          "peak_cell": [
+            30.5,
+            70.5
+          ]
+        },
+        {
+          "date": "2019-06-05",
+          "year": 2019,
+          "area_frac": 0.0656,
+          "severity_k": 5.173,
+          "centroid": [
+            22.46,
+            79.0
+          ],
+          "peak_anom_k": 6.68,
+          "peak_cell": [
+            21.5,
+            79.75
+          ]
+        },
+        {
+          "date": "2019-06-06",
+          "year": 2019,
+          "area_frac": 0.0712,
+          "severity_k": 5.408,
+          "centroid": [
+            22.67,
+            77.99
+          ],
+          "peak_anom_k": 7.51,
+          "peak_cell": [
+            23.25,
+            78.75
+          ]
+        },
+        {
+          "date": "2019-06-07",
+          "year": 2019,
+          "area_frac": 0.0759,
+          "severity_k": 5.424,
+          "centroid": [
+            22.09,
+            75.94
+          ],
+          "peak_anom_k": 7.53,
+          "peak_cell": [
+            23.0,
+            77.5
+          ]
+        },
+        {
+          "date": "2019-06-08",
+          "year": 2019,
+          "area_frac": 0.0768,
+          "severity_k": 5.08,
+          "centroid": [
+            25.31,
+            74.36
+          ],
+          "peak_anom_k": 6.3,
+          "peak_cell": [
+            24.0,
+            73.75
+          ]
+        },
+        {
+          "date": "2019-06-09",
+          "year": 2019,
+          "area_frac": 0.1761,
+          "severity_k": 5.505,
+          "centroid": [
+            25.19,
+            77.16
+          ],
+          "peak_anom_k": 8.13,
+          "peak_cell": [
+            23.25,
+            84.25
+          ]
+        },
+        {
+          "date": "2019-06-10",
+          "year": 2019,
+          "area_frac": 0.2064,
+          "severity_k": 5.984,
+          "centroid": [
+            25.31,
+            77.93
+          ],
+          "peak_anom_k": 8.91,
+          "peak_cell": [
+            23.25,
+            84.25
+          ]
+        },
+        {
+          "date": "2019-06-11",
+          "year": 2019,
+          "area_frac": 0.1552,
+          "severity_k": 6.035,
+          "centroid": [
+            23.86,
+            79.09
+          ],
+          "peak_anom_k": 9.02,
+          "peak_cell": [
+            23.25,
+            84.25
+          ]
+        },
+        {
+          "date": "2019-06-12",
+          "year": 2019,
+          "area_frac": 0.1015,
+          "severity_k": 6.214,
+          "centroid": [
+            21.45,
+            80.95
+          ],
+          "peak_anom_k": 9.52,
+          "peak_cell": [
+            22.75,
+            84.5
+          ]
+        },
+        {
+          "date": "2019-06-14",
+          "year": 2019,
+          "area_frac": 0.0764,
+          "severity_k": 5.813,
+          "centroid": [
+            24.23,
+            81.59
+          ],
+          "peak_anom_k": 8.19,
+          "peak_cell": [
+            24.0,
+            86.5
+          ]
+        },
+        {
+          "date": "2019-06-15",
+          "year": 2019,
+          "area_frac": 0.1065,
+          "severity_k": 6.456,
+          "centroid": [
+            23.68,
+            81.36
+          ],
+          "peak_anom_k": 10.1,
+          "peak_cell": [
+            26.0,
+            86.0
+          ]
+        },
+        {
+          "date": "2019-06-16",
+          "year": 2019,
+          "area_frac": 0.0553,
+          "severity_k": 6.281,
+          "centroid": [
+            22.58,
+            82.61
+          ],
+          "peak_anom_k": 9.24,
+          "peak_cell": [
+            24.75,
+            87.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2017-04-12",
+      "end": "2017-04-20",
+      "n_days": 9,
+      "score": 5.769,
+      "peak_area_frac": 0.1151,
+      "peak_area_date": "2017-04-15",
+      "peak_anom_k": 12.12,
+      "mean_centroid": [
+        27.81,
+        73.12
+      ],
+      "days": [
+        {
+          "date": "2017-04-12",
+          "year": 2017,
+          "area_frac": 0.0693,
+          "severity_k": 5.88,
+          "centroid": [
+            26.73,
+            71.16
+          ],
+          "peak_anom_k": 8.96,
+          "peak_cell": [
+            29.0,
+            69.75
+          ]
+        },
+        {
+          "date": "2017-04-13",
+          "year": 2017,
+          "area_frac": 0.112,
+          "severity_k": 6.162,
+          "centroid": [
+            26.74,
+            72.1
+          ],
+          "peak_anom_k": 10.17,
+          "peak_cell": [
+            32.0,
+            70.25
+          ]
+        },
+        {
+          "date": "2017-04-14",
+          "year": 2017,
+          "area_frac": 0.1108,
+          "severity_k": 5.856,
+          "centroid": [
+            27.14,
+            72.82
+          ],
+          "peak_anom_k": 8.43,
+          "peak_cell": [
+            28.75,
+            69.25
+          ]
+        },
+        {
+          "date": "2017-04-15",
+          "year": 2017,
+          "area_frac": 0.1151,
+          "severity_k": 6.058,
+          "centroid": [
+            27.61,
+            73.57
+          ],
+          "peak_anom_k": 10.72,
+          "peak_cell": [
+            34.0,
+            71.75
+          ]
+        },
+        {
+          "date": "2017-04-16",
+          "year": 2017,
+          "area_frac": 0.1103,
+          "severity_k": 6.644,
+          "centroid": [
+            27.65,
+            73.51
+          ],
+          "peak_anom_k": 12.12,
+          "peak_cell": [
+            34.0,
+            71.5
+          ]
+        },
+        {
+          "date": "2017-04-17",
+          "year": 2017,
+          "area_frac": 0.0999,
+          "severity_k": 6.551,
+          "centroid": [
+            27.82,
+            73.89
+          ],
+          "peak_anom_k": 12.06,
+          "peak_cell": [
+            34.0,
+            71.5
+          ]
+        },
+        {
+          "date": "2017-04-18",
+          "year": 2017,
+          "area_frac": 0.0951,
+          "severity_k": 6.863,
+          "centroid": [
+            28.73,
+            73.83
+          ],
+          "peak_anom_k": 12.09,
+          "peak_cell": [
+            34.0,
+            71.75
+          ]
+        },
+        {
+          "date": "2017-04-19",
+          "year": 2017,
+          "area_frac": 0.0977,
+          "severity_k": 6.697,
+          "centroid": [
+            28.64,
+            74.47
+          ],
+          "peak_anom_k": 11.25,
+          "peak_cell": [
+            33.0,
+            72.5
+          ]
+        },
+        {
+          "date": "2017-04-20",
+          "year": 2017,
+          "area_frac": 0.09,
+          "severity_k": 7.006,
+          "centroid": [
+            29.21,
+            72.77
+          ],
+          "peak_anom_k": 10.22,
+          "peak_cell": [
+            33.0,
+            72.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2022-04-02",
+      "end": "2022-04-11",
+      "n_days": 10,
+      "score": 5.717,
+      "peak_area_frac": 0.1394,
+      "peak_area_date": "2022-04-08",
+      "peak_anom_k": 12.12,
+      "mean_centroid": [
+        27.31,
+        74.04
+      ],
+      "days": [
+        {
+          "date": "2022-04-02",
+          "year": 2022,
+          "area_frac": 0.0571,
+          "severity_k": 6.023,
+          "centroid": [
+            27.18,
+            71.79
+          ],
+          "peak_anom_k": 9.23,
+          "peak_cell": [
+            29.5,
+            70.0
+          ]
+        },
+        {
+          "date": "2022-04-03",
+          "year": 2022,
+          "area_frac": 0.0673,
+          "severity_k": 5.423,
+          "centroid": [
+            26.92,
+            74.09
+          ],
+          "peak_anom_k": 7.26,
+          "peak_cell": [
+            28.75,
+            69.5
+          ]
+        },
+        {
+          "date": "2022-04-04",
+          "year": 2022,
+          "area_frac": 0.0615,
+          "severity_k": 5.052,
+          "centroid": [
+            26.5,
+            75.95
+          ],
+          "peak_anom_k": 7.51,
+          "peak_cell": [
+            31.0,
+            71.5
+          ]
+        },
+        {
+          "date": "2022-04-05",
+          "year": 2022,
+          "area_frac": 0.0546,
+          "severity_k": 5.659,
+          "centroid": [
+            27.4,
+            73.8
+          ],
+          "peak_anom_k": 8.45,
+          "peak_cell": [
+            29.0,
+            69.25
+          ]
+        },
+        {
+          "date": "2022-04-06",
+          "year": 2022,
+          "area_frac": 0.0801,
+          "severity_k": 5.846,
+          "centroid": [
+            27.13,
+            73.15
+          ],
+          "peak_anom_k": 9.56,
+          "peak_cell": [
+            29.5,
+            70.0
+          ]
+        },
+        {
+          "date": "2022-04-07",
+          "year": 2022,
+          "area_frac": 0.1055,
+          "severity_k": 6.421,
+          "centroid": [
+            27.21,
+            72.79
+          ],
+          "peak_anom_k": 9.76,
+          "peak_cell": [
+            29.0,
+            70.0
+          ]
+        },
+        {
+          "date": "2022-04-08",
+          "year": 2022,
+          "area_frac": 0.1394,
+          "severity_k": 6.639,
+          "centroid": [
+            27.25,
+            73.91
+          ],
+          "peak_anom_k": 11.28,
+          "peak_cell": [
+            34.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-04-09",
+          "year": 2022,
+          "area_frac": 0.124,
+          "severity_k": 6.742,
+          "centroid": [
+            27.7,
+            74.84
+          ],
+          "peak_anom_k": 11.8,
+          "peak_cell": [
+            31.75,
+            70.25
+          ]
+        },
+        {
+          "date": "2022-04-10",
+          "year": 2022,
+          "area_frac": 0.1174,
+          "severity_k": 6.788,
+          "centroid": [
+            27.82,
+            74.71
+          ],
+          "peak_anom_k": 11.31,
+          "peak_cell": [
+            34.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-04-11",
+          "year": 2022,
+          "area_frac": 0.1054,
+          "severity_k": 6.489,
+          "centroid": [
+            28.03,
+            75.4
+          ],
+          "peak_anom_k": 12.12,
+          "peak_cell": [
+            34.25,
+            71.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2024-06-11",
+      "end": "2024-06-19",
+      "n_days": 9,
+      "score": 4.56,
+      "peak_area_frac": 0.1109,
+      "peak_area_date": "2024-06-12",
+      "peak_anom_k": 8.97,
+      "mean_centroid": [
+        27.26,
+        79.74
+      ],
+      "days": [
+        {
+          "date": "2024-06-11",
+          "year": 2024,
+          "area_frac": 0.0689,
+          "severity_k": 5.441,
+          "centroid": [
+            26.39,
+            81.16
+          ],
+          "peak_anom_k": 8.39,
+          "peak_cell": [
+            23.0,
+            87.0
+          ]
+        },
+        {
+          "date": "2024-06-12",
+          "year": 2024,
+          "area_frac": 0.1109,
+          "severity_k": 5.665,
+          "centroid": [
+            27.67,
+            79.03
+          ],
+          "peak_anom_k": 8.06,
+          "peak_cell": [
+            23.25,
+            86.0
+          ]
+        },
+        {
+          "date": "2024-06-13",
+          "year": 2024,
+          "area_frac": 0.0894,
+          "severity_k": 5.91,
+          "centroid": [
+            26.75,
+            80.63
+          ],
+          "peak_anom_k": 8.29,
+          "peak_cell": [
+            23.25,
+            87.0
+          ]
+        },
+        {
+          "date": "2024-06-14",
+          "year": 2024,
+          "area_frac": 0.0692,
+          "severity_k": 5.876,
+          "centroid": [
+            26.8,
+            80.96
+          ],
+          "peak_anom_k": 7.84,
+          "peak_cell": [
+            23.0,
+            87.0
+          ]
+        },
+        {
+          "date": "2024-06-15",
+          "year": 2024,
+          "area_frac": 0.1082,
+          "severity_k": 6.112,
+          "centroid": [
+            25.61,
+            80.9
+          ],
+          "peak_anom_k": 8.85,
+          "peak_cell": [
+            23.25,
+            87.0
+          ]
+        },
+        {
+          "date": "2024-06-16",
+          "year": 2024,
+          "area_frac": 0.0998,
+          "severity_k": 6.159,
+          "centroid": [
+            27.88,
+            78.32
+          ],
+          "peak_anom_k": 8.69,
+          "peak_cell": [
+            27.0,
+            81.25
+          ]
+        },
+        {
+          "date": "2024-06-17",
+          "year": 2024,
+          "area_frac": 0.0971,
+          "severity_k": 6.4,
+          "centroid": [
+            28.23,
+            78.36
+          ],
+          "peak_anom_k": 8.97,
+          "peak_cell": [
+            26.0,
+            81.75
+          ]
+        },
+        {
+          "date": "2024-06-18",
+          "year": 2024,
+          "area_frac": 0.073,
+          "severity_k": 5.993,
+          "centroid": [
+            27.32,
+            79.64
+          ],
+          "peak_anom_k": 8.29,
+          "peak_cell": [
+            27.75,
+            81.0
+          ]
+        },
+        {
+          "date": "2024-06-19",
+          "year": 2024,
+          "area_frac": 0.0514,
+          "severity_k": 5.585,
+          "centroid": [
+            28.67,
+            78.63
+          ],
+          "peak_anom_k": 7.3,
+          "peak_cell": [
+            27.25,
+            82.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2014-06-05",
+      "end": "2014-06-11",
+      "n_days": 7,
+      "score": 4.382,
+      "peak_area_frac": 0.1638,
+      "peak_area_date": "2014-06-07",
+      "peak_anom_k": 8.89,
+      "mean_centroid": [
+        25.77,
+        78.62
+      ],
+      "days": [
+        {
+          "date": "2014-06-05",
+          "year": 2014,
+          "area_frac": 0.0809,
+          "severity_k": 5.079,
+          "centroid": [
+            26.21,
+            79.04
+          ],
+          "peak_anom_k": 8.89,
+          "peak_cell": [
+            19.75,
+            95.0
+          ]
+        },
+        {
+          "date": "2014-06-06",
+          "year": 2014,
+          "area_frac": 0.1537,
+          "severity_k": 5.288,
+          "centroid": [
+            25.42,
+            78.58
+          ],
+          "peak_anom_k": 7.67,
+          "peak_cell": [
+            21.0,
+            94.5
+          ]
+        },
+        {
+          "date": "2014-06-07",
+          "year": 2014,
+          "area_frac": 0.1638,
+          "severity_k": 5.483,
+          "centroid": [
+            24.87,
+            78.25
+          ],
+          "peak_anom_k": 8.15,
+          "peak_cell": [
+            22.5,
+            81.75
+          ]
+        },
+        {
+          "date": "2014-06-08",
+          "year": 2014,
+          "area_frac": 0.1384,
+          "severity_k": 5.509,
+          "centroid": [
+            25.8,
+            77.89
+          ],
+          "peak_anom_k": 7.78,
+          "peak_cell": [
+            22.5,
+            81.75
+          ]
+        },
+        {
+          "date": "2014-06-09",
+          "year": 2014,
+          "area_frac": 0.086,
+          "severity_k": 5.118,
+          "centroid": [
+            26.81,
+            77.4
+          ],
+          "peak_anom_k": 6.91,
+          "peak_cell": [
+            30.5,
+            77.5
+          ]
+        },
+        {
+          "date": "2014-06-10",
+          "year": 2014,
+          "area_frac": 0.1046,
+          "severity_k": 5.29,
+          "centroid": [
+            26.2,
+            78.55
+          ],
+          "peak_anom_k": 6.71,
+          "peak_cell": [
+            19.5,
+            80.75
+          ]
+        },
+        {
+          "date": "2014-06-11",
+          "year": 2014,
+          "area_frac": 0.0942,
+          "severity_k": 5.35,
+          "centroid": [
+            25.09,
+            80.62
+          ],
+          "peak_anom_k": 7.44,
+          "peak_cell": [
+            23.25,
+            82.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2024-05-26",
+      "end": "2024-05-31",
+      "n_days": 6,
+      "score": 3.381,
+      "peak_area_frac": 0.138,
+      "peak_area_date": "2024-05-28",
+      "peak_anom_k": 9.85,
+      "mean_centroid": [
+        27.34,
+        76.51
+      ],
+      "days": [
+        {
+          "date": "2024-05-26",
+          "year": 2024,
+          "area_frac": 0.0923,
+          "severity_k": 5.494,
+          "centroid": [
+            28.75,
+            73.03
+          ],
+          "peak_anom_k": 9.85,
+          "peak_cell": [
+            26.5,
+            91.5
+          ]
+        },
+        {
+          "date": "2024-05-27",
+          "year": 2024,
+          "area_frac": 0.131,
+          "severity_k": 5.653,
+          "centroid": [
+            28.25,
+            73.41
+          ],
+          "peak_anom_k": 8.13,
+          "peak_cell": [
+            26.25,
+            72.25
+          ]
+        },
+        {
+          "date": "2024-05-28",
+          "year": 2024,
+          "area_frac": 0.138,
+          "severity_k": 5.604,
+          "centroid": [
+            28.08,
+            75.47
+          ],
+          "peak_anom_k": 7.34,
+          "peak_cell": [
+            30.25,
+            70.25
+          ]
+        },
+        {
+          "date": "2024-05-29",
+          "year": 2024,
+          "area_frac": 0.1028,
+          "severity_k": 5.481,
+          "centroid": [
+            26.55,
+            79.37
+          ],
+          "peak_anom_k": 7.44,
+          "peak_cell": [
+            23.5,
+            86.0
+          ]
+        },
+        {
+          "date": "2024-05-30",
+          "year": 2024,
+          "area_frac": 0.0952,
+          "severity_k": 5.173,
+          "centroid": [
+            26.34,
+            79.43
+          ],
+          "peak_anom_k": 6.67,
+          "peak_cell": [
+            28.75,
+            81.25
+          ]
+        },
+        {
+          "date": "2024-05-31",
+          "year": 2024,
+          "area_frac": 0.0598,
+          "severity_k": 5.08,
+          "centroid": [
+            26.06,
+            78.33
+          ],
+          "peak_anom_k": 6.24,
+          "peak_cell": [
+            28.5,
+            77.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2017-03-27",
+      "end": "2017-04-03",
+      "n_days": 8,
+      "score": 2.931,
+      "peak_area_frac": 0.0835,
+      "peak_area_date": "2017-03-30",
+      "peak_anom_k": 9.07,
+      "mean_centroid": [
+        25.51,
+        76.38
+      ],
+      "days": [
+        {
+          "date": "2017-03-27",
+          "year": 2017,
+          "area_frac": 0.0538,
+          "severity_k": 5.848,
+          "centroid": [
+            25.62,
+            72.02
+          ],
+          "peak_anom_k": 9.07,
+          "peak_cell": [
+            29.25,
+            70.0
+          ]
+        },
+        {
+          "date": "2017-03-28",
+          "year": 2017,
+          "area_frac": 0.0745,
+          "severity_k": 5.679,
+          "centroid": [
+            25.67,
+            74.52
+          ],
+          "peak_anom_k": 7.5,
+          "peak_cell": [
+            29.25,
+            68.0
+          ]
+        },
+        {
+          "date": "2017-03-29",
+          "year": 2017,
+          "area_frac": 0.0797,
+          "severity_k": 5.383,
+          "centroid": [
+            25.03,
+            76.74
+          ],
+          "peak_anom_k": 6.86,
+          "peak_cell": [
+            25.75,
+            78.5
+          ]
+        },
+        {
+          "date": "2017-03-30",
+          "year": 2017,
+          "area_frac": 0.0835,
+          "severity_k": 5.384,
+          "centroid": [
+            24.17,
+            79.78
+          ],
+          "peak_anom_k": 7.8,
+          "peak_cell": [
+            22.0,
+            86.5
+          ]
+        },
+        {
+          "date": "2017-03-31",
+          "year": 2017,
+          "area_frac": 0.0632,
+          "severity_k": 5.415,
+          "centroid": [
+            24.77,
+            78.94
+          ],
+          "peak_anom_k": 8.21,
+          "peak_cell": [
+            29.25,
+            68.0
+          ]
+        },
+        {
+          "date": "2017-04-01",
+          "year": 2017,
+          "area_frac": 0.0687,
+          "severity_k": 5.353,
+          "centroid": [
+            25.71,
+            77.95
+          ],
+          "peak_anom_k": 7.47,
+          "peak_cell": [
+            29.0,
+            68.0
+          ]
+        },
+        {
+          "date": "2017-04-02",
+          "year": 2017,
+          "area_frac": 0.0545,
+          "severity_k": 5.516,
+          "centroid": [
+            26.5,
+            75.21
+          ],
+          "peak_anom_k": 7.73,
+          "peak_cell": [
+            29.25,
+            70.0
+          ]
+        },
+        {
+          "date": "2017-04-03",
+          "year": 2017,
+          "area_frac": 0.0551,
+          "severity_k": 5.527,
+          "centroid": [
+            26.59,
+            75.85
+          ],
+          "peak_anom_k": 7.33,
+          "peak_cell": [
+            29.25,
+            68.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2023-06-13",
+      "end": "2023-06-18",
+      "n_days": 6,
+      "score": 2.926,
+      "peak_area_frac": 0.1069,
+      "peak_area_date": "2023-06-16",
+      "peak_anom_k": 10.16,
+      "mean_centroid": [
+        22.84,
+        82.46
+      ],
+      "days": [
+        {
+          "date": "2023-06-13",
+          "year": 2023,
+          "area_frac": 0.0628,
+          "severity_k": 5.43,
+          "centroid": [
+            22.7,
+            81.87
+          ],
+          "peak_anom_k": 7.27,
+          "peak_cell": [
+            22.25,
+            83.25
+          ]
+        },
+        {
+          "date": "2023-06-14",
+          "year": 2023,
+          "area_frac": 0.0542,
+          "severity_k": 5.831,
+          "centroid": [
+            23.36,
+            83.0
+          ],
+          "peak_anom_k": 8.17,
+          "peak_cell": [
+            26.25,
+            86.0
+          ]
+        },
+        {
+          "date": "2023-06-15",
+          "year": 2023,
+          "area_frac": 0.075,
+          "severity_k": 6.011,
+          "centroid": [
+            22.57,
+            83.11
+          ],
+          "peak_anom_k": 8.42,
+          "peak_cell": [
+            26.0,
+            87.25
+          ]
+        },
+        {
+          "date": "2023-06-16",
+          "year": 2023,
+          "area_frac": 0.1069,
+          "severity_k": 6.68,
+          "centroid": [
+            22.07,
+            82.57
+          ],
+          "peak_anom_k": 10.16,
+          "peak_cell": [
+            22.0,
+            83.5
+          ]
+        },
+        {
+          "date": "2023-06-17",
+          "year": 2023,
+          "area_frac": 0.0852,
+          "severity_k": 6.627,
+          "centroid": [
+            23.24,
+            82.14
+          ],
+          "peak_anom_k": 10.07,
+          "peak_cell": [
+            22.0,
+            83.5
+          ]
+        },
+        {
+          "date": "2023-06-18",
+          "year": 2023,
+          "area_frac": 0.081,
+          "severity_k": 6.661,
+          "centroid": [
+            23.1,
+            82.1
+          ],
+          "peak_anom_k": 9.72,
+          "peak_cell": [
+            21.25,
+            83.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2016-05-18",
+      "end": "2016-05-21",
+      "n_days": 4,
+      "score": 2.295,
+      "peak_area_frac": 0.1385,
+      "peak_area_date": "2016-05-18",
+      "peak_anom_k": 7.83,
+      "mean_centroid": [
+        28.39,
+        72.97
+      ],
+      "days": [
+        {
+          "date": "2016-05-18",
+          "year": 2016,
+          "area_frac": 0.1385,
+          "severity_k": 5.621,
+          "centroid": [
+            26.94,
+            73.81
+          ],
+          "peak_anom_k": 7.72,
+          "peak_cell": [
+            19.0,
+            96.0
+          ]
+        },
+        {
+          "date": "2016-05-19",
+          "year": 2016,
+          "area_frac": 0.1205,
+          "severity_k": 5.807,
+          "centroid": [
+            27.65,
+            72.64
+          ],
+          "peak_anom_k": 7.43,
+          "peak_cell": [
+            26.5,
+            72.5
+          ]
+        },
+        {
+          "date": "2016-05-20",
+          "year": 2016,
+          "area_frac": 0.0847,
+          "severity_k": 5.531,
+          "centroid": [
+            28.58,
+            72.85
+          ],
+          "peak_anom_k": 7.22,
+          "peak_cell": [
+            26.75,
+            74.0
+          ]
+        },
+        {
+          "date": "2016-05-21",
+          "year": 2016,
+          "area_frac": 0.061,
+          "severity_k": 5.709,
+          "centroid": [
+            30.37,
+            72.56
+          ],
+          "peak_anom_k": 7.83,
+          "peak_cell": [
+            34.25,
+            72.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2025-04-06",
+      "end": "2025-04-09",
+      "n_days": 4,
+      "score": 2.122,
+      "peak_area_frac": 0.0978,
+      "peak_area_date": "2025-04-08",
+      "peak_anom_k": 10.62,
+      "mean_centroid": [
+        26.97,
+        72.49
+      ],
+      "days": [
+        {
+          "date": "2025-04-06",
+          "year": 2025,
+          "area_frac": 0.0672,
+          "severity_k": 6.228,
+          "centroid": [
+            26.53,
+            71.24
+          ],
+          "peak_anom_k": 8.97,
+          "peak_cell": [
+            29.5,
+            68.0
+          ]
+        },
+        {
+          "date": "2025-04-07",
+          "year": 2025,
+          "area_frac": 0.0965,
+          "severity_k": 6.365,
+          "centroid": [
+            26.92,
+            72.58
+          ],
+          "peak_anom_k": 10.62,
+          "peak_cell": [
+            29.5,
+            68.0
+          ]
+        },
+        {
+          "date": "2025-04-08",
+          "year": 2025,
+          "area_frac": 0.0978,
+          "severity_k": 6.521,
+          "centroid": [
+            27.31,
+            72.81
+          ],
+          "peak_anom_k": 10.3,
+          "peak_cell": [
+            32.75,
+            71.25
+          ]
+        },
+        {
+          "date": "2025-04-09",
+          "year": 2025,
+          "area_frac": 0.0784,
+          "severity_k": 5.761,
+          "centroid": [
+            27.13,
+            73.34
+          ],
+          "peak_anom_k": 8.35,
+          "peak_cell": [
+            32.25,
+            74.0
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2022-04-27",
+      "end": "2022-05-01",
+      "n_days": 5,
+      "score": 1.895,
+      "peak_area_frac": 0.0865,
+      "peak_area_date": "2022-04-28",
+      "peak_anom_k": 11.2,
+      "mean_centroid": [
+        28.53,
+        75.39
+      ],
+      "days": [
+        {
+          "date": "2022-04-27",
+          "year": 2022,
+          "area_frac": 0.0551,
+          "severity_k": 5.473,
+          "centroid": [
+            27.73,
+            77.85
+          ],
+          "peak_anom_k": 7.7,
+          "peak_cell": [
+            30.25,
+            70.25
+          ]
+        },
+        {
+          "date": "2022-04-28",
+          "year": 2022,
+          "area_frac": 0.0865,
+          "severity_k": 5.493,
+          "centroid": [
+            28.2,
+            76.39
+          ],
+          "peak_anom_k": 8.21,
+          "peak_cell": [
+            31.75,
+            70.25
+          ]
+        },
+        {
+          "date": "2022-04-29",
+          "year": 2022,
+          "area_frac": 0.079,
+          "severity_k": 5.335,
+          "centroid": [
+            27.92,
+            78.03
+          ],
+          "peak_anom_k": 7.63,
+          "peak_cell": [
+            34.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-04-30",
+          "year": 2022,
+          "area_frac": 0.0594,
+          "severity_k": 5.292,
+          "centroid": [
+            29.78,
+            73.05
+          ],
+          "peak_anom_k": 7.5,
+          "peak_cell": [
+            34.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-05-01",
+          "year": 2022,
+          "area_frac": 0.0679,
+          "severity_k": 5.628,
+          "centroid": [
+            29.0,
+            71.65
+          ],
+          "peak_anom_k": 11.2,
+          "peak_cell": [
+            37.25,
+            68.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2022-05-12",
+      "end": "2022-05-15",
+      "n_days": 4,
+      "score": 1.843,
+      "peak_area_frac": 0.112,
+      "peak_area_date": "2022-05-14",
+      "peak_anom_k": 8.86,
+      "mean_centroid": [
+        28.81,
+        73.34
+      ],
+      "days": [
+        {
+          "date": "2022-05-12",
+          "year": 2022,
+          "area_frac": 0.0711,
+          "severity_k": 5.275,
+          "centroid": [
+            28.82,
+            72.64
+          ],
+          "peak_anom_k": 7.63,
+          "peak_cell": [
+            30.25,
+            70.25
+          ]
+        },
+        {
+          "date": "2022-05-13",
+          "year": 2022,
+          "area_frac": 0.0782,
+          "severity_k": 5.218,
+          "centroid": [
+            28.26,
+            72.49
+          ],
+          "peak_anom_k": 7.3,
+          "peak_cell": [
+            25.25,
+            68.0
+          ]
+        },
+        {
+          "date": "2022-05-14",
+          "year": 2022,
+          "area_frac": 0.112,
+          "severity_k": 5.825,
+          "centroid": [
+            28.72,
+            73.19
+          ],
+          "peak_anom_k": 8.86,
+          "peak_cell": [
+            33.5,
+            74.0
+          ]
+        },
+        {
+          "date": "2022-05-15",
+          "year": 2022,
+          "area_frac": 0.0725,
+          "severity_k": 5.616,
+          "centroid": [
+            29.46,
+            75.04
+          ],
+          "peak_anom_k": 8.46,
+          "peak_cell": [
+            33.25,
+            74.0
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2025-04-15",
+      "end": "2025-04-18",
+      "n_days": 4,
+      "score": 1.34,
+      "peak_area_frac": 0.0634,
+      "peak_area_date": "2025-04-16",
+      "peak_anom_k": 10.16,
+      "mean_centroid": [
+        27.98,
+        71.5
+      ],
+      "days": [
+        {
+          "date": "2025-04-15",
+          "year": 2025,
+          "area_frac": 0.0507,
+          "severity_k": 6.356,
+          "centroid": [
+            28.15,
+            70.59
+          ],
+          "peak_anom_k": 10.16,
+          "peak_cell": [
+            34.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2025-04-16",
+          "year": 2025,
+          "area_frac": 0.0634,
+          "severity_k": 6.455,
+          "centroid": [
+            28.42,
+            71.3
+          ],
+          "peak_anom_k": 8.88,
+          "peak_cell": [
+            29.75,
+            68.5
+          ]
+        },
+        {
+          "date": "2025-04-17",
+          "year": 2025,
+          "area_frac": 0.0504,
+          "severity_k": 5.291,
+          "centroid": [
+            27.26,
+            71.65
+          ],
+          "peak_anom_k": 7.03,
+          "peak_cell": [
+            26.0,
+            68.25
+          ]
+        },
+        {
+          "date": "2025-04-18",
+          "year": 2025,
+          "area_frac": 0.0603,
+          "severity_k": 5.667,
+          "centroid": [
+            28.07,
+            72.47
+          ],
+          "peak_anom_k": 7.64,
+          "peak_cell": [
+            29.25,
+            72.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2022-03-28",
+      "end": "2022-03-30",
+      "n_days": 3,
+      "score": 1.061,
+      "peak_area_frac": 0.0601,
+      "peak_area_date": "2022-03-29",
+      "peak_anom_k": 8.87,
+      "mean_centroid": [
+        26.78,
+        73.85
+      ],
+      "days": [
+        {
+          "date": "2022-03-28",
+          "year": 2022,
+          "area_frac": 0.0518,
+          "severity_k": 6.55,
+          "centroid": [
+            27.03,
+            72.32
+          ],
+          "peak_anom_k": 8.87,
+          "peak_cell": [
+            29.0,
+            72.5
+          ]
+        },
+        {
+          "date": "2022-03-29",
+          "year": 2022,
+          "area_frac": 0.0601,
+          "severity_k": 6.259,
+          "centroid": [
+            26.98,
+            73.84
+          ],
+          "peak_anom_k": 8.84,
+          "peak_cell": [
+            29.0,
+            72.5
+          ]
+        },
+        {
+          "date": "2022-03-30",
+          "year": 2022,
+          "area_frac": 0.0599,
+          "severity_k": 5.766,
+          "centroid": [
+            26.34,
+            75.39
+          ],
+          "peak_anom_k": 8.0,
+          "peak_cell": [
+            28.75,
+            73.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2025-06-09",
+      "end": "2025-06-12",
+      "n_days": 3,
+      "score": 1.025,
+      "peak_area_frac": 0.067,
+      "peak_area_date": "2025-06-10",
+      "peak_anom_k": 8.19,
+      "mean_centroid": [
+        29.09,
+        74.9
+      ],
+      "days": [
+        {
+          "date": "2025-06-09",
+          "year": 2025,
+          "area_frac": 0.0599,
+          "severity_k": 5.306,
+          "centroid": [
+            28.83,
+            75.38
+          ],
+          "peak_anom_k": 7.45,
+          "peak_cell": [
+            31.5,
+            70.25
+          ]
+        },
+        {
+          "date": "2025-06-10",
+          "year": 2025,
+          "area_frac": 0.067,
+          "severity_k": 5.541,
+          "centroid": [
+            28.71,
+            75.47
+          ],
+          "peak_anom_k": 8.14,
+          "peak_cell": [
+            31.5,
+            70.25
+          ]
+        },
+        {
+          "date": "2025-06-12",
+          "year": 2025,
+          "area_frac": 0.0622,
+          "severity_k": 5.397,
+          "centroid": [
+            29.73,
+            73.85
+          ],
+          "peak_anom_k": 8.19,
+          "peak_cell": [
+            33.25,
+            73.0
+          ]
+        }
+      ]
+    }
+  ],
+  "candidates_p95": [
+    {
+      "start": "2026-03-01",
+      "end": "2026-03-13",
+      "n_days": 13,
+      "score": 12.267,
+      "peak_area_frac": 0.5266,
+      "peak_area_date": "2026-03-06",
+      "peak_anom_k": 17.4,
+      "mean_centroid": [
+        30.5,
+        81.1
+      ],
+      "days": [
+        {
+          "date": "2026-03-01",
+          "year": 2026,
+          "area_frac": 0.1108,
+          "severity_k": 0.835,
+          "centroid": [
+            32.26,
+            75.21
+          ],
+          "peak_anom_k": 11.82,
+          "peak_cell": [
+            37.25,
+            70.25
+          ]
+        },
+        {
+          "date": "2026-03-02",
+          "year": 2026,
+          "area_frac": 0.1869,
+          "severity_k": 1.166,
+          "centroid": [
+            31.85,
+            77.2
+          ],
+          "peak_anom_k": 12.53,
+          "peak_cell": [
+            37.25,
+            70.25
+          ]
+        },
+        {
+          "date": "2026-03-03",
+          "year": 2026,
+          "area_frac": 0.3028,
+          "severity_k": 1.95,
+          "centroid": [
+            31.28,
+            78.53
+          ],
+          "peak_anom_k": 12.37,
+          "peak_cell": [
+            33.5,
+            69.5
+          ]
+        },
+        {
+          "date": "2026-03-04",
+          "year": 2026,
+          "area_frac": 0.4155,
+          "severity_k": 2.636,
+          "centroid": [
+            31.11,
+            81.08
+          ],
+          "peak_anom_k": 14.4,
+          "peak_cell": [
+            28.0,
+            89.0
+          ]
+        },
+        {
+          "date": "2026-03-05",
+          "year": 2026,
+          "area_frac": 0.5052,
+          "severity_k": 3.681,
+          "centroid": [
+            30.85,
+            82.25
+          ],
+          "peak_anom_k": 15.62,
+          "peak_cell": [
+            33.75,
+            79.5
+          ]
+        },
+        {
+          "date": "2026-03-06",
+          "year": 2026,
+          "area_frac": 0.5266,
+          "severity_k": 3.726,
+          "centroid": [
+            30.33,
+            82.54
+          ],
+          "peak_anom_k": 17.4,
+          "peak_cell": [
+            32.25,
+            93.5
+          ]
+        },
+        {
+          "date": "2026-03-07",
+          "year": 2026,
+          "area_frac": 0.4942,
+          "severity_k": 3.007,
+          "centroid": [
+            30.74,
+            81.79
+          ],
+          "peak_anom_k": 15.7,
+          "peak_cell": [
+            32.25,
+            93.5
+          ]
+        },
+        {
+          "date": "2026-03-08",
+          "year": 2026,
+          "area_frac": 0.4316,
+          "severity_k": 2.339,
+          "centroid": [
+            30.34,
+            80.37
+          ],
+          "peak_anom_k": 14.99,
+          "peak_cell": [
+            32.25,
+            93.25
+          ]
+        },
+        {
+          "date": "2026-03-09",
+          "year": 2026,
+          "area_frac": 0.4583,
+          "severity_k": 1.73,
+          "centroid": [
+            30.04,
+            80.97
+          ],
+          "peak_anom_k": 12.52,
+          "peak_cell": [
+            29.25,
+            85.5
+          ]
+        },
+        {
+          "date": "2026-03-10",
+          "year": 2026,
+          "area_frac": 0.4702,
+          "severity_k": 2.382,
+          "centroid": [
+            30.26,
+            83.2
+          ],
+          "peak_anom_k": 13.96,
+          "peak_cell": [
+            37.0,
+            77.0
+          ]
+        },
+        {
+          "date": "2026-03-11",
+          "year": 2026,
+          "area_frac": 0.4641,
+          "severity_k": 2.438,
+          "centroid": [
+            30.35,
+            83.26
+          ],
+          "peak_anom_k": 14.76,
+          "peak_cell": [
+            33.5,
+            97.0
+          ]
+        },
+        {
+          "date": "2026-03-12",
+          "year": 2026,
+          "area_frac": 0.3393,
+          "severity_k": 2.281,
+          "centroid": [
+            30.25,
+            84.22
+          ],
+          "peak_anom_k": 14.36,
+          "peak_cell": [
+            32.25,
+            93.5
+          ]
+        },
+        {
+          "date": "2026-03-13",
+          "year": 2026,
+          "area_frac": 0.127,
+          "severity_k": 1.065,
+          "centroid": [
+            26.89,
+            83.7
+          ],
+          "peak_anom_k": 11.46,
+          "peak_cell": [
+            32.75,
+            96.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2022-03-07",
+      "end": "2022-03-23",
+      "n_days": 16,
+      "score": 9.875,
+      "peak_area_frac": 0.6299,
+      "peak_area_date": "2022-03-17",
+      "peak_anom_k": 18.98,
+      "mean_centroid": [
+        29.45,
+        86.59
+      ],
+      "days": [
+        {
+          "date": "2022-03-07",
+          "year": 2022,
+          "area_frac": 0.1526,
+          "severity_k": 1.588,
+          "centroid": [
+            31.59,
+            90.41
+          ],
+          "peak_anom_k": 14.16,
+          "peak_cell": [
+            35.75,
+            97.5
+          ]
+        },
+        {
+          "date": "2022-03-09",
+          "year": 2022,
+          "area_frac": 0.1042,
+          "severity_k": 1.025,
+          "centroid": [
+            28.84,
+            93.12
+          ],
+          "peak_anom_k": 11.3,
+          "peak_cell": [
+            37.25,
+            77.0
+          ]
+        },
+        {
+          "date": "2022-03-10",
+          "year": 2022,
+          "area_frac": 0.1505,
+          "severity_k": 1.154,
+          "centroid": [
+            28.08,
+            93.94
+          ],
+          "peak_anom_k": 11.02,
+          "peak_cell": [
+            35.75,
+            97.5
+          ]
+        },
+        {
+          "date": "2022-03-11",
+          "year": 2022,
+          "area_frac": 0.1288,
+          "severity_k": 1.087,
+          "centroid": [
+            26.96,
+            92.49
+          ],
+          "peak_anom_k": 12.48,
+          "peak_cell": [
+            37.25,
+            77.0
+          ]
+        },
+        {
+          "date": "2022-03-12",
+          "year": 2022,
+          "area_frac": 0.2403,
+          "severity_k": 1.267,
+          "centroid": [
+            30.03,
+            87.45
+          ],
+          "peak_anom_k": 16.02,
+          "peak_cell": [
+            37.25,
+            77.25
+          ]
+        },
+        {
+          "date": "2022-03-13",
+          "year": 2022,
+          "area_frac": 0.3535,
+          "severity_k": 1.432,
+          "centroid": [
+            29.2,
+            83.36
+          ],
+          "peak_anom_k": 14.53,
+          "peak_cell": [
+            37.25,
+            77.25
+          ]
+        },
+        {
+          "date": "2022-03-14",
+          "year": 2022,
+          "area_frac": 0.5298,
+          "severity_k": 1.932,
+          "centroid": [
+            29.73,
+            83.64
+          ],
+          "peak_anom_k": 12.84,
+          "peak_cell": [
+            32.5,
+            80.0
+          ]
+        },
+        {
+          "date": "2022-03-15",
+          "year": 2022,
+          "area_frac": 0.5389,
+          "severity_k": 1.574,
+          "centroid": [
+            29.32,
+            82.74
+          ],
+          "peak_anom_k": 15.5,
+          "peak_cell": [
+            37.25,
+            77.0
+          ]
+        },
+        {
+          "date": "2022-03-16",
+          "year": 2022,
+          "area_frac": 0.515,
+          "severity_k": 1.592,
+          "centroid": [
+            28.06,
+            80.99
+          ],
+          "peak_anom_k": 16.66,
+          "peak_cell": [
+            37.25,
+            77.0
+          ]
+        },
+        {
+          "date": "2022-03-17",
+          "year": 2022,
+          "area_frac": 0.6299,
+          "severity_k": 2.075,
+          "centroid": [
+            28.72,
+            82.1
+          ],
+          "peak_anom_k": 18.98,
+          "peak_cell": [
+            37.25,
+            77.0
+          ]
+        },
+        {
+          "date": "2022-03-18",
+          "year": 2022,
+          "area_frac": 0.6261,
+          "severity_k": 2.723,
+          "centroid": [
+            29.73,
+            82.99
+          ],
+          "peak_anom_k": 16.15,
+          "peak_cell": [
+            36.5,
+            79.5
+          ]
+        },
+        {
+          "date": "2022-03-19",
+          "year": 2022,
+          "area_frac": 0.5002,
+          "severity_k": 2.536,
+          "centroid": [
+            30.31,
+            85.98
+          ],
+          "peak_anom_k": 16.55,
+          "peak_cell": [
+            34.25,
+            97.0
+          ]
+        },
+        {
+          "date": "2022-03-20",
+          "year": 2022,
+          "area_frac": 0.3247,
+          "severity_k": 1.802,
+          "centroid": [
+            29.71,
+            88.55
+          ],
+          "peak_anom_k": 15.15,
+          "peak_cell": [
+            34.25,
+            97.0
+          ]
+        },
+        {
+          "date": "2022-03-21",
+          "year": 2022,
+          "area_frac": 0.2544,
+          "severity_k": 1.35,
+          "centroid": [
+            28.62,
+            87.26
+          ],
+          "peak_anom_k": 14.2,
+          "peak_cell": [
+            33.25,
+            97.25
+          ]
+        },
+        {
+          "date": "2022-03-22",
+          "year": 2022,
+          "area_frac": 0.1629,
+          "severity_k": 1.12,
+          "centroid": [
+            30.79,
+            82.8
+          ],
+          "peak_anom_k": 10.78,
+          "peak_cell": [
+            32.75,
+            79.75
+          ]
+        },
+        {
+          "date": "2022-03-23",
+          "year": 2022,
+          "area_frac": 0.2573,
+          "severity_k": 1.237,
+          "centroid": [
+            31.56,
+            87.64
+          ],
+          "peak_anom_k": 12.08,
+          "peak_cell": [
+            34.5,
+            95.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2022-03-26",
+      "end": "2022-04-13",
+      "n_days": 19,
+      "score": 8.899,
+      "peak_area_frac": 0.4315,
+      "peak_area_date": "2022-03-29",
+      "peak_anom_k": 15.37,
+      "mean_centroid": [
+        30.07,
+        79.39
+      ],
+      "days": [
+        {
+          "date": "2022-03-26",
+          "year": 2022,
+          "area_frac": 0.1048,
+          "severity_k": 0.827,
+          "centroid": [
+            30.63,
+            74.46
+          ],
+          "peak_anom_k": 13.48,
+          "peak_cell": [
+            36.25,
+            69.5
+          ]
+        },
+        {
+          "date": "2022-03-27",
+          "year": 2022,
+          "area_frac": 0.3294,
+          "severity_k": 1.981,
+          "centroid": [
+            31.64,
+            80.02
+          ],
+          "peak_anom_k": 14.57,
+          "peak_cell": [
+            32.75,
+            79.75
+          ]
+        },
+        {
+          "date": "2022-03-28",
+          "year": 2022,
+          "area_frac": 0.4199,
+          "severity_k": 2.308,
+          "centroid": [
+            31.13,
+            80.47
+          ],
+          "peak_anom_k": 14.96,
+          "peak_cell": [
+            28.25,
+            89.0
+          ]
+        },
+        {
+          "date": "2022-03-29",
+          "year": 2022,
+          "area_frac": 0.4315,
+          "severity_k": 2.365,
+          "centroid": [
+            30.22,
+            81.04
+          ],
+          "peak_anom_k": 15.37,
+          "peak_cell": [
+            28.25,
+            89.0
+          ]
+        },
+        {
+          "date": "2022-03-30",
+          "year": 2022,
+          "area_frac": 0.3522,
+          "severity_k": 1.666,
+          "centroid": [
+            28.81,
+            81.09
+          ],
+          "peak_anom_k": 14.01,
+          "peak_cell": [
+            32.25,
+            93.0
+          ]
+        },
+        {
+          "date": "2022-03-31",
+          "year": 2022,
+          "area_frac": 0.2693,
+          "severity_k": 1.093,
+          "centroid": [
+            27.91,
+            79.41
+          ],
+          "peak_anom_k": 12.07,
+          "peak_cell": [
+            29.25,
+            85.0
+          ]
+        },
+        {
+          "date": "2022-04-01",
+          "year": 2022,
+          "area_frac": 0.2329,
+          "severity_k": 1.474,
+          "centroid": [
+            28.83,
+            78.53
+          ],
+          "peak_anom_k": 12.86,
+          "peak_cell": [
+            35.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-04-02",
+          "year": 2022,
+          "area_frac": 0.3875,
+          "severity_k": 2.147,
+          "centroid": [
+            30.69,
+            81.03
+          ],
+          "peak_anom_k": 12.44,
+          "peak_cell": [
+            29.5,
+            85.0
+          ]
+        },
+        {
+          "date": "2022-04-03",
+          "year": 2022,
+          "area_frac": 0.237,
+          "severity_k": 1.147,
+          "centroid": [
+            29.32,
+            80.89
+          ],
+          "peak_anom_k": 12.19,
+          "peak_cell": [
+            32.0,
+            93.0
+          ]
+        },
+        {
+          "date": "2022-04-04",
+          "year": 2022,
+          "area_frac": 0.256,
+          "severity_k": 1.014,
+          "centroid": [
+            29.24,
+            78.9
+          ],
+          "peak_anom_k": 12.15,
+          "peak_cell": [
+            35.5,
+            69.25
+          ]
+        },
+        {
+          "date": "2022-04-05",
+          "year": 2022,
+          "area_frac": 0.2644,
+          "severity_k": 1.173,
+          "centroid": [
+            29.56,
+            78.44
+          ],
+          "peak_anom_k": 12.63,
+          "peak_cell": [
+            35.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-04-06",
+          "year": 2022,
+          "area_frac": 0.3331,
+          "severity_k": 1.102,
+          "centroid": [
+            29.89,
+            78.16
+          ],
+          "peak_anom_k": 13.71,
+          "peak_cell": [
+            37.0,
+            68.5
+          ]
+        },
+        {
+          "date": "2022-04-07",
+          "year": 2022,
+          "area_frac": 0.3924,
+          "severity_k": 1.297,
+          "centroid": [
+            29.35,
+            78.34
+          ],
+          "peak_anom_k": 13.93,
+          "peak_cell": [
+            37.5,
+            70.0
+          ]
+        },
+        {
+          "date": "2022-04-08",
+          "year": 2022,
+          "area_frac": 0.38,
+          "severity_k": 1.375,
+          "centroid": [
+            29.49,
+            76.73
+          ],
+          "peak_anom_k": 13.75,
+          "peak_cell": [
+            35.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-04-09",
+          "year": 2022,
+          "area_frac": 0.3785,
+          "severity_k": 1.235,
+          "centroid": [
+            30.72,
+            79.12
+          ],
+          "peak_anom_k": 12.09,
+          "peak_cell": [
+            35.25,
+            71.5
+          ]
+        },
+        {
+          "date": "2022-04-10",
+          "year": 2022,
+          "area_frac": 0.266,
+          "severity_k": 1.576,
+          "centroid": [
+            30.13,
+            76.7
+          ],
+          "peak_anom_k": 13.68,
+          "peak_cell": [
+            35.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-04-11",
+          "year": 2022,
+          "area_frac": 0.2966,
+          "severity_k": 1.525,
+          "centroid": [
+            30.91,
+            77.74
+          ],
+          "peak_anom_k": 14.25,
+          "peak_cell": [
+            35.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-04-12",
+          "year": 2022,
+          "area_frac": 0.2937,
+          "severity_k": 1.307,
+          "centroid": [
+            31.37,
+            83.0
+          ],
+          "peak_anom_k": 11.69,
+          "peak_cell": [
+            35.5,
+            69.5
+          ]
+        },
+        {
+          "date": "2022-04-13",
+          "year": 2022,
+          "area_frac": 0.1529,
+          "severity_k": 0.984,
+          "centroid": [
+            31.41,
+            84.26
+          ],
+          "peak_anom_k": 9.94,
+          "peak_cell": [
+            32.25,
+            92.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2017-04-12",
+      "end": "2017-04-22",
+      "n_days": 11,
+      "score": 3.339,
+      "peak_area_frac": 0.4667,
+      "peak_area_date": "2017-04-18",
+      "peak_anom_k": 12.12,
+      "mean_centroid": [
+        27.52,
+        77.5
+      ],
+      "days": [
+        {
+          "date": "2017-04-12",
+          "year": 2017,
+          "area_frac": 0.1421,
+          "severity_k": 0.863,
+          "centroid": [
+            24.16,
+            74.31
+          ],
+          "peak_anom_k": 9.01,
+          "peak_cell": [
+            32.0,
+            70.0
+          ]
+        },
+        {
+          "date": "2017-04-13",
+          "year": 2017,
+          "area_frac": 0.1907,
+          "severity_k": 1.207,
+          "centroid": [
+            25.25,
+            74.0
+          ],
+          "peak_anom_k": 10.24,
+          "peak_cell": [
+            31.75,
+            70.25
+          ]
+        },
+        {
+          "date": "2017-04-14",
+          "year": 2017,
+          "area_frac": 0.2083,
+          "severity_k": 0.91,
+          "centroid": [
+            25.7,
+            74.36
+          ],
+          "peak_anom_k": 9.91,
+          "peak_cell": [
+            33.75,
+            71.75
+          ]
+        },
+        {
+          "date": "2017-04-15",
+          "year": 2017,
+          "area_frac": 0.252,
+          "severity_k": 0.877,
+          "centroid": [
+            25.95,
+            74.15
+          ],
+          "peak_anom_k": 10.72,
+          "peak_cell": [
+            34.0,
+            71.75
+          ]
+        },
+        {
+          "date": "2017-04-16",
+          "year": 2017,
+          "area_frac": 0.3026,
+          "severity_k": 1.133,
+          "centroid": [
+            25.78,
+            74.73
+          ],
+          "peak_anom_k": 12.12,
+          "peak_cell": [
+            34.0,
+            71.5
+          ]
+        },
+        {
+          "date": "2017-04-17",
+          "year": 2017,
+          "area_frac": 0.3818,
+          "severity_k": 1.23,
+          "centroid": [
+            27.95,
+            77.78
+          ],
+          "peak_anom_k": 12.06,
+          "peak_cell": [
+            34.0,
+            71.5
+          ]
+        },
+        {
+          "date": "2017-04-18",
+          "year": 2017,
+          "area_frac": 0.4667,
+          "severity_k": 1.533,
+          "centroid": [
+            28.65,
+            80.3
+          ],
+          "peak_anom_k": 12.09,
+          "peak_cell": [
+            34.0,
+            71.75
+          ]
+        },
+        {
+          "date": "2017-04-19",
+          "year": 2017,
+          "area_frac": 0.3124,
+          "severity_k": 1.257,
+          "centroid": [
+            28.83,
+            78.26
+          ],
+          "peak_anom_k": 11.56,
+          "peak_cell": [
+            33.25,
+            69.75
+          ]
+        },
+        {
+          "date": "2017-04-20",
+          "year": 2017,
+          "area_frac": 0.2531,
+          "severity_k": 1.304,
+          "centroid": [
+            29.68,
+            77.06
+          ],
+          "peak_anom_k": 10.22,
+          "peak_cell": [
+            33.0,
+            72.5
+          ]
+        },
+        {
+          "date": "2017-04-21",
+          "year": 2017,
+          "area_frac": 0.1396,
+          "severity_k": 1.026,
+          "centroid": [
+            30.14,
+            81.57
+          ],
+          "peak_anom_k": 10.87,
+          "peak_cell": [
+            30.0,
+            84.75
+          ]
+        },
+        {
+          "date": "2017-04-22",
+          "year": 2017,
+          "area_frac": 0.1535,
+          "severity_k": 1.186,
+          "centroid": [
+            30.6,
+            86.01
+          ],
+          "peak_anom_k": 10.31,
+          "peak_cell": [
+            30.0,
+            84.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2024-05-15",
+      "end": "2024-05-30",
+      "n_days": 15,
+      "score": 2.813,
+      "peak_area_frac": 0.2732,
+      "peak_area_date": "2024-05-26",
+      "peak_anom_k": 13.05,
+      "mean_centroid": [
+        28.36,
+        82.48
+      ],
+      "days": [
+        {
+          "date": "2024-05-15",
+          "year": 2024,
+          "area_frac": 0.1001,
+          "severity_k": 1.135,
+          "centroid": [
+            25.18,
+            90.94
+          ],
+          "peak_anom_k": 10.96,
+          "peak_cell": [
+            25.25,
+            95.75
+          ]
+        },
+        {
+          "date": "2024-05-16",
+          "year": 2024,
+          "area_frac": 0.1079,
+          "severity_k": 1.204,
+          "centroid": [
+            24.84,
+            90.18
+          ],
+          "peak_anom_k": 10.9,
+          "peak_cell": [
+            20.5,
+            94.0
+          ]
+        },
+        {
+          "date": "2024-05-17",
+          "year": 2024,
+          "area_frac": 0.1227,
+          "severity_k": 0.863,
+          "centroid": [
+            27.33,
+            84.39
+          ],
+          "peak_anom_k": 10.12,
+          "peak_cell": [
+            20.75,
+            94.25
+          ]
+        },
+        {
+          "date": "2024-05-18",
+          "year": 2024,
+          "area_frac": 0.1619,
+          "severity_k": 1.009,
+          "centroid": [
+            29.44,
+            79.13
+          ],
+          "peak_anom_k": 11.89,
+          "peak_cell": [
+            36.5,
+            79.0
+          ]
+        },
+        {
+          "date": "2024-05-19",
+          "year": 2024,
+          "area_frac": 0.1359,
+          "severity_k": 0.902,
+          "centroid": [
+            30.55,
+            80.78
+          ],
+          "peak_anom_k": 11.01,
+          "peak_cell": [
+            37.5,
+            86.5
+          ]
+        },
+        {
+          "date": "2024-05-21",
+          "year": 2024,
+          "area_frac": 0.1363,
+          "severity_k": 1.493,
+          "centroid": [
+            30.57,
+            84.61
+          ],
+          "peak_anom_k": 13.05,
+          "peak_cell": [
+            37.5,
+            91.25
+          ]
+        },
+        {
+          "date": "2024-05-22",
+          "year": 2024,
+          "area_frac": 0.2037,
+          "severity_k": 1.308,
+          "centroid": [
+            30.68,
+            82.92
+          ],
+          "peak_anom_k": 10.94,
+          "peak_cell": [
+            36.0,
+            92.5
+          ]
+        },
+        {
+          "date": "2024-05-23",
+          "year": 2024,
+          "area_frac": 0.2163,
+          "severity_k": 1.23,
+          "centroid": [
+            28.17,
+            81.97
+          ],
+          "peak_anom_k": 9.9,
+          "peak_cell": [
+            26.5,
+            97.5
+          ]
+        },
+        {
+          "date": "2024-05-24",
+          "year": 2024,
+          "area_frac": 0.174,
+          "severity_k": 1.217,
+          "centroid": [
+            28.27,
+            82.02
+          ],
+          "peak_anom_k": 9.48,
+          "peak_cell": [
+            34.0,
+            77.5
+          ]
+        },
+        {
+          "date": "2024-05-25",
+          "year": 2024,
+          "area_frac": 0.1837,
+          "severity_k": 1.396,
+          "centroid": [
+            29.63,
+            84.29
+          ],
+          "peak_anom_k": 11.17,
+          "peak_cell": [
+            26.75,
+            93.0
+          ]
+        },
+        {
+          "date": "2024-05-26",
+          "year": 2024,
+          "area_frac": 0.2732,
+          "severity_k": 1.12,
+          "centroid": [
+            30.03,
+            81.19
+          ],
+          "peak_anom_k": 9.85,
+          "peak_cell": [
+            26.5,
+            91.5
+          ]
+        },
+        {
+          "date": "2024-05-27",
+          "year": 2024,
+          "area_frac": 0.2228,
+          "severity_k": 1.153,
+          "centroid": [
+            29.35,
+            75.93
+          ],
+          "peak_anom_k": 9.4,
+          "peak_cell": [
+            34.0,
+            77.5
+          ]
+        },
+        {
+          "date": "2024-05-28",
+          "year": 2024,
+          "area_frac": 0.1903,
+          "severity_k": 1.087,
+          "centroid": [
+            28.38,
+            77.08
+          ],
+          "peak_anom_k": 7.77,
+          "peak_cell": [
+            34.0,
+            77.75
+          ]
+        },
+        {
+          "date": "2024-05-29",
+          "year": 2024,
+          "area_frac": 0.1454,
+          "severity_k": 0.877,
+          "centroid": [
+            27.13,
+            80.27
+          ],
+          "peak_anom_k": 7.44,
+          "peak_cell": [
+            23.5,
+            86.0
+          ]
+        },
+        {
+          "date": "2024-05-30",
+          "year": 2024,
+          "area_frac": 0.1267,
+          "severity_k": 0.605,
+          "centroid": [
+            25.92,
+            81.57
+          ],
+          "peak_anom_k": 7.47,
+          "peak_cell": [
+            30.5,
+            89.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2016-04-01",
+      "end": "2016-04-04",
+      "n_days": 4,
+      "score": 1.631,
+      "peak_area_frac": 0.351,
+      "peak_area_date": "2016-04-03",
+      "peak_anom_k": 12.53,
+      "mean_centroid": [
+        29.86,
+        84.84
+      ],
+      "days": [
+        {
+          "date": "2016-04-01",
+          "year": 2016,
+          "area_frac": 0.1331,
+          "severity_k": 1.052,
+          "centroid": [
+            31.34,
+            83.72
+          ],
+          "peak_anom_k": 11.38,
+          "peak_cell": [
+            32.75,
+            79.75
+          ]
+        },
+        {
+          "date": "2016-04-02",
+          "year": 2016,
+          "area_frac": 0.2575,
+          "severity_k": 1.606,
+          "centroid": [
+            29.44,
+            82.9
+          ],
+          "peak_anom_k": 11.61,
+          "peak_cell": [
+            30.25,
+            83.0
+          ]
+        },
+        {
+          "date": "2016-04-03",
+          "year": 2016,
+          "area_frac": 0.351,
+          "severity_k": 2.017,
+          "centroid": [
+            29.39,
+            85.08
+          ],
+          "peak_anom_k": 12.28,
+          "peak_cell": [
+            35.25,
+            89.75
+          ]
+        },
+        {
+          "date": "2016-04-04",
+          "year": 2016,
+          "area_frac": 0.2505,
+          "severity_k": 1.474,
+          "centroid": [
+            29.25,
+            87.68
+          ],
+          "peak_anom_k": 12.53,
+          "peak_cell": [
+            32.0,
+            96.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2017-03-27",
+      "end": "2017-04-02",
+      "n_days": 7,
+      "score": 1.473,
+      "peak_area_frac": 0.3369,
+      "peak_area_date": "2017-03-31",
+      "peak_anom_k": 9.97,
+      "mean_centroid": [
+        26.13,
+        78.55
+      ],
+      "days": [
+        {
+          "date": "2017-03-27",
+          "year": 2017,
+          "area_frac": 0.3324,
+          "severity_k": 0.882,
+          "centroid": [
+            28.47,
+            77.45
+          ],
+          "peak_anom_k": 9.31,
+          "peak_cell": [
+            29.5,
+            85.0
+          ]
+        },
+        {
+          "date": "2017-03-28",
+          "year": 2017,
+          "area_frac": 0.2746,
+          "severity_k": 0.849,
+          "centroid": [
+            26.96,
+            77.57
+          ],
+          "peak_anom_k": 9.21,
+          "peak_cell": [
+            31.75,
+            82.75
+          ]
+        },
+        {
+          "date": "2017-03-29",
+          "year": 2017,
+          "area_frac": 0.31,
+          "severity_k": 0.759,
+          "centroid": [
+            26.21,
+            78.6
+          ],
+          "peak_anom_k": 9.51,
+          "peak_cell": [
+            29.5,
+            85.0
+          ]
+        },
+        {
+          "date": "2017-03-30",
+          "year": 2017,
+          "area_frac": 0.2923,
+          "severity_k": 0.899,
+          "centroid": [
+            26.42,
+            80.22
+          ],
+          "peak_anom_k": 9.68,
+          "peak_cell": [
+            28.0,
+            87.5
+          ]
+        },
+        {
+          "date": "2017-03-31",
+          "year": 2017,
+          "area_frac": 0.3369,
+          "severity_k": 0.85,
+          "centroid": [
+            26.49,
+            80.43
+          ],
+          "peak_anom_k": 9.97,
+          "peak_cell": [
+            29.5,
+            85.0
+          ]
+        },
+        {
+          "date": "2017-04-01",
+          "year": 2017,
+          "area_frac": 0.1742,
+          "severity_k": 0.645,
+          "centroid": [
+            23.32,
+            78.95
+          ],
+          "peak_anom_k": 7.59,
+          "peak_cell": [
+            31.75,
+            97.0
+          ]
+        },
+        {
+          "date": "2017-04-02",
+          "year": 2017,
+          "area_frac": 0.1076,
+          "severity_k": 0.461,
+          "centroid": [
+            25.02,
+            76.64
+          ],
+          "peak_anom_k": 8.04,
+          "peak_cell": [
+            31.75,
+            70.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2023-04-13",
+      "end": "2023-04-19",
+      "n_days": 7,
+      "score": 1.292,
+      "peak_area_frac": 0.2482,
+      "peak_area_date": "2023-04-18",
+      "peak_anom_k": 12.6,
+      "mean_centroid": [
+        25.93,
+        87.87
+      ],
+      "days": [
+        {
+          "date": "2023-04-13",
+          "year": 2023,
+          "area_frac": 0.1053,
+          "severity_k": 0.889,
+          "centroid": [
+            22.94,
+            85.94
+          ],
+          "peak_anom_k": 10.83,
+          "peak_cell": [
+            37.25,
+            69.0
+          ]
+        },
+        {
+          "date": "2023-04-14",
+          "year": 2023,
+          "area_frac": 0.1486,
+          "severity_k": 1.189,
+          "centroid": [
+            25.66,
+            85.11
+          ],
+          "peak_anom_k": 12.6,
+          "peak_cell": [
+            37.25,
+            69.0
+          ]
+        },
+        {
+          "date": "2023-04-15",
+          "year": 2023,
+          "area_frac": 0.1669,
+          "severity_k": 1.454,
+          "centroid": [
+            28.02,
+            90.04
+          ],
+          "peak_anom_k": 10.13,
+          "peak_cell": [
+            28.5,
+            97.25
+          ]
+        },
+        {
+          "date": "2023-04-16",
+          "year": 2023,
+          "area_frac": 0.1431,
+          "severity_k": 1.161,
+          "centroid": [
+            27.62,
+            89.95
+          ],
+          "peak_anom_k": 10.28,
+          "peak_cell": [
+            35.25,
+            97.5
+          ]
+        },
+        {
+          "date": "2023-04-17",
+          "year": 2023,
+          "area_frac": 0.1558,
+          "severity_k": 0.852,
+          "centroid": [
+            25.17,
+            87.1
+          ],
+          "peak_anom_k": 9.73,
+          "peak_cell": [
+            35.5,
+            97.5
+          ]
+        },
+        {
+          "date": "2023-04-18",
+          "year": 2023,
+          "area_frac": 0.2482,
+          "severity_k": 1.266,
+          "centroid": [
+            27.24,
+            88.73
+          ],
+          "peak_anom_k": 12.09,
+          "peak_cell": [
+            35.5,
+            97.5
+          ]
+        },
+        {
+          "date": "2023-04-19",
+          "year": 2023,
+          "area_frac": 0.1673,
+          "severity_k": 0.993,
+          "centroid": [
+            24.84,
+            88.24
+          ],
+          "peak_anom_k": 11.62,
+          "peak_cell": [
+            35.25,
+            97.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2018-03-27",
+      "end": "2018-04-03",
+      "n_days": 7,
+      "score": 1.276,
+      "peak_area_frac": 0.1686,
+      "peak_area_date": "2018-04-02",
+      "peak_anom_k": 16.95,
+      "mean_centroid": [
+        31.13,
+        77.43
+      ],
+      "days": [
+        {
+          "date": "2018-03-27",
+          "year": 2018,
+          "area_frac": 0.1104,
+          "severity_k": 0.812,
+          "centroid": [
+            31.4,
+            78.19
+          ],
+          "peak_anom_k": 11.57,
+          "peak_cell": [
+            37.25,
+            77.0
+          ]
+        },
+        {
+          "date": "2018-03-29",
+          "year": 2018,
+          "area_frac": 0.1143,
+          "severity_k": 0.785,
+          "centroid": [
+            28.11,
+            71.46
+          ],
+          "peak_anom_k": 11.65,
+          "peak_cell": [
+            37.0,
+            68.75
+          ]
+        },
+        {
+          "date": "2018-03-30",
+          "year": 2018,
+          "area_frac": 0.1607,
+          "severity_k": 1.204,
+          "centroid": [
+            28.15,
+            72.34
+          ],
+          "peak_anom_k": 13.6,
+          "peak_cell": [
+            37.25,
+            68.75
+          ]
+        },
+        {
+          "date": "2018-03-31",
+          "year": 2018,
+          "area_frac": 0.1565,
+          "severity_k": 1.925,
+          "centroid": [
+            30.64,
+            73.0
+          ],
+          "peak_anom_k": 16.95,
+          "peak_cell": [
+            37.25,
+            69.0
+          ]
+        },
+        {
+          "date": "2018-04-01",
+          "year": 2018,
+          "area_frac": 0.1563,
+          "severity_k": 1.653,
+          "centroid": [
+            33.39,
+            77.63
+          ],
+          "peak_anom_k": 15.0,
+          "peak_cell": [
+            37.25,
+            77.0
+          ]
+        },
+        {
+          "date": "2018-04-02",
+          "year": 2018,
+          "area_frac": 0.1686,
+          "severity_k": 1.494,
+          "centroid": [
+            33.72,
+            82.79
+          ],
+          "peak_anom_k": 12.79,
+          "peak_cell": [
+            33.75,
+            79.5
+          ]
+        },
+        {
+          "date": "2018-04-03",
+          "year": 2018,
+          "area_frac": 0.1186,
+          "severity_k": 0.773,
+          "centroid": [
+            32.53,
+            86.59
+          ],
+          "peak_anom_k": 10.12,
+          "peak_cell": [
+            33.5,
+            79.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2025-06-08",
+      "end": "2025-06-13",
+      "n_days": 6,
+      "score": 1.23,
+      "peak_area_frac": 0.2075,
+      "peak_area_date": "2025-06-10",
+      "peak_anom_k": 10.44,
+      "mean_centroid": [
+        29.62,
+        84.43
+      ],
+      "days": [
+        {
+          "date": "2025-06-08",
+          "year": 2025,
+          "area_frac": 0.1054,
+          "severity_k": 0.791,
+          "centroid": [
+            28.16,
+            86.51
+          ],
+          "peak_anom_k": 9.15,
+          "peak_cell": [
+            34.25,
+            76.75
+          ]
+        },
+        {
+          "date": "2025-06-09",
+          "year": 2025,
+          "area_frac": 0.1753,
+          "severity_k": 1.189,
+          "centroid": [
+            30.05,
+            82.99
+          ],
+          "peak_anom_k": 10.04,
+          "peak_cell": [
+            36.25,
+            73.5
+          ]
+        },
+        {
+          "date": "2025-06-10",
+          "year": 2025,
+          "area_frac": 0.2075,
+          "severity_k": 1.506,
+          "centroid": [
+            30.39,
+            83.18
+          ],
+          "peak_anom_k": 10.3,
+          "peak_cell": [
+            32.5,
+            78.5
+          ]
+        },
+        {
+          "date": "2025-06-11",
+          "year": 2025,
+          "area_frac": 0.1857,
+          "severity_k": 1.189,
+          "centroid": [
+            31.15,
+            83.98
+          ],
+          "peak_anom_k": 9.59,
+          "peak_cell": [
+            34.5,
+            76.75
+          ]
+        },
+        {
+          "date": "2025-06-12",
+          "year": 2025,
+          "area_frac": 0.1764,
+          "severity_k": 1.287,
+          "centroid": [
+            30.17,
+            83.81
+          ],
+          "peak_anom_k": 10.44,
+          "peak_cell": [
+            32.5,
+            78.5
+          ]
+        },
+        {
+          "date": "2025-06-13",
+          "year": 2025,
+          "area_frac": 0.1407,
+          "severity_k": 1.265,
+          "centroid": [
+            27.79,
+            86.11
+          ],
+          "peak_anom_k": 9.8,
+          "peak_cell": [
+            26.25,
+            96.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2025-04-14",
+      "end": "2025-04-19",
+      "n_days": 6,
+      "score": 1.146,
+      "peak_area_frac": 0.1964,
+      "peak_area_date": "2025-04-16",
+      "peak_anom_k": 12.68,
+      "mean_centroid": [
+        30.91,
+        78.79
+      ],
+      "days": [
+        {
+          "date": "2025-04-14",
+          "year": 2025,
+          "area_frac": 0.1272,
+          "severity_k": 0.995,
+          "centroid": [
+            30.65,
+            73.42
+          ],
+          "peak_anom_k": 11.18,
+          "peak_cell": [
+            35.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2025-04-15",
+          "year": 2025,
+          "area_frac": 0.1743,
+          "severity_k": 1.37,
+          "centroid": [
+            31.5,
+            73.8
+          ],
+          "peak_anom_k": 12.19,
+          "peak_cell": [
+            35.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2025-04-16",
+          "year": 2025,
+          "area_frac": 0.1964,
+          "severity_k": 1.321,
+          "centroid": [
+            31.29,
+            76.02
+          ],
+          "peak_anom_k": 11.69,
+          "peak_cell": [
+            37.25,
+            85.0
+          ]
+        },
+        {
+          "date": "2025-04-17",
+          "year": 2025,
+          "area_frac": 0.117,
+          "severity_k": 1.038,
+          "centroid": [
+            29.25,
+            80.46
+          ],
+          "peak_anom_k": 11.58,
+          "peak_cell": [
+            35.0,
+            95.5
+          ]
+        },
+        {
+          "date": "2025-04-18",
+          "year": 2025,
+          "area_frac": 0.1749,
+          "severity_k": 0.731,
+          "centroid": [
+            29.99,
+            79.09
+          ],
+          "peak_anom_k": 8.98,
+          "peak_cell": [
+            30.25,
+            83.0
+          ]
+        },
+        {
+          "date": "2025-04-19",
+          "year": 2025,
+          "area_frac": 0.1538,
+          "severity_k": 1.765,
+          "centroid": [
+            32.8,
+            89.94
+          ],
+          "peak_anom_k": 12.68,
+          "peak_cell": [
+            35.0,
+            95.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2025-03-25",
+      "end": "2025-03-30",
+      "n_days": 6,
+      "score": 1.091,
+      "peak_area_frac": 0.1723,
+      "peak_area_date": "2025-03-27",
+      "peak_anom_k": 13.54,
+      "mean_centroid": [
+        28.54,
+        88.93
+      ],
+      "days": [
+        {
+          "date": "2025-03-25",
+          "year": 2025,
+          "area_frac": 0.1628,
+          "severity_k": 1.407,
+          "centroid": [
+            32.54,
+            88.51
+          ],
+          "peak_anom_k": 13.41,
+          "peak_cell": [
+            35.0,
+            97.0
+          ]
+        },
+        {
+          "date": "2025-03-26",
+          "year": 2025,
+          "area_frac": 0.1628,
+          "severity_k": 1.398,
+          "centroid": [
+            30.55,
+            88.83
+          ],
+          "peak_anom_k": 13.54,
+          "peak_cell": [
+            32.25,
+            92.75
+          ]
+        },
+        {
+          "date": "2025-03-27",
+          "year": 2025,
+          "area_frac": 0.1723,
+          "severity_k": 1.373,
+          "centroid": [
+            28.74,
+            87.99
+          ],
+          "peak_anom_k": 13.36,
+          "peak_cell": [
+            32.25,
+            92.75
+          ]
+        },
+        {
+          "date": "2025-03-28",
+          "year": 2025,
+          "area_frac": 0.1379,
+          "severity_k": 1.066,
+          "centroid": [
+            27.35,
+            88.75
+          ],
+          "peak_anom_k": 12.51,
+          "peak_cell": [
+            32.25,
+            92.75
+          ]
+        },
+        {
+          "date": "2025-03-29",
+          "year": 2025,
+          "area_frac": 0.1257,
+          "severity_k": 1.046,
+          "centroid": [
+            24.8,
+            88.55
+          ],
+          "peak_anom_k": 11.24,
+          "peak_cell": [
+            32.25,
+            93.0
+          ]
+        },
+        {
+          "date": "2025-03-30",
+          "year": 2025,
+          "area_frac": 0.1139,
+          "severity_k": 1.044,
+          "centroid": [
+            27.23,
+            90.97
+          ],
+          "peak_anom_k": 11.1,
+          "peak_cell": [
+            32.0,
+            93.0
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2022-05-09",
+      "end": "2022-05-15",
+      "n_days": 6,
+      "score": 1.066,
+      "peak_area_frac": 0.216,
+      "peak_area_date": "2022-05-14",
+      "peak_anom_k": 12.24,
+      "mean_centroid": [
+        29.63,
+        77.97
+      ],
+      "days": [
+        {
+          "date": "2022-05-09",
+          "year": 2022,
+          "area_frac": 0.1369,
+          "severity_k": 0.966,
+          "centroid": [
+            30.13,
+            82.51
+          ],
+          "peak_anom_k": 9.98,
+          "peak_cell": [
+            34.25,
+            76.75
+          ]
+        },
+        {
+          "date": "2022-05-11",
+          "year": 2022,
+          "area_frac": 0.1335,
+          "severity_k": 1.358,
+          "centroid": [
+            30.37,
+            76.8
+          ],
+          "peak_anom_k": 12.24,
+          "peak_cell": [
+            32.0,
+            79.0
+          ]
+        },
+        {
+          "date": "2022-05-12",
+          "year": 2022,
+          "area_frac": 0.1418,
+          "severity_k": 0.944,
+          "centroid": [
+            28.77,
+            76.81
+          ],
+          "peak_anom_k": 10.31,
+          "peak_cell": [
+            32.0,
+            79.0
+          ]
+        },
+        {
+          "date": "2022-05-13",
+          "year": 2022,
+          "area_frac": 0.159,
+          "severity_k": 0.897,
+          "centroid": [
+            28.53,
+            76.82
+          ],
+          "peak_anom_k": 8.89,
+          "peak_cell": [
+            31.75,
+            79.0
+          ]
+        },
+        {
+          "date": "2022-05-14",
+          "year": 2022,
+          "area_frac": 0.216,
+          "severity_k": 1.282,
+          "centroid": [
+            29.4,
+            75.24
+          ],
+          "peak_anom_k": 11.23,
+          "peak_cell": [
+            32.0,
+            79.0
+          ]
+        },
+        {
+          "date": "2022-05-15",
+          "year": 2022,
+          "area_frac": 0.1858,
+          "severity_k": 1.07,
+          "centroid": [
+            30.57,
+            79.62
+          ],
+          "peak_anom_k": 9.87,
+          "peak_cell": [
+            32.0,
+            78.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2019-06-23",
+      "end": "2019-06-29",
+      "n_days": 6,
+      "score": 1.054,
+      "peak_area_frac": 0.1824,
+      "peak_area_date": "2019-06-24",
+      "peak_anom_k": 9.12,
+      "mean_centroid": [
+        24.46,
+        89.37
+      ],
+      "days": [
+        {
+          "date": "2019-06-23",
+          "year": 2019,
+          "area_frac": 0.1487,
+          "severity_k": 1.441,
+          "centroid": [
+            23.75,
+            92.44
+          ],
+          "peak_anom_k": 7.81,
+          "peak_cell": [
+            19.5,
+            95.75
+          ]
+        },
+        {
+          "date": "2019-06-24",
+          "year": 2019,
+          "area_frac": 0.1824,
+          "severity_k": 1.588,
+          "centroid": [
+            24.53,
+            91.93
+          ],
+          "peak_anom_k": 9.08,
+          "peak_cell": [
+            28.75,
+            89.0
+          ]
+        },
+        {
+          "date": "2019-06-25",
+          "year": 2019,
+          "area_frac": 0.1477,
+          "severity_k": 1.198,
+          "centroid": [
+            26.32,
+            89.64
+          ],
+          "peak_anom_k": 8.99,
+          "peak_cell": [
+            30.5,
+            88.25
+          ]
+        },
+        {
+          "date": "2019-06-26",
+          "year": 2019,
+          "area_frac": 0.1421,
+          "severity_k": 1.118,
+          "centroid": [
+            25.84,
+            89.26
+          ],
+          "peak_anom_k": 9.12,
+          "peak_cell": [
+            30.75,
+            89.0
+          ]
+        },
+        {
+          "date": "2019-06-28",
+          "year": 2019,
+          "area_frac": 0.1217,
+          "severity_k": 0.886,
+          "centroid": [
+            22.3,
+            87.09
+          ],
+          "peak_anom_k": 7.89,
+          "peak_cell": [
+            30.75,
+            90.0
+          ]
+        },
+        {
+          "date": "2019-06-29",
+          "year": 2019,
+          "area_frac": 0.1404,
+          "severity_k": 0.757,
+          "centroid": [
+            24.04,
+            85.84
+          ],
+          "peak_anom_k": 7.78,
+          "peak_cell": [
+            30.75,
+            90.0
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2025-04-06",
+      "end": "2025-04-09",
+      "n_days": 4,
+      "score": 1.025,
+      "peak_area_frac": 0.2871,
+      "peak_area_date": "2025-04-08",
+      "peak_anom_k": 11.35,
+      "mean_centroid": [
+        28.95,
+        76.47
+      ],
+      "days": [
+        {
+          "date": "2025-04-06",
+          "year": 2025,
+          "area_frac": 0.1343,
+          "severity_k": 1.133,
+          "centroid": [
+            28.51,
+            73.03
+          ],
+          "peak_anom_k": 9.86,
+          "peak_cell": [
+            30.25,
+            68.0
+          ]
+        },
+        {
+          "date": "2025-04-07",
+          "year": 2025,
+          "area_frac": 0.2741,
+          "severity_k": 1.198,
+          "centroid": [
+            29.13,
+            75.48
+          ],
+          "peak_anom_k": 11.24,
+          "peak_cell": [
+            35.0,
+            73.0
+          ]
+        },
+        {
+          "date": "2025-04-08",
+          "year": 2025,
+          "area_frac": 0.2871,
+          "severity_k": 1.115,
+          "centroid": [
+            28.77,
+            76.98
+          ],
+          "peak_anom_k": 11.35,
+          "peak_cell": [
+            37.0,
+            68.5
+          ]
+        },
+        {
+          "date": "2025-04-09",
+          "year": 2025,
+          "area_frac": 0.2813,
+          "severity_k": 0.797,
+          "centroid": [
+            29.4,
+            80.37
+          ],
+          "peak_anom_k": 11.05,
+          "peak_cell": [
+            35.0,
+            68.0
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2019-04-24",
+      "end": "2019-04-30",
+      "n_days": 7,
+      "score": 0.95,
+      "peak_area_frac": 0.2307,
+      "peak_area_date": "2019-04-26",
+      "peak_anom_k": 9.5,
+      "mean_centroid": [
+        23.33,
+        84.39
+      ],
+      "days": [
+        {
+          "date": "2019-04-24",
+          "year": 2019,
+          "area_frac": 0.1448,
+          "severity_k": 0.824,
+          "centroid": [
+            26.53,
+            87.52
+          ],
+          "peak_anom_k": 9.5,
+          "peak_cell": [
+            37.0,
+            83.75
+          ]
+        },
+        {
+          "date": "2019-04-25",
+          "year": 2019,
+          "area_frac": 0.2016,
+          "severity_k": 0.875,
+          "centroid": [
+            24.84,
+            88.52
+          ],
+          "peak_anom_k": 9.19,
+          "peak_cell": [
+            36.5,
+            93.75
+          ]
+        },
+        {
+          "date": "2019-04-26",
+          "year": 2019,
+          "area_frac": 0.2307,
+          "severity_k": 0.71,
+          "centroid": [
+            23.08,
+            85.06
+          ],
+          "peak_anom_k": 8.52,
+          "peak_cell": [
+            26.25,
+            96.0
+          ]
+        },
+        {
+          "date": "2019-04-27",
+          "year": 2019,
+          "area_frac": 0.1704,
+          "severity_k": 0.899,
+          "centroid": [
+            20.74,
+            80.83
+          ],
+          "peak_anom_k": 7.85,
+          "peak_cell": [
+            21.0,
+            73.0
+          ]
+        },
+        {
+          "date": "2019-04-28",
+          "year": 2019,
+          "area_frac": 0.1648,
+          "severity_k": 0.898,
+          "centroid": [
+            22.5,
+            80.88
+          ],
+          "peak_anom_k": 7.82,
+          "peak_cell": [
+            21.75,
+            92.75
+          ]
+        },
+        {
+          "date": "2019-04-29",
+          "year": 2019,
+          "area_frac": 0.1433,
+          "severity_k": 0.706,
+          "centroid": [
+            22.13,
+            82.85
+          ],
+          "peak_anom_k": 7.43,
+          "peak_cell": [
+            21.5,
+            93.0
+          ]
+        },
+        {
+          "date": "2019-04-30",
+          "year": 2019,
+          "area_frac": 0.1264,
+          "severity_k": 0.697,
+          "centroid": [
+            23.48,
+            85.07
+          ],
+          "peak_anom_k": 7.35,
+          "peak_cell": [
+            22.25,
+            94.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2013-06-10",
+      "end": "2013-06-12",
+      "n_days": 3,
+      "score": 0.916,
+      "peak_area_frac": 0.2228,
+      "peak_area_date": "2013-06-11",
+      "peak_anom_k": 12.12,
+      "mean_centroid": [
+        32.05,
+        86.58
+      ],
+      "days": [
+        {
+          "date": "2013-06-10",
+          "year": 2013,
+          "area_frac": 0.142,
+          "severity_k": 1.829,
+          "centroid": [
+            32.21,
+            82.85
+          ],
+          "peak_anom_k": 12.12,
+          "peak_cell": [
+            35.0,
+            80.25
+          ]
+        },
+        {
+          "date": "2013-06-11",
+          "year": 2013,
+          "area_frac": 0.2228,
+          "severity_k": 1.635,
+          "centroid": [
+            32.31,
+            85.98
+          ],
+          "peak_anom_k": 11.08,
+          "peak_cell": [
+            35.0,
+            79.25
+          ]
+        },
+        {
+          "date": "2013-06-12",
+          "year": 2013,
+          "area_frac": 0.1891,
+          "severity_k": 1.545,
+          "centroid": [
+            31.62,
+            90.92
+          ],
+          "peak_anom_k": 10.4,
+          "peak_cell": [
+            33.0,
+            92.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2022-05-04",
+      "end": "2022-05-06",
+      "n_days": 3,
+      "score": 0.887,
+      "peak_area_frac": 0.184,
+      "peak_area_date": "2022-05-05",
+      "peak_anom_k": 12.31,
+      "mean_centroid": [
+        33.54,
+        87.91
+      ],
+      "days": [
+        {
+          "date": "2022-05-04",
+          "year": 2022,
+          "area_frac": 0.1427,
+          "severity_k": 1.552,
+          "centroid": [
+            33.48,
+            86.15
+          ],
+          "peak_anom_k": 11.58,
+          "peak_cell": [
+            36.0,
+            83.0
+          ]
+        },
+        {
+          "date": "2022-05-05",
+          "year": 2022,
+          "area_frac": 0.184,
+          "severity_k": 2.155,
+          "centroid": [
+            33.63,
+            87.28
+          ],
+          "peak_anom_k": 11.26,
+          "peak_cell": [
+            36.5,
+            90.25
+          ]
+        },
+        {
+          "date": "2022-05-06",
+          "year": 2022,
+          "area_frac": 0.1169,
+          "severity_k": 2.297,
+          "centroid": [
+            33.52,
+            90.31
+          ],
+          "peak_anom_k": 12.31,
+          "peak_cell": [
+            35.0,
+            95.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2013-05-21",
+      "end": "2013-05-26",
+      "n_days": 6,
+      "score": 0.877,
+      "peak_area_frac": 0.2198,
+      "peak_area_date": "2013-05-26",
+      "peak_anom_k": 10.56,
+      "mean_centroid": [
+        26.91,
+        81.86
+      ],
+      "days": [
+        {
+          "date": "2013-05-21",
+          "year": 2013,
+          "area_frac": 0.1308,
+          "severity_k": 0.598,
+          "centroid": [
+            25.93,
+            80.44
+          ],
+          "peak_anom_k": 7.79,
+          "peak_cell": [
+            30.0,
+            85.25
+          ]
+        },
+        {
+          "date": "2013-05-22",
+          "year": 2013,
+          "area_frac": 0.1355,
+          "severity_k": 0.666,
+          "centroid": [
+            23.69,
+            78.9
+          ],
+          "peak_anom_k": 8.11,
+          "peak_cell": [
+            32.75,
+            75.5
+          ]
+        },
+        {
+          "date": "2013-05-23",
+          "year": 2013,
+          "area_frac": 0.1977,
+          "severity_k": 0.856,
+          "centroid": [
+            24.99,
+            77.49
+          ],
+          "peak_anom_k": 8.93,
+          "peak_cell": [
+            32.75,
+            75.5
+          ]
+        },
+        {
+          "date": "2013-05-24",
+          "year": 2013,
+          "area_frac": 0.1704,
+          "severity_k": 0.872,
+          "centroid": [
+            25.87,
+            78.94
+          ],
+          "peak_anom_k": 8.79,
+          "peak_cell": [
+            32.75,
+            75.5
+          ]
+        },
+        {
+          "date": "2013-05-25",
+          "year": 2013,
+          "area_frac": 0.1709,
+          "severity_k": 0.782,
+          "centroid": [
+            29.61,
+            85.35
+          ],
+          "peak_anom_k": 8.4,
+          "peak_cell": [
+            28.75,
+            89.5
+          ]
+        },
+        {
+          "date": "2013-05-26",
+          "year": 2013,
+          "area_frac": 0.2198,
+          "severity_k": 1.168,
+          "centroid": [
+            31.39,
+            90.01
+          ],
+          "peak_anom_k": 10.56,
+          "peak_cell": [
+            32.75,
+            91.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2014-06-24",
+      "end": "2015-03-02",
+      "n_days": 7,
+      "score": 0.847,
+      "peak_area_frac": 0.1329,
+      "peak_area_date": "2014-06-27",
+      "peak_anom_k": 10.78,
+      "mean_centroid": [
+        20.05,
+        81.19
+      ],
+      "days": [
+        {
+          "date": "2014-06-24",
+          "year": 2014,
+          "area_frac": 0.108,
+          "severity_k": 0.771,
+          "centroid": [
+            19.16,
+            81.65
+          ],
+          "peak_anom_k": 7.04,
+          "peak_cell": [
+            33.0,
+            89.25
+          ]
+        },
+        {
+          "date": "2014-06-25",
+          "year": 2014,
+          "area_frac": 0.121,
+          "severity_k": 0.642,
+          "centroid": [
+            19.57,
+            82.27
+          ],
+          "peak_anom_k": 6.64,
+          "peak_cell": [
+            16.5,
+            81.75
+          ]
+        },
+        {
+          "date": "2014-06-27",
+          "year": 2014,
+          "area_frac": 0.1329,
+          "severity_k": 1.126,
+          "centroid": [
+            19.18,
+            78.22
+          ],
+          "peak_anom_k": 7.2,
+          "peak_cell": [
+            16.5,
+            74.75
+          ]
+        },
+        {
+          "date": "2014-06-28",
+          "year": 2014,
+          "area_frac": 0.1013,
+          "severity_k": 1.246,
+          "centroid": [
+            18.08,
+            77.59
+          ],
+          "peak_anom_k": 7.09,
+          "peak_cell": [
+            17.75,
+            75.5
+          ]
+        },
+        {
+          "date": "2014-06-29",
+          "year": 2014,
+          "area_frac": 0.1055,
+          "severity_k": 1.243,
+          "centroid": [
+            17.48,
+            76.8
+          ],
+          "peak_anom_k": 7.74,
+          "peak_cell": [
+            16.75,
+            76.0
+          ]
+        },
+        {
+          "date": "2014-06-30",
+          "year": 2014,
+          "area_frac": 0.1318,
+          "severity_k": 1.143,
+          "centroid": [
+            18.57,
+            78.43
+          ],
+          "peak_anom_k": 7.18,
+          "peak_cell": [
+            17.0,
+            75.25
+          ]
+        },
+        {
+          "date": "2015-03-02",
+          "year": 2015,
+          "area_frac": 0.1312,
+          "severity_k": 0.976,
+          "centroid": [
+            28.33,
+            93.39
+          ],
+          "peak_anom_k": 10.78,
+          "peak_cell": [
+            32.0,
+            97.0
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2021-03-01",
+      "end": "2021-03-06",
+      "n_days": 6,
+      "score": 0.84,
+      "peak_area_frac": 0.1866,
+      "peak_area_date": "2021-03-01",
+      "peak_anom_k": 13.38,
+      "mean_centroid": [
+        28.22,
+        79.35
+      ],
+      "days": [
+        {
+          "date": "2021-03-01",
+          "year": 2021,
+          "area_frac": 0.1866,
+          "severity_k": 1.283,
+          "centroid": [
+            28.23,
+            87.07
+          ],
+          "peak_anom_k": 12.64,
+          "peak_cell": [
+            32.0,
+            92.75
+          ]
+        },
+        {
+          "date": "2021-03-02",
+          "year": 2021,
+          "area_frac": 0.1127,
+          "severity_k": 0.923,
+          "centroid": [
+            27.97,
+            82.86
+          ],
+          "peak_anom_k": 12.23,
+          "peak_cell": [
+            34.0,
+            68.5
+          ]
+        },
+        {
+          "date": "2021-03-03",
+          "year": 2021,
+          "area_frac": 0.1564,
+          "severity_k": 1.204,
+          "centroid": [
+            29.83,
+            81.22
+          ],
+          "peak_anom_k": 13.38,
+          "peak_cell": [
+            29.5,
+            85.25
+          ]
+        },
+        {
+          "date": "2021-03-04",
+          "year": 2021,
+          "area_frac": 0.1425,
+          "severity_k": 0.607,
+          "centroid": [
+            27.86,
+            78.1
+          ],
+          "peak_anom_k": 11.45,
+          "peak_cell": [
+            33.75,
+            68.5
+          ]
+        },
+        {
+          "date": "2021-03-05",
+          "year": 2021,
+          "area_frac": 0.1072,
+          "severity_k": 0.803,
+          "centroid": [
+            27.66,
+            72.78
+          ],
+          "peak_anom_k": 12.35,
+          "peak_cell": [
+            33.75,
+            68.5
+          ]
+        },
+        {
+          "date": "2021-03-06",
+          "year": 2021,
+          "area_frac": 0.1222,
+          "severity_k": 1.112,
+          "centroid": [
+            27.75,
+            74.08
+          ],
+          "peak_anom_k": 10.77,
+          "peak_cell": [
+            33.75,
+            68.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2024-04-26",
+      "end": "2024-05-01",
+      "n_days": 6,
+      "score": 0.822,
+      "peak_area_frac": 0.1731,
+      "peak_area_date": "2024-04-30",
+      "peak_anom_k": 9.64,
+      "mean_centroid": [
+        19.38,
+        85.3
+      ],
+      "days": [
+        {
+          "date": "2024-04-26",
+          "year": 2024,
+          "area_frac": 0.1185,
+          "severity_k": 0.823,
+          "centroid": [
+            20.13,
+            86.15
+          ],
+          "peak_anom_k": 8.4,
+          "peak_cell": [
+            24.75,
+            90.75
+          ]
+        },
+        {
+          "date": "2024-04-27",
+          "year": 2024,
+          "area_frac": 0.1293,
+          "severity_k": 0.95,
+          "centroid": [
+            18.92,
+            86.43
+          ],
+          "peak_anom_k": 8.48,
+          "peak_cell": [
+            24.0,
+            94.25
+          ]
+        },
+        {
+          "date": "2024-04-28",
+          "year": 2024,
+          "area_frac": 0.1499,
+          "severity_k": 1.121,
+          "centroid": [
+            19.56,
+            86.51
+          ],
+          "peak_anom_k": 8.41,
+          "peak_cell": [
+            22.25,
+            94.5
+          ]
+        },
+        {
+          "date": "2024-04-29",
+          "year": 2024,
+          "area_frac": 0.1278,
+          "severity_k": 0.977,
+          "centroid": [
+            19.75,
+            85.08
+          ],
+          "peak_anom_k": 8.86,
+          "peak_cell": [
+            24.5,
+            91.0
+          ]
+        },
+        {
+          "date": "2024-04-30",
+          "year": 2024,
+          "area_frac": 0.1731,
+          "severity_k": 1.114,
+          "centroid": [
+            20.08,
+            84.48
+          ],
+          "peak_anom_k": 9.64,
+          "peak_cell": [
+            26.0,
+            91.0
+          ]
+        },
+        {
+          "date": "2024-05-01",
+          "year": 2024,
+          "area_frac": 0.1128,
+          "severity_k": 1.024,
+          "centroid": [
+            17.86,
+            83.14
+          ],
+          "peak_anom_k": 8.73,
+          "peak_cell": [
+            24.75,
+            90.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2016-05-17",
+      "end": "2016-05-21",
+      "n_days": 5,
+      "score": 0.801,
+      "peak_area_frac": 0.2189,
+      "peak_area_date": "2016-05-18",
+      "peak_anom_k": 9.67,
+      "mean_centroid": [
+        27.19,
+        74.25
+      ],
+      "days": [
+        {
+          "date": "2016-05-17",
+          "year": 2016,
+          "area_frac": 0.1431,
+          "severity_k": 0.589,
+          "centroid": [
+            23.63,
+            76.29
+          ],
+          "peak_anom_k": 9.67,
+          "peak_cell": [
+            18.75,
+            96.25
+          ]
+        },
+        {
+          "date": "2016-05-18",
+          "year": 2016,
+          "area_frac": 0.2189,
+          "severity_k": 1.194,
+          "centroid": [
+            26.53,
+            74.38
+          ],
+          "peak_anom_k": 8.76,
+          "peak_cell": [
+            37.0,
+            76.75
+          ]
+        },
+        {
+          "date": "2016-05-19",
+          "year": 2016,
+          "area_frac": 0.1727,
+          "severity_k": 1.401,
+          "centroid": [
+            26.76,
+            73.87
+          ],
+          "peak_anom_k": 7.43,
+          "peak_cell": [
+            26.5,
+            72.5
+          ]
+        },
+        {
+          "date": "2016-05-20",
+          "year": 2016,
+          "area_frac": 0.1388,
+          "severity_k": 0.941,
+          "centroid": [
+            28.43,
+            73.04
+          ],
+          "peak_anom_k": 8.17,
+          "peak_cell": [
+            30.25,
+            81.5
+          ]
+        },
+        {
+          "date": "2016-05-21",
+          "year": 2016,
+          "area_frac": 0.1065,
+          "severity_k": 0.777,
+          "centroid": [
+            30.59,
+            73.68
+          ],
+          "peak_anom_k": 8.25,
+          "peak_cell": [
+            30.5,
+            81.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2026-04-23",
+      "end": "2026-04-27",
+      "n_days": 5,
+      "score": 0.789,
+      "peak_area_frac": 0.2676,
+      "peak_area_date": "2026-04-24",
+      "peak_anom_k": 10.84,
+      "mean_centroid": [
+        27.91,
+        81.62
+      ],
+      "days": [
+        {
+          "date": "2026-04-23",
+          "year": 2026,
+          "area_frac": 0.1751,
+          "severity_k": 1.002,
+          "centroid": [
+            30.65,
+            83.51
+          ],
+          "peak_anom_k": 10.76,
+          "peak_cell": [
+            33.75,
+            79.25
+          ]
+        },
+        {
+          "date": "2026-04-24",
+          "year": 2026,
+          "area_frac": 0.2676,
+          "severity_k": 1.072,
+          "centroid": [
+            30.76,
+            87.58
+          ],
+          "peak_anom_k": 10.84,
+          "peak_cell": [
+            32.0,
+            93.5
+          ]
+        },
+        {
+          "date": "2026-04-25",
+          "year": 2026,
+          "area_frac": 0.1974,
+          "severity_k": 0.658,
+          "centroid": [
+            27.41,
+            81.54
+          ],
+          "peak_anom_k": 8.32,
+          "peak_cell": [
+            33.0,
+            95.5
+          ]
+        },
+        {
+          "date": "2026-04-26",
+          "year": 2026,
+          "area_frac": 0.18,
+          "severity_k": 0.547,
+          "centroid": [
+            24.19,
+            78.06
+          ],
+          "peak_anom_k": 7.98,
+          "peak_cell": [
+            33.25,
+            91.5
+          ]
+        },
+        {
+          "date": "2026-04-27",
+          "year": 2026,
+          "area_frac": 0.1451,
+          "severity_k": 0.679,
+          "centroid": [
+            26.54,
+            77.42
+          ],
+          "peak_anom_k": 10.04,
+          "peak_cell": [
+            33.0,
+            78.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2022-04-27",
+      "end": "2022-05-01",
+      "n_days": 5,
+      "score": 0.774,
+      "peak_area_frac": 0.254,
+      "peak_area_date": "2022-04-28",
+      "peak_anom_k": 11.78,
+      "mean_centroid": [
+        27.58,
+        76.63
+      ],
+      "days": [
+        {
+          "date": "2022-04-27",
+          "year": 2022,
+          "area_frac": 0.194,
+          "severity_k": 0.774,
+          "centroid": [
+            27.17,
+            78.34
+          ],
+          "peak_anom_k": 10.69,
+          "peak_cell": [
+            35.5,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-04-28",
+          "year": 2022,
+          "area_frac": 0.254,
+          "severity_k": 0.743,
+          "centroid": [
+            27.07,
+            77.24
+          ],
+          "peak_anom_k": 10.76,
+          "peak_cell": [
+            37.25,
+            69.0
+          ]
+        },
+        {
+          "date": "2022-04-29",
+          "year": 2022,
+          "area_frac": 0.199,
+          "severity_k": 0.748,
+          "centroid": [
+            25.85,
+            79.66
+          ],
+          "peak_anom_k": 8.86,
+          "peak_cell": [
+            35.5,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-04-30",
+          "year": 2022,
+          "area_frac": 0.1576,
+          "severity_k": 0.63,
+          "centroid": [
+            28.34,
+            74.64
+          ],
+          "peak_anom_k": 10.19,
+          "peak_cell": [
+            35.5,
+            71.75
+          ]
+        },
+        {
+          "date": "2022-05-01",
+          "year": 2022,
+          "area_frac": 0.1747,
+          "severity_k": 1.072,
+          "centroid": [
+            29.45,
+            73.29
+          ],
+          "peak_anom_k": 11.78,
+          "peak_cell": [
+            36.75,
+            71.0
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2016-03-24",
+      "end": "2016-03-26",
+      "n_days": 3,
+      "score": 0.742,
+      "peak_area_frac": 0.2366,
+      "peak_area_date": "2016-03-25",
+      "peak_anom_k": 11.54,
+      "mean_centroid": [
+        27.86,
+        84.02
+      ],
+      "days": [
+        {
+          "date": "2016-03-24",
+          "year": 2016,
+          "area_frac": 0.1014,
+          "severity_k": 0.539,
+          "centroid": [
+            25.14,
+            79.99
+          ],
+          "peak_anom_k": 9.23,
+          "peak_cell": [
+            29.25,
+            85.0
+          ]
+        },
+        {
+          "date": "2016-03-25",
+          "year": 2016,
+          "area_frac": 0.2366,
+          "severity_k": 1.494,
+          "centroid": [
+            29.2,
+            85.43
+          ],
+          "peak_anom_k": 11.54,
+          "peak_cell": [
+            28.25,
+            87.25
+          ]
+        },
+        {
+          "date": "2016-03-26",
+          "year": 2016,
+          "area_frac": 0.2209,
+          "severity_k": 1.511,
+          "centroid": [
+            29.24,
+            86.65
+          ],
+          "peak_anom_k": 11.44,
+          "peak_cell": [
+            28.25,
+            87.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2021-03-27",
+      "end": "2021-03-31",
+      "n_days": 5,
+      "score": 0.669,
+      "peak_area_frac": 0.2194,
+      "peak_area_date": "2021-03-29",
+      "peak_anom_k": 12.24,
+      "mean_centroid": [
+        25.42,
+        81.96
+      ],
+      "days": [
+        {
+          "date": "2021-03-27",
+          "year": 2021,
+          "area_frac": 0.1223,
+          "severity_k": 1.044,
+          "centroid": [
+            26.68,
+            86.6
+          ],
+          "peak_anom_k": 12.24,
+          "peak_cell": [
+            34.0,
+            68.5
+          ]
+        },
+        {
+          "date": "2021-03-28",
+          "year": 2021,
+          "area_frac": 0.1412,
+          "severity_k": 0.919,
+          "centroid": [
+            28.22,
+            79.3
+          ],
+          "peak_anom_k": 12.14,
+          "peak_cell": [
+            34.0,
+            68.5
+          ]
+        },
+        {
+          "date": "2021-03-29",
+          "year": 2021,
+          "area_frac": 0.2194,
+          "severity_k": 0.925,
+          "centroid": [
+            28.12,
+            81.11
+          ],
+          "peak_anom_k": 12.07,
+          "peak_cell": [
+            35.75,
+            97.5
+          ]
+        },
+        {
+          "date": "2021-03-30",
+          "year": 2021,
+          "area_frac": 0.1691,
+          "severity_k": 0.768,
+          "centroid": [
+            24.13,
+            81.44
+          ],
+          "peak_anom_k": 10.55,
+          "peak_cell": [
+            29.25,
+            85.5
+          ]
+        },
+        {
+          "date": "2021-03-31",
+          "year": 2021,
+          "area_frac": 0.1003,
+          "severity_k": 0.786,
+          "centroid": [
+            19.95,
+            81.33
+          ],
+          "peak_anom_k": 9.81,
+          "peak_cell": [
+            29.75,
+            85.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2023-05-29",
+      "end": "2023-06-01",
+      "n_days": 4,
+      "score": 0.634,
+      "peak_area_frac": 0.1253,
+      "peak_area_date": "2023-05-31",
+      "peak_anom_k": 12.1,
+      "mean_centroid": [
+        25.09,
+        90.89
+      ],
+      "days": [
+        {
+          "date": "2023-05-29",
+          "year": 2023,
+          "area_frac": 0.103,
+          "severity_k": 1.187,
+          "centroid": [
+            23.31,
+            90.44
+          ],
+          "peak_anom_k": 9.98,
+          "peak_cell": [
+            26.5,
+            96.5
+          ]
+        },
+        {
+          "date": "2023-05-30",
+          "year": 2023,
+          "area_frac": 0.1237,
+          "severity_k": 1.48,
+          "centroid": [
+            24.93,
+            91.46
+          ],
+          "peak_anom_k": 11.4,
+          "peak_cell": [
+            25.5,
+            95.75
+          ]
+        },
+        {
+          "date": "2023-05-31",
+          "year": 2023,
+          "area_frac": 0.1253,
+          "severity_k": 1.653,
+          "centroid": [
+            25.0,
+            90.81
+          ],
+          "peak_anom_k": 11.08,
+          "peak_cell": [
+            25.5,
+            95.75
+          ]
+        },
+        {
+          "date": "2023-06-01",
+          "year": 2023,
+          "area_frac": 0.1012,
+          "severity_k": 1.203,
+          "centroid": [
+            27.12,
+            90.87
+          ],
+          "peak_anom_k": 12.1,
+          "peak_cell": [
+            34.0,
+            94.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2019-05-28",
+      "end": "2019-06-03",
+      "n_days": 6,
+      "score": 0.624,
+      "peak_area_frac": 0.1584,
+      "peak_area_date": "2019-05-28",
+      "peak_anom_k": 11.08,
+      "mean_centroid": [
+        22.39,
+        80.73
+      ],
+      "days": [
+        {
+          "date": "2019-05-28",
+          "year": 2019,
+          "area_frac": 0.1584,
+          "severity_k": 0.794,
+          "centroid": [
+            19.03,
+            84.46
+          ],
+          "peak_anom_k": 9.92,
+          "peak_cell": [
+            21.0,
+            93.0
+          ]
+        },
+        {
+          "date": "2019-05-29",
+          "year": 2019,
+          "area_frac": 0.1411,
+          "severity_k": 0.937,
+          "centroid": [
+            20.5,
+            84.8
+          ],
+          "peak_anom_k": 11.08,
+          "peak_cell": [
+            21.25,
+            93.0
+          ]
+        },
+        {
+          "date": "2019-05-30",
+          "year": 2019,
+          "area_frac": 0.1142,
+          "severity_k": 0.783,
+          "centroid": [
+            22.44,
+            84.11
+          ],
+          "peak_anom_k": 10.27,
+          "peak_cell": [
+            23.25,
+            94.0
+          ]
+        },
+        {
+          "date": "2019-05-31",
+          "year": 2019,
+          "area_frac": 0.1146,
+          "severity_k": 0.708,
+          "centroid": [
+            22.67,
+            81.75
+          ],
+          "peak_anom_k": 9.73,
+          "peak_cell": [
+            21.0,
+            93.0
+          ]
+        },
+        {
+          "date": "2019-06-02",
+          "year": 2019,
+          "area_frac": 0.1563,
+          "severity_k": 0.759,
+          "centroid": [
+            24.2,
+            75.19
+          ],
+          "peak_anom_k": 8.16,
+          "peak_cell": [
+            26.25,
+            96.0
+          ]
+        },
+        {
+          "date": "2019-06-03",
+          "year": 2019,
+          "area_frac": 0.1112,
+          "severity_k": 0.691,
+          "centroid": [
+            25.48,
+            74.09
+          ],
+          "peak_anom_k": 6.38,
+          "peak_cell": [
+            30.5,
+            70.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2018-05-21",
+      "end": "2018-05-23",
+      "n_days": 3,
+      "score": 0.61,
+      "peak_area_frac": 0.1946,
+      "peak_area_date": "2018-05-22",
+      "peak_anom_k": 13.57,
+      "mean_centroid": [
+        30.59,
+        86.75
+      ],
+      "days": [
+        {
+          "date": "2018-05-21",
+          "year": 2018,
+          "area_frac": 0.1295,
+          "severity_k": 0.863,
+          "centroid": [
+            30.44,
+            87.27
+          ],
+          "peak_anom_k": 10.18,
+          "peak_cell": [
+            33.0,
+            94.5
+          ]
+        },
+        {
+          "date": "2018-05-22",
+          "year": 2018,
+          "area_frac": 0.1946,
+          "severity_k": 1.629,
+          "centroid": [
+            31.14,
+            86.59
+          ],
+          "peak_anom_k": 13.57,
+          "peak_cell": [
+            33.5,
+            94.5
+          ]
+        },
+        {
+          "date": "2018-05-23",
+          "year": 2018,
+          "area_frac": 0.1581,
+          "severity_k": 1.146,
+          "centroid": [
+            30.19,
+            86.38
+          ],
+          "peak_anom_k": 12.86,
+          "peak_cell": [
+            32.25,
+            93.0
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2019-06-09",
+      "end": "2019-06-12",
+      "n_days": 4,
+      "score": 0.546,
+      "peak_area_frac": 0.1671,
+      "peak_area_date": "2019-06-10",
+      "peak_anom_k": 9.52,
+      "mean_centroid": [
+        24.85,
+        80.87
+      ],
+      "days": [
+        {
+          "date": "2019-06-09",
+          "year": 2019,
+          "area_frac": 0.1667,
+          "severity_k": 0.844,
+          "centroid": [
+            23.71,
+            76.61
+          ],
+          "peak_anom_k": 8.13,
+          "peak_cell": [
+            23.25,
+            84.25
+          ]
+        },
+        {
+          "date": "2019-06-10",
+          "year": 2019,
+          "area_frac": 0.1671,
+          "severity_k": 0.958,
+          "centroid": [
+            24.98,
+            77.56
+          ],
+          "peak_anom_k": 8.91,
+          "peak_cell": [
+            23.25,
+            84.25
+          ]
+        },
+        {
+          "date": "2019-06-11",
+          "year": 2019,
+          "area_frac": 0.1204,
+          "severity_k": 0.748,
+          "centroid": [
+            23.84,
+            80.39
+          ],
+          "peak_anom_k": 9.02,
+          "peak_cell": [
+            23.25,
+            84.25
+          ]
+        },
+        {
+          "date": "2019-06-12",
+          "year": 2019,
+          "area_frac": 0.1591,
+          "severity_k": 0.974,
+          "centroid": [
+            26.87,
+            88.9
+          ],
+          "peak_anom_k": 9.52,
+          "peak_cell": [
+            22.75,
+            84.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2016-04-15",
+      "end": "2016-04-21",
+      "n_days": 6,
+      "score": 0.528,
+      "peak_area_frac": 0.2182,
+      "peak_area_date": "2016-04-15",
+      "peak_anom_k": 9.94,
+      "mean_centroid": [
+        21.69,
+        81.58
+      ],
+      "days": [
+        {
+          "date": "2016-04-15",
+          "year": 2016,
+          "area_frac": 0.2182,
+          "severity_k": 0.546,
+          "centroid": [
+            22.08,
+            79.94
+          ],
+          "peak_anom_k": 9.94,
+          "peak_cell": [
+            31.25,
+            80.0
+          ]
+        },
+        {
+          "date": "2016-04-16",
+          "year": 2016,
+          "area_frac": 0.2164,
+          "severity_k": 0.649,
+          "centroid": [
+            23.01,
+            80.04
+          ],
+          "peak_anom_k": 8.81,
+          "peak_cell": [
+            31.0,
+            80.75
+          ]
+        },
+        {
+          "date": "2016-04-17",
+          "year": 2016,
+          "area_frac": 0.113,
+          "severity_k": 0.625,
+          "centroid": [
+            23.26,
+            81.49
+          ],
+          "peak_anom_k": 9.44,
+          "peak_cell": [
+            31.25,
+            80.0
+          ]
+        },
+        {
+          "date": "2016-04-19",
+          "year": 2016,
+          "area_frac": 0.1,
+          "severity_k": 0.623,
+          "centroid": [
+            20.13,
+            83.84
+          ],
+          "peak_anom_k": 8.08,
+          "peak_cell": [
+            28.25,
+            87.25
+          ]
+        },
+        {
+          "date": "2016-04-20",
+          "year": 2016,
+          "area_frac": 0.1287,
+          "severity_k": 0.586,
+          "centroid": [
+            22.75,
+            84.75
+          ],
+          "peak_anom_k": 8.28,
+          "peak_cell": [
+            31.25,
+            80.0
+          ]
+        },
+        {
+          "date": "2016-04-21",
+          "year": 2016,
+          "area_frac": 0.1061,
+          "severity_k": 0.57,
+          "centroid": [
+            18.91,
+            79.39
+          ],
+          "peak_anom_k": 7.73,
+          "peak_cell": [
+            31.25,
+            80.0
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2016-04-27",
+      "end": "2016-05-02",
+      "n_days": 6,
+      "score": 0.52,
+      "peak_area_frac": 0.1286,
+      "peak_area_date": "2016-05-01",
+      "peak_anom_k": 10.2,
+      "mean_centroid": [
+        21.26,
+        82.03
+      ],
+      "days": [
+        {
+          "date": "2016-04-27",
+          "year": 2016,
+          "area_frac": 0.1129,
+          "severity_k": 0.779,
+          "centroid": [
+            18.53,
+            84.08
+          ],
+          "peak_anom_k": 8.19,
+          "peak_cell": [
+            10.5,
+            76.5
+          ]
+        },
+        {
+          "date": "2016-04-28",
+          "year": 2016,
+          "area_frac": 0.118,
+          "severity_k": 0.996,
+          "centroid": [
+            19.57,
+            86.45
+          ],
+          "peak_anom_k": 8.36,
+          "peak_cell": [
+            22.25,
+            94.5
+          ]
+        },
+        {
+          "date": "2016-04-29",
+          "year": 2016,
+          "area_frac": 0.1186,
+          "severity_k": 0.613,
+          "centroid": [
+            20.6,
+            83.8
+          ],
+          "peak_anom_k": 8.02,
+          "peak_cell": [
+            25.0,
+            95.0
+          ]
+        },
+        {
+          "date": "2016-04-30",
+          "year": 2016,
+          "area_frac": 0.1161,
+          "severity_k": 0.787,
+          "centroid": [
+            21.95,
+            82.61
+          ],
+          "peak_anom_k": 9.36,
+          "peak_cell": [
+            37.25,
+            77.0
+          ]
+        },
+        {
+          "date": "2016-05-01",
+          "year": 2016,
+          "area_frac": 0.1286,
+          "severity_k": 0.584,
+          "centroid": [
+            23.85,
+            76.89
+          ],
+          "peak_anom_k": 10.2,
+          "peak_cell": [
+            37.25,
+            69.0
+          ]
+        },
+        {
+          "date": "2016-05-02",
+          "year": 2016,
+          "area_frac": 0.114,
+          "severity_k": 0.663,
+          "centroid": [
+            23.04,
+            78.38
+          ],
+          "peak_anom_k": 8.12,
+          "peak_cell": [
+            31.75,
+            75.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2025-03-10",
+      "end": "2025-03-15",
+      "n_days": 5,
+      "score": 0.513,
+      "peak_area_frac": 0.1573,
+      "peak_area_date": "2025-03-10",
+      "peak_anom_k": 10.86,
+      "mean_centroid": [
+        23.68,
+        80.58
+      ],
+      "days": [
+        {
+          "date": "2025-03-10",
+          "year": 2025,
+          "area_frac": 0.1573,
+          "severity_k": 1.159,
+          "centroid": [
+            27.3,
+            81.25
+          ],
+          "peak_anom_k": 10.86,
+          "peak_cell": [
+            32.25,
+            92.75
+          ]
+        },
+        {
+          "date": "2025-03-11",
+          "year": 2025,
+          "area_frac": 0.1012,
+          "severity_k": 1.052,
+          "centroid": [
+            24.17,
+            76.17
+          ],
+          "peak_anom_k": 9.2,
+          "peak_cell": [
+            29.0,
+            85.5
+          ]
+        },
+        {
+          "date": "2025-03-12",
+          "year": 2025,
+          "area_frac": 0.1399,
+          "severity_k": 0.557,
+          "centroid": [
+            23.61,
+            77.26
+          ],
+          "peak_anom_k": 8.4,
+          "peak_cell": [
+            29.25,
+            85.0
+          ]
+        },
+        {
+          "date": "2025-03-14",
+          "year": 2025,
+          "area_frac": 0.103,
+          "severity_k": 0.548,
+          "centroid": [
+            20.27,
+            82.9
+          ],
+          "peak_anom_k": 7.98,
+          "peak_cell": [
+            28.25,
+            87.25
+          ]
+        },
+        {
+          "date": "2025-03-15",
+          "year": 2025,
+          "area_frac": 0.1238,
+          "severity_k": 0.725,
+          "centroid": [
+            23.06,
+            85.32
+          ],
+          "peak_anom_k": 9.53,
+          "peak_cell": [
+            28.25,
+            89.5
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2014-04-22",
+      "end": "2014-04-24",
+      "n_days": 3,
+      "score": 0.499,
+      "peak_area_frac": 0.108,
+      "peak_area_date": "2014-04-22",
+      "peak_anom_k": 11.13,
+      "mean_centroid": [
+        23.1,
+        90.58
+      ],
+      "days": [
+        {
+          "date": "2014-04-22",
+          "year": 2014,
+          "area_frac": 0.108,
+          "severity_k": 1.746,
+          "centroid": [
+            23.38,
+            91.01
+          ],
+          "peak_anom_k": 10.54,
+          "peak_cell": [
+            26.5,
+            93.25
+          ]
+        },
+        {
+          "date": "2014-04-23",
+          "year": 2014,
+          "area_frac": 0.1041,
+          "severity_k": 1.523,
+          "centroid": [
+            23.48,
+            90.81
+          ],
+          "peak_anom_k": 10.75,
+          "peak_cell": [
+            26.5,
+            93.25
+          ]
+        },
+        {
+          "date": "2014-04-24",
+          "year": 2014,
+          "area_frac": 0.1063,
+          "severity_k": 1.43,
+          "centroid": [
+            22.44,
+            89.93
+          ],
+          "peak_anom_k": 11.13,
+          "peak_cell": [
+            26.5,
+            92.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2014-06-04",
+      "end": "2014-06-08",
+      "n_days": 5,
+      "score": 0.492,
+      "peak_area_frac": 0.2172,
+      "peak_area_date": "2014-06-06",
+      "peak_anom_k": 10.15,
+      "mean_centroid": [
+        26.41,
+        82.69
+      ],
+      "days": [
+        {
+          "date": "2014-06-04",
+          "year": 2014,
+          "area_frac": 0.1223,
+          "severity_k": 0.61,
+          "centroid": [
+            26.8,
+            86.54
+          ],
+          "peak_anom_k": 9.78,
+          "peak_cell": [
+            32.25,
+            92.25
+          ]
+        },
+        {
+          "date": "2014-06-05",
+          "year": 2014,
+          "area_frac": 0.1207,
+          "severity_k": 0.571,
+          "centroid": [
+            25.56,
+            82.49
+          ],
+          "peak_anom_k": 10.15,
+          "peak_cell": [
+            33.25,
+            90.5
+          ]
+        },
+        {
+          "date": "2014-06-06",
+          "year": 2014,
+          "area_frac": 0.2172,
+          "severity_k": 0.561,
+          "centroid": [
+            26.94,
+            81.49
+          ],
+          "peak_anom_k": 9.97,
+          "peak_cell": [
+            33.25,
+            90.25
+          ]
+        },
+        {
+          "date": "2014-06-07",
+          "year": 2014,
+          "area_frac": 0.2103,
+          "severity_k": 0.632,
+          "centroid": [
+            25.86,
+            82.12
+          ],
+          "peak_anom_k": 10.11,
+          "peak_cell": [
+            33.25,
+            90.25
+          ]
+        },
+        {
+          "date": "2014-06-08",
+          "year": 2014,
+          "area_frac": 0.159,
+          "severity_k": 0.59,
+          "centroid": [
+            26.91,
+            80.83
+          ],
+          "peak_anom_k": 8.71,
+          "peak_cell": [
+            33.0,
+            90.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2018-03-01",
+      "end": "2018-03-04",
+      "n_days": 4,
+      "score": 0.394,
+      "peak_area_frac": 0.2078,
+      "peak_area_date": "2018-03-02",
+      "peak_anom_k": 12.53,
+      "mean_centroid": [
+        26.84,
+        81.09
+      ],
+      "days": [
+        {
+          "date": "2018-03-01",
+          "year": 2018,
+          "area_frac": 0.1806,
+          "severity_k": 0.859,
+          "centroid": [
+            29.39,
+            78.47
+          ],
+          "peak_anom_k": 12.53,
+          "peak_cell": [
+            37.25,
+            77.0
+          ]
+        },
+        {
+          "date": "2018-03-02",
+          "year": 2018,
+          "area_frac": 0.2078,
+          "severity_k": 0.573,
+          "centroid": [
+            28.45,
+            81.19
+          ],
+          "peak_anom_k": 10.44,
+          "peak_cell": [
+            37.5,
+            86.5
+          ]
+        },
+        {
+          "date": "2018-03-03",
+          "year": 2018,
+          "area_frac": 0.1425,
+          "severity_k": 0.43,
+          "centroid": [
+            25.59,
+            81.16
+          ],
+          "peak_anom_k": 9.81,
+          "peak_cell": [
+            29.25,
+            85.0
+          ]
+        },
+        {
+          "date": "2018-03-04",
+          "year": 2018,
+          "area_frac": 0.1012,
+          "severity_k": 0.578,
+          "centroid": [
+            23.92,
+            83.54
+          ],
+          "peak_anom_k": 6.99,
+          "peak_cell": [
+            33.5,
+            79.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2016-03-02",
+      "end": "2016-03-04",
+      "n_days": 3,
+      "score": 0.38,
+      "peak_area_frac": 0.1504,
+      "peak_area_date": "2016-03-03",
+      "peak_anom_k": 14.24,
+      "mean_centroid": [
+        30.83,
+        77.75
+      ],
+      "days": [
+        {
+          "date": "2016-03-02",
+          "year": 2016,
+          "area_frac": 0.115,
+          "severity_k": 0.698,
+          "centroid": [
+            30.46,
+            77.1
+          ],
+          "peak_anom_k": 9.35,
+          "peak_cell": [
+            37.25,
+            77.0
+          ]
+        },
+        {
+          "date": "2016-03-03",
+          "year": 2016,
+          "area_frac": 0.1504,
+          "severity_k": 1.154,
+          "centroid": [
+            31.39,
+            77.57
+          ],
+          "peak_anom_k": 14.24,
+          "peak_cell": [
+            37.5,
+            77.0
+          ]
+        },
+        {
+          "date": "2016-03-04",
+          "year": 2016,
+          "area_frac": 0.136,
+          "severity_k": 0.93,
+          "centroid": [
+            30.65,
+            78.58
+          ],
+          "peak_anom_k": 11.43,
+          "peak_cell": [
+            37.25,
+            70.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2026-05-18",
+      "end": "2026-05-21",
+      "n_days": 4,
+      "score": 0.367,
+      "peak_area_frac": 0.1464,
+      "peak_area_date": "2026-05-20",
+      "peak_anom_k": 12.36,
+      "mean_centroid": [
+        29.27,
+        82.01
+      ],
+      "days": [
+        {
+          "date": "2026-05-18",
+          "year": 2026,
+          "area_frac": 0.1096,
+          "severity_k": 0.726,
+          "centroid": [
+            28.25,
+            76.77
+          ],
+          "peak_anom_k": 12.36,
+          "peak_cell": [
+            37.5,
+            69.5
+          ]
+        },
+        {
+          "date": "2026-05-19",
+          "year": 2026,
+          "area_frac": 0.1072,
+          "severity_k": 0.794,
+          "centroid": [
+            31.14,
+            81.9
+          ],
+          "peak_anom_k": 10.03,
+          "peak_cell": [
+            36.5,
+            79.0
+          ]
+        },
+        {
+          "date": "2026-05-20",
+          "year": 2026,
+          "area_frac": 0.1464,
+          "severity_k": 0.719,
+          "centroid": [
+            29.05,
+            85.78
+          ],
+          "peak_anom_k": 9.0,
+          "peak_cell": [
+            24.25,
+            94.75
+          ]
+        },
+        {
+          "date": "2026-05-21",
+          "year": 2026,
+          "area_frac": 0.1448,
+          "severity_k": 0.67,
+          "centroid": [
+            28.64,
+            83.59
+          ],
+          "peak_anom_k": 9.13,
+          "peak_cell": [
+            36.25,
+            80.0
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2019-04-03",
+      "end": "2019-04-05",
+      "n_days": 3,
+      "score": 0.336,
+      "peak_area_frac": 0.1955,
+      "peak_area_date": "2019-04-04",
+      "peak_anom_k": 11.7,
+      "mean_centroid": [
+        27.65,
+        74.32
+      ],
+      "days": [
+        {
+          "date": "2019-04-03",
+          "year": 2019,
+          "area_frac": 0.1077,
+          "severity_k": 0.655,
+          "centroid": [
+            27.13,
+            73.78
+          ],
+          "peak_anom_k": 11.7,
+          "peak_cell": [
+            37.25,
+            68.75
+          ]
+        },
+        {
+          "date": "2019-04-04",
+          "year": 2019,
+          "area_frac": 0.1955,
+          "severity_k": 0.872,
+          "centroid": [
+            26.93,
+            74.33
+          ],
+          "peak_anom_k": 9.57,
+          "peak_cell": [
+            34.25,
+            71.75
+          ]
+        },
+        {
+          "date": "2019-04-05",
+          "year": 2019,
+          "area_frac": 0.134,
+          "severity_k": 0.709,
+          "centroid": [
+            28.9,
+            74.85
+          ],
+          "peak_anom_k": 10.63,
+          "peak_cell": [
+            34.25,
+            71.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2024-04-05",
+      "end": "2024-04-07",
+      "n_days": 3,
+      "score": 0.331,
+      "peak_area_frac": 0.1557,
+      "peak_area_date": "2024-04-06",
+      "peak_anom_k": 7.37,
+      "mean_centroid": [
+        17.73,
+        84.36
+      ],
+      "days": [
+        {
+          "date": "2024-04-05",
+          "year": 2024,
+          "area_frac": 0.1065,
+          "severity_k": 0.758,
+          "centroid": [
+            17.17,
+            82.97
+          ],
+          "peak_anom_k": 6.3,
+          "peak_cell": [
+            19.75,
+            97.25
+          ]
+        },
+        {
+          "date": "2024-04-06",
+          "year": 2024,
+          "area_frac": 0.1557,
+          "severity_k": 0.977,
+          "centroid": [
+            18.15,
+            84.79
+          ],
+          "peak_anom_k": 7.17,
+          "peak_cell": [
+            21.25,
+            93.0
+          ]
+        },
+        {
+          "date": "2024-04-07",
+          "year": 2024,
+          "area_frac": 0.1017,
+          "severity_k": 0.969,
+          "centroid": [
+            17.88,
+            85.32
+          ],
+          "peak_anom_k": 7.37,
+          "peak_cell": [
+            27.0,
+            92.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2023-06-22",
+      "end": "2023-06-24",
+      "n_days": 3,
+      "score": 0.321,
+      "peak_area_frac": 0.1233,
+      "peak_area_date": "2023-06-22",
+      "peak_anom_k": 9.23,
+      "mean_centroid": [
+        28.45,
+        81.05
+      ],
+      "days": [
+        {
+          "date": "2023-06-22",
+          "year": 2023,
+          "area_frac": 0.1233,
+          "severity_k": 1.019,
+          "centroid": [
+            27.4,
+            77.36
+          ],
+          "peak_anom_k": 9.23,
+          "peak_cell": [
+            37.0,
+            76.75
+          ]
+        },
+        {
+          "date": "2023-06-23",
+          "year": 2023,
+          "area_frac": 0.1046,
+          "severity_k": 1.03,
+          "centroid": [
+            29.3,
+            79.49
+          ],
+          "peak_anom_k": 8.8,
+          "peak_cell": [
+            35.0,
+            74.0
+          ]
+        },
+        {
+          "date": "2023-06-24",
+          "year": 2023,
+          "area_frac": 0.1082,
+          "severity_k": 0.806,
+          "centroid": [
+            28.64,
+            86.3
+          ],
+          "peak_anom_k": 7.86,
+          "peak_cell": [
+            35.25,
+            74.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2022-06-26",
+      "end": "2022-06-28",
+      "n_days": 3,
+      "score": 0.312,
+      "peak_area_frac": 0.1371,
+      "peak_area_date": "2022-06-26",
+      "peak_anom_k": 10.08,
+      "mean_centroid": [
+        29.91,
+        77.44
+      ],
+      "days": [
+        {
+          "date": "2022-06-26",
+          "year": 2022,
+          "area_frac": 0.1371,
+          "severity_k": 0.892,
+          "centroid": [
+            26.82,
+            77.78
+          ],
+          "peak_anom_k": 9.2,
+          "peak_cell": [
+            35.0,
+            76.0
+          ]
+        },
+        {
+          "date": "2022-06-27",
+          "year": 2022,
+          "area_frac": 0.1099,
+          "severity_k": 0.861,
+          "centroid": [
+            30.84,
+            78.19
+          ],
+          "peak_anom_k": 8.74,
+          "peak_cell": [
+            34.5,
+            77.25
+          ]
+        },
+        {
+          "date": "2022-06-28",
+          "year": 2022,
+          "area_frac": 0.1155,
+          "severity_k": 0.827,
+          "centroid": [
+            32.07,
+            76.35
+          ],
+          "peak_anom_k": 10.08,
+          "peak_cell": [
+            32.75,
+            77.75
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2016-04-10",
+      "end": "2016-04-12",
+      "n_days": 3,
+      "score": 0.286,
+      "peak_area_frac": 0.1417,
+      "peak_area_date": "2016-04-11",
+      "peak_anom_k": 9.47,
+      "mean_centroid": [
+        22.19,
+        86.93
+      ],
+      "days": [
+        {
+          "date": "2016-04-10",
+          "year": 2016,
+          "area_frac": 0.1191,
+          "severity_k": 0.77,
+          "centroid": [
+            24.79,
+            88.76
+          ],
+          "peak_anom_k": 9.47,
+          "peak_cell": [
+            30.75,
+            96.25
+          ]
+        },
+        {
+          "date": "2016-04-11",
+          "year": 2016,
+          "area_frac": 0.1417,
+          "severity_k": 0.921,
+          "centroid": [
+            21.88,
+            87.15
+          ],
+          "peak_anom_k": 7.97,
+          "peak_cell": [
+            21.75,
+            87.5
+          ]
+        },
+        {
+          "date": "2016-04-12",
+          "year": 2016,
+          "area_frac": 0.1022,
+          "severity_k": 0.624,
+          "centroid": [
+            19.89,
+            84.88
+          ],
+          "peak_anom_k": 8.44,
+          "peak_cell": [
+            25.25,
+            95.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2023-06-16",
+      "end": "2023-06-18",
+      "n_days": 3,
+      "score": 0.275,
+      "peak_area_frac": 0.1462,
+      "peak_area_date": "2023-06-16",
+      "peak_anom_k": 10.16,
+      "mean_centroid": [
+        20.25,
+        82.04
+      ],
+      "days": [
+        {
+          "date": "2023-06-16",
+          "year": 2023,
+          "area_frac": 0.1462,
+          "severity_k": 0.922,
+          "centroid": [
+            18.8,
+            82.59
+          ],
+          "peak_anom_k": 10.16,
+          "peak_cell": [
+            22.0,
+            83.5
+          ]
+        },
+        {
+          "date": "2023-06-17",
+          "year": 2023,
+          "area_frac": 0.1031,
+          "severity_k": 0.652,
+          "centroid": [
+            20.82,
+            82.45
+          ],
+          "peak_anom_k": 10.07,
+          "peak_cell": [
+            22.0,
+            83.5
+          ]
+        },
+        {
+          "date": "2023-06-18",
+          "year": 2023,
+          "area_frac": 0.1012,
+          "severity_k": 0.719,
+          "centroid": [
+            21.13,
+            81.07
+          ],
+          "peak_anom_k": 9.72,
+          "peak_cell": [
+            21.25,
+            83.25
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2019-04-12",
+      "end": "2019-04-16",
+      "n_days": 4,
+      "score": 0.255,
+      "peak_area_frac": 0.1299,
+      "peak_area_date": "2019-04-16",
+      "peak_anom_k": 10.26,
+      "mean_centroid": [
+        25.21,
+        82.0
+      ],
+      "days": [
+        {
+          "date": "2019-04-12",
+          "year": 2019,
+          "area_frac": 0.111,
+          "severity_k": 0.505,
+          "centroid": [
+            24.93,
+            82.38
+          ],
+          "peak_anom_k": 7.1,
+          "peak_cell": [
+            9.0,
+            77.0
+          ]
+        },
+        {
+          "date": "2019-04-13",
+          "year": 2019,
+          "area_frac": 0.1252,
+          "severity_k": 0.485,
+          "centroid": [
+            24.8,
+            82.76
+          ],
+          "peak_anom_k": 7.12,
+          "peak_cell": [
+            28.0,
+            95.0
+          ]
+        },
+        {
+          "date": "2019-04-14",
+          "year": 2019,
+          "area_frac": 0.1151,
+          "severity_k": 0.427,
+          "centroid": [
+            22.18,
+            78.29
+          ],
+          "peak_anom_k": 6.62,
+          "peak_cell": [
+            9.75,
+            77.0
+          ]
+        },
+        {
+          "date": "2019-04-16",
+          "year": 2019,
+          "area_frac": 0.1299,
+          "severity_k": 0.689,
+          "centroid": [
+            28.92,
+            84.55
+          ],
+          "peak_anom_k": 10.26,
+          "peak_cell": [
+            37.25,
+            85.0
+          ]
+        }
+      ]
+    },
+    {
+      "start": "2014-03-29",
+      "end": "2014-03-31",
+      "n_days": 3,
+      "score": 0.228,
+      "peak_area_frac": 0.1308,
+      "peak_area_date": "2014-03-29",
+      "peak_anom_k": 7.69,
+      "mean_centroid": [
+        18.61,
+        85.38
+      ],
+      "days": [
+        {
+          "date": "2014-03-29",
+          "year": 2014,
+          "area_frac": 0.1308,
+          "severity_k": 0.594,
+          "centroid": [
+            19.17,
+            85.46
+          ],
+          "peak_anom_k": 6.96,
+          "peak_cell": [
+            21.75,
+            87.5
+          ]
+        },
+        {
+          "date": "2014-03-30",
+          "year": 2014,
+          "area_frac": 0.121,
+          "severity_k": 0.697,
+          "centroid": [
+            18.41,
+            84.69
+          ],
+          "peak_anom_k": 7.5,
+          "peak_cell": [
+            29.25,
+            92.5
+          ]
+        },
+        {
+          "date": "2014-03-31",
+          "year": 2014,
+          "area_frac": 0.1081,
+          "severity_k": 0.611,
+          "centroid": [
+            18.26,
+            85.99
+          ],
+          "peak_anom_k": 7.69,
+          "peak_cell": [
+            25.25,
+            95.75
+          ]
+        }
+      ]
+    }
+  ],
+  "daily_imd_top50": [
+    {
+      "date": "2019-06-10",
+      "year": 2019,
+      "area_frac": 0.2064,
+      "severity_k": 5.984,
+      "centroid": [
+        25.31,
+        77.93
+      ],
+      "peak_anom_k": 8.91,
+      "peak_cell": [
+        23.25,
+        84.25
+      ]
+    },
+    {
+      "date": "2019-06-09",
+      "year": 2019,
+      "area_frac": 0.1761,
+      "severity_k": 5.505,
+      "centroid": [
+        25.19,
+        77.16
+      ],
+      "peak_anom_k": 8.13,
+      "peak_cell": [
+        23.25,
+        84.25
+      ]
+    },
+    {
+      "date": "2014-06-07",
+      "year": 2014,
+      "area_frac": 0.1638,
+      "severity_k": 5.483,
+      "centroid": [
+        24.87,
+        78.25
+      ],
+      "peak_anom_k": 8.15,
+      "peak_cell": [
+        22.5,
+        81.75
+      ]
+    },
+    {
+      "date": "2019-06-11",
+      "year": 2019,
+      "area_frac": 0.1552,
+      "severity_k": 6.035,
+      "centroid": [
+        23.86,
+        79.09
+      ],
+      "peak_anom_k": 9.02,
+      "peak_cell": [
+        23.25,
+        84.25
+      ]
+    },
+    {
+      "date": "2014-06-06",
+      "year": 2014,
+      "area_frac": 0.1537,
+      "severity_k": 5.288,
+      "centroid": [
+        25.42,
+        78.58
+      ],
+      "peak_anom_k": 7.67,
+      "peak_cell": [
+        21.0,
+        94.5
+      ]
+    },
+    {
+      "date": "2022-04-08",
+      "year": 2022,
+      "area_frac": 0.1394,
+      "severity_k": 6.639,
+      "centroid": [
+        27.25,
+        73.91
+      ],
+      "peak_anom_k": 11.28,
+      "peak_cell": [
+        34.25,
+        71.75
+      ]
+    },
+    {
+      "date": "2016-05-18",
+      "year": 2016,
+      "area_frac": 0.1385,
+      "severity_k": 5.621,
+      "centroid": [
+        26.94,
+        73.81
+      ],
+      "peak_anom_k": 7.72,
+      "peak_cell": [
+        19.0,
+        96.0
+      ]
+    },
+    {
+      "date": "2014-06-08",
+      "year": 2014,
+      "area_frac": 0.1384,
+      "severity_k": 5.509,
+      "centroid": [
+        25.8,
+        77.89
+      ],
+      "peak_anom_k": 7.78,
+      "peak_cell": [
+        22.5,
+        81.75
+      ]
+    },
+    {
+      "date": "2024-05-28",
+      "year": 2024,
+      "area_frac": 0.138,
+      "severity_k": 5.604,
+      "centroid": [
+        28.08,
+        75.47
+      ],
+      "peak_anom_k": 7.34,
+      "peak_cell": [
+        30.25,
+        70.25
+      ]
+    },
+    {
+      "date": "2024-05-27",
+      "year": 2024,
+      "area_frac": 0.131,
+      "severity_k": 5.653,
+      "centroid": [
+        28.25,
+        73.41
+      ],
+      "peak_anom_k": 8.13,
+      "peak_cell": [
+        26.25,
+        72.25
+      ]
+    },
+    {
+      "date": "2022-04-09",
+      "year": 2022,
+      "area_frac": 0.124,
+      "severity_k": 6.742,
+      "centroid": [
+        27.7,
+        74.84
+      ],
+      "peak_anom_k": 11.8,
+      "peak_cell": [
+        31.75,
+        70.25
+      ]
+    },
+    {
+      "date": "2016-05-19",
+      "year": 2016,
+      "area_frac": 0.1205,
+      "severity_k": 5.807,
+      "centroid": [
+        27.65,
+        72.64
+      ],
+      "peak_anom_k": 7.43,
+      "peak_cell": [
+        26.5,
+        72.5
+      ]
+    },
+    {
+      "date": "2022-04-10",
+      "year": 2022,
+      "area_frac": 0.1174,
+      "severity_k": 6.788,
+      "centroid": [
+        27.82,
+        74.71
+      ],
+      "peak_anom_k": 11.31,
+      "peak_cell": [
+        34.25,
+        71.75
+      ]
+    },
+    {
+      "date": "2017-04-15",
+      "year": 2017,
+      "area_frac": 0.1151,
+      "severity_k": 6.058,
+      "centroid": [
+        27.61,
+        73.57
+      ],
+      "peak_anom_k": 10.72,
+      "peak_cell": [
+        34.0,
+        71.75
+      ]
+    },
+    {
+      "date": "2017-04-13",
+      "year": 2017,
+      "area_frac": 0.112,
+      "severity_k": 6.162,
+      "centroid": [
+        26.74,
+        72.1
+      ],
+      "peak_anom_k": 10.17,
+      "peak_cell": [
+        32.0,
+        70.25
+      ]
+    },
+    {
+      "date": "2022-05-14",
+      "year": 2022,
+      "area_frac": 0.112,
+      "severity_k": 5.825,
+      "centroid": [
+        28.72,
+        73.19
+      ],
+      "peak_anom_k": 8.86,
+      "peak_cell": [
+        33.5,
+        74.0
+      ]
+    },
+    {
+      "date": "2024-06-12",
+      "year": 2024,
+      "area_frac": 0.1109,
+      "severity_k": 5.665,
+      "centroid": [
+        27.67,
+        79.03
+      ],
+      "peak_anom_k": 8.06,
+      "peak_cell": [
+        23.25,
+        86.0
+      ]
+    },
+    {
+      "date": "2017-04-14",
+      "year": 2017,
+      "area_frac": 0.1108,
+      "severity_k": 5.856,
+      "centroid": [
+        27.14,
+        72.82
+      ],
+      "peak_anom_k": 8.43,
+      "peak_cell": [
+        28.75,
+        69.25
+      ]
+    },
+    {
+      "date": "2017-04-16",
+      "year": 2017,
+      "area_frac": 0.1103,
+      "severity_k": 6.644,
+      "centroid": [
+        27.65,
+        73.51
+      ],
+      "peak_anom_k": 12.12,
+      "peak_cell": [
+        34.0,
+        71.5
+      ]
+    },
+    {
+      "date": "2024-06-15",
+      "year": 2024,
+      "area_frac": 0.1082,
+      "severity_k": 6.112,
+      "centroid": [
+        25.61,
+        80.9
+      ],
+      "peak_anom_k": 8.85,
+      "peak_cell": [
+        23.25,
+        87.0
+      ]
+    },
+    {
+      "date": "2023-06-16",
+      "year": 2023,
+      "area_frac": 0.1069,
+      "severity_k": 6.68,
+      "centroid": [
+        22.07,
+        82.57
+      ],
+      "peak_anom_k": 10.16,
+      "peak_cell": [
+        22.0,
+        83.5
+      ]
+    },
+    {
+      "date": "2019-06-15",
+      "year": 2019,
+      "area_frac": 0.1065,
+      "severity_k": 6.456,
+      "centroid": [
+        23.68,
+        81.36
+      ],
+      "peak_anom_k": 10.1,
+      "peak_cell": [
+        26.0,
+        86.0
+      ]
+    },
+    {
+      "date": "2013-05-23",
+      "year": 2013,
+      "area_frac": 0.1055,
+      "severity_k": 5.531,
+      "centroid": [
+        26.58,
+        76.51
+      ],
+      "peak_anom_k": 8.74,
+      "peak_cell": [
+        33.0,
+        74.5
+      ]
+    },
+    {
+      "date": "2022-04-07",
+      "year": 2022,
+      "area_frac": 0.1055,
+      "severity_k": 6.421,
+      "centroid": [
+        27.21,
+        72.79
+      ],
+      "peak_anom_k": 9.76,
+      "peak_cell": [
+        29.0,
+        70.0
+      ]
+    },
+    {
+      "date": "2022-04-11",
+      "year": 2022,
+      "area_frac": 0.1054,
+      "severity_k": 6.489,
+      "centroid": [
+        28.03,
+        75.4
+      ],
+      "peak_anom_k": 12.12,
+      "peak_cell": [
+        34.25,
+        71.75
+      ]
+    },
+    {
+      "date": "2014-06-10",
+      "year": 2014,
+      "area_frac": 0.1046,
+      "severity_k": 5.29,
+      "centroid": [
+        26.2,
+        78.55
+      ],
+      "peak_anom_k": 6.71,
+      "peak_cell": [
+        19.5,
+        80.75
+      ]
+    },
+    {
+      "date": "2019-06-02",
+      "year": 2019,
+      "area_frac": 0.1035,
+      "severity_k": 5.156,
+      "centroid": [
+        25.13,
+        74.06
+      ],
+      "peak_anom_k": 6.56,
+      "peak_cell": [
+        28.75,
+        69.75
+      ]
+    },
+    {
+      "date": "2024-05-29",
+      "year": 2024,
+      "area_frac": 0.1028,
+      "severity_k": 5.481,
+      "centroid": [
+        26.55,
+        79.37
+      ],
+      "peak_anom_k": 7.44,
+      "peak_cell": [
+        23.5,
+        86.0
+      ]
+    },
+    {
+      "date": "2019-06-12",
+      "year": 2019,
+      "area_frac": 0.1015,
+      "severity_k": 6.214,
+      "centroid": [
+        21.45,
+        80.95
+      ],
+      "peak_anom_k": 9.52,
+      "peak_cell": [
+        22.75,
+        84.5
+      ]
+    },
+    {
+      "date": "2017-04-17",
+      "year": 2017,
+      "area_frac": 0.0999,
+      "severity_k": 6.551,
+      "centroid": [
+        27.82,
+        73.89
+      ],
+      "peak_anom_k": 12.06,
+      "peak_cell": [
+        34.0,
+        71.5
+      ]
+    },
+    {
+      "date": "2024-06-16",
+      "year": 2024,
+      "area_frac": 0.0998,
+      "severity_k": 6.159,
+      "centroid": [
+        27.88,
+        78.32
+      ],
+      "peak_anom_k": 8.69,
+      "peak_cell": [
+        27.0,
+        81.25
+      ]
+    },
+    {
+      "date": "2025-04-08",
+      "year": 2025,
+      "area_frac": 0.0978,
+      "severity_k": 6.521,
+      "centroid": [
+        27.31,
+        72.81
+      ],
+      "peak_anom_k": 10.3,
+      "peak_cell": [
+        32.75,
+        71.25
+      ]
+    },
+    {
+      "date": "2017-04-19",
+      "year": 2017,
+      "area_frac": 0.0977,
+      "severity_k": 6.697,
+      "centroid": [
+        28.64,
+        74.47
+      ],
+      "peak_anom_k": 11.25,
+      "peak_cell": [
+        33.0,
+        72.5
+      ]
+    },
+    {
+      "date": "2024-06-17",
+      "year": 2024,
+      "area_frac": 0.0971,
+      "severity_k": 6.4,
+      "centroid": [
+        28.23,
+        78.36
+      ],
+      "peak_anom_k": 8.97,
+      "peak_cell": [
+        26.0,
+        81.75
+      ]
+    },
+    {
+      "date": "2017-06-04",
+      "year": 2017,
+      "area_frac": 0.0967,
+      "severity_k": 6.039,
+      "centroid": [
+        28.32,
+        77.71
+      ],
+      "peak_anom_k": 9.55,
+      "peak_cell": [
+        34.0,
+        72.0
+      ]
+    },
+    {
+      "date": "2025-04-07",
+      "year": 2025,
+      "area_frac": 0.0965,
+      "severity_k": 6.365,
+      "centroid": [
+        26.92,
+        72.58
+      ],
+      "peak_anom_k": 10.62,
+      "peak_cell": [
+        29.5,
+        68.0
+      ]
+    },
+    {
+      "date": "2024-05-30",
+      "year": 2024,
+      "area_frac": 0.0952,
+      "severity_k": 5.173,
+      "centroid": [
+        26.34,
+        79.43
+      ],
+      "peak_anom_k": 6.67,
+      "peak_cell": [
+        28.75,
+        81.25
+      ]
+    },
+    {
+      "date": "2017-04-18",
+      "year": 2017,
+      "area_frac": 0.0951,
+      "severity_k": 6.863,
+      "centroid": [
+        28.73,
+        73.83
+      ],
+      "peak_anom_k": 12.09,
+      "peak_cell": [
+        34.0,
+        71.75
+      ]
+    },
+    {
+      "date": "2014-06-11",
+      "year": 2014,
+      "area_frac": 0.0942,
+      "severity_k": 5.35,
+      "centroid": [
+        25.09,
+        80.62
+      ],
+      "peak_anom_k": 7.44,
+      "peak_cell": [
+        23.25,
+        82.75
+      ]
+    },
+    {
+      "date": "2024-05-26",
+      "year": 2024,
+      "area_frac": 0.0923,
+      "severity_k": 5.494,
+      "centroid": [
+        28.75,
+        73.03
+      ],
+      "peak_anom_k": 9.85,
+      "peak_cell": [
+        26.5,
+        91.5
+      ]
+    },
+    {
+      "date": "2017-04-20",
+      "year": 2017,
+      "area_frac": 0.09,
+      "severity_k": 7.006,
+      "centroid": [
+        29.21,
+        72.77
+      ],
+      "peak_anom_k": 10.22,
+      "peak_cell": [
+        33.0,
+        72.5
+      ]
+    },
+    {
+      "date": "2024-06-13",
+      "year": 2024,
+      "area_frac": 0.0894,
+      "severity_k": 5.91,
+      "centroid": [
+        26.75,
+        80.63
+      ],
+      "peak_anom_k": 8.29,
+      "peak_cell": [
+        23.25,
+        87.0
+      ]
+    },
+    {
+      "date": "2022-04-28",
+      "year": 2022,
+      "area_frac": 0.0865,
+      "severity_k": 5.493,
+      "centroid": [
+        28.2,
+        76.39
+      ],
+      "peak_anom_k": 8.21,
+      "peak_cell": [
+        31.75,
+        70.25
+      ]
+    },
+    {
+      "date": "2014-06-09",
+      "year": 2014,
+      "area_frac": 0.086,
+      "severity_k": 5.118,
+      "centroid": [
+        26.81,
+        77.4
+      ],
+      "peak_anom_k": 6.91,
+      "peak_cell": [
+        30.5,
+        77.5
+      ]
+    },
+    {
+      "date": "2023-06-17",
+      "year": 2023,
+      "area_frac": 0.0852,
+      "severity_k": 6.627,
+      "centroid": [
+        23.24,
+        82.14
+      ],
+      "peak_anom_k": 10.07,
+      "peak_cell": [
+        22.0,
+        83.5
+      ]
+    },
+    {
+      "date": "2016-05-20",
+      "year": 2016,
+      "area_frac": 0.0847,
+      "severity_k": 5.531,
+      "centroid": [
+        28.58,
+        72.85
+      ],
+      "peak_anom_k": 7.22,
+      "peak_cell": [
+        26.75,
+        74.0
+      ]
+    },
+    {
+      "date": "2019-06-03",
+      "year": 2019,
+      "area_frac": 0.0846,
+      "severity_k": 5.064,
+      "centroid": [
+        26.89,
+        73.86
+      ],
+      "peak_anom_k": 6.38,
+      "peak_cell": [
+        30.5,
+        70.5
+      ]
+    },
+    {
+      "date": "2016-04-16",
+      "year": 2016,
+      "area_frac": 0.084,
+      "severity_k": 5.433,
+      "centroid": [
+        26.09,
+        79.65
+      ],
+      "peak_anom_k": 8.04,
+      "peak_cell": [
+        22.25,
+        86.75
+      ]
+    },
+    {
+      "date": "2017-03-30",
+      "year": 2017,
+      "area_frac": 0.0835,
+      "severity_k": 5.384,
+      "centroid": [
+        24.17,
+        79.78
+      ],
+      "peak_anom_k": 7.8,
+      "peak_cell": [
+        22.0,
+        86.5
+      ]
+    },
+    {
+      "date": "2023-06-18",
+      "year": 2023,
+      "area_frac": 0.081,
+      "severity_k": 6.661,
+      "centroid": [
+        23.1,
+        82.1
+      ],
+      "peak_anom_k": 9.72,
+      "peak_cell": [
+        21.25,
+        83.25
+      ]
+    }
+  ]
+}

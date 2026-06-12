@@ -58,7 +58,11 @@ class Observation(AetherBase):
 class DetectionType(StrEnum):
     METHANE_PLUME = "methane_plume"
     CO2_PLUME = "co2_plume"
+    # THERMAL_ANOMALY is a *skin/LST* (land-surface temperature) anomaly;
+    # AIR_TEMPERATURE_ANOMALY is a *2 m air* temperature anomaly. They are
+    # different physical quantities and must never be conflated (ADR 0003).
     THERMAL_ANOMALY = "thermal_anomaly"
+    AIR_TEMPERATURE_ANOMALY = "air_temperature_anomaly"
     SST_ANOMALY = "sst_anomaly"
     FIRE = "fire"
     LAUNCH_SIGNATURE = "launch_signature"

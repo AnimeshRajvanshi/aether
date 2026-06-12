@@ -110,3 +110,86 @@ class HypothesisSet(_Base):
     global_assumptions: list[str]
     hypotheses: list[SourceHypothesis]
     provenance: dict[str, str]
+
+
+# --------------------------------------------------------------------------- #
+# Factor hypotheses (Sprint 9 Stage C — heat vertical, ADR 0005)
+# --------------------------------------------------------------------------- #
+
+
+class FactorRole(StrEnum):
+    """How a factor participates in the explanation.
+
+    WARMING_CONTRIBUTOR — a physical driver ranked for its contribution.
+    SEVERITY_FRAMING — modulates experienced severity, not the temperature
+    anomaly itself (e.g., humidity).
+    COUNTER_EVIDENCE — the data argues AGAINST this factor at the observed
+    time; it is listed so a popular prior cannot be silently presumed.
+    """
+
+    WARMING_CONTRIBUTOR = "warming_contributor"
+    SEVERITY_FRAMING = "severity_framing"
+    COUNTER_EVIDENCE = "counter_evidence"
+
+
+class Diagnostic(_Base):
+    """One computed number a factor claim binds to (no-fabrication-for-factors).
+
+    Every diagnostic names the committed artifact / cached dataset it was
+    computed from. A factor with no diagnostics cannot exist (schema-enforced).
+    """
+
+    name: str
+    value: float
+    unit: str
+    definition: str
+    source: SourceRef
+
+
+class FactorHypothesis(_Base):
+    """A ranked contributing FACTOR with mandatory computed diagnostics.
+
+    The heat vertical's analogue of SourceHypothesis: candidates become
+    physical factors; the bearing wedge becomes a diagnostics list. The
+    ``diagnostics`` field is required and non-empty — the structural form of
+    the no-fabrication-for-factors rule: no diagnostic, no factor.
+    """
+
+    id: str
+    rank: int = Field(ge=1)
+    factor_name: str
+    role: FactorRole
+    claim: str
+    confidence_tier: ConfidenceTier
+    confidence_rationale: str
+    score: float = Field(ge=0.0, le=1.0)
+    score_components: list[ScoreComponent]
+    diagnostics: list[Diagnostic] = Field(min_length=1)
+    evidence: list[EvidenceItem]
+    assumptions: list[str]
+    counter_considerations: list[str]
+    falsification: str
+    generation_method: str
+
+
+class FactorHypothesisSet(_Base):
+    """The Stage C heat-attribution output: ranked factors + honesty framing.
+
+    ``external_published_attribution`` is the ONLY place published
+    extreme-event attribution (e.g., WWA/Zachariah) may appear — cited
+    evidence with a source, never blended into factor scores
+    (``attribution_boundary`` states this in the artifact itself).
+    """
+
+    event_id: str
+    phenomenon: str
+    generated_method: str
+    headline_finding: str
+    scoring_disclaimer: str
+    confidence_cap: str
+    attribution_boundary: str
+    event_summary: dict[str, str]
+    global_assumptions: list[str]
+    factors: list[FactorHypothesis]
+    external_published_attribution: list[EvidenceItem]
+    provenance: dict[str, str]

@@ -152,3 +152,55 @@ class TestUhiHeadlines:
         prov = validation["provenance"]
         assert "cannot be redistributed" in prov["isd_license_verbatim"]
         assert "derived" in prov["isd_handling"]
+
+
+class TestStageCReportHeadlines:
+    """Stage C gate-report numbers trace to the committed attribution artifacts."""
+
+    @pytest.fixture(scope="class")
+    def diag(self) -> dict[str, Any]:
+        return json.loads(
+            (config.data_root() / "attribution_outputs" / HEAT / "diagnostics.json").read_text()
+        )
+
+    @pytest.fixture(scope="class")
+    def factors(self) -> dict[str, Any]:
+        return json.loads(
+            (
+                config.data_root() / "attribution_outputs" / HEAT / "factor_hypotheses.json"
+            ).read_text()
+        )
+
+    @pytest.fixture(scope="class")
+    def report_c(self) -> str:
+        return (config.data_root() / "docs/reports/sprint9_stage_c_report.md").read_text()
+
+    def test_z500_numbers(self, report_c: str, diag: dict[str, Any]) -> None:
+        z = diag["z500"]
+        report_c = report_c.replace("\u2212", "-")  # typographic minus -> ASCII
+        assert f"+{z['anomaly_m']} m" in report_c
+        assert f"{z['cross_store_offset_m']} m" in report_c
+        assert f"{z['window_mean_2022_corrected_m']} m" in report_c
+        assert f"{z['days_above_pooled_p90']}/{z['n_window_days']} days" in report_c
+
+    def test_soil_dryness_rank(self, report_c: str, diag: dict[str, Any]) -> None:
+        rank = round((1.0 - diag["soil_moisture"]["antecedent_percentile"]) * 100)
+        assert f"{rank}%" in report_c
+
+    def test_factor_scores_and_tiers(self, report_c: str, factors: dict[str, Any]) -> None:
+        by_id = {f["id"]: f for f in factors["factors"]}
+        for fid in ("F1", "F2", "F3", "F4", "F5"):
+            assert f"{by_id[fid]['score']:.2f}" in report_c, f"{fid} score stale"
+        assert by_id["F1"]["confidence_tier"] == "moderate"  # capped — report says so
+        assert by_id["F5"]["role"] == "counter_evidence"
+        gap = abs(by_id["F1"]["score"] - by_id["F2"]["score"])
+        assert f"{gap:.2f}" in report_c
+
+    def test_headline_quoted_faithfully(self, report_c: str, factors: dict[str, Any]) -> None:
+        assert "did NOT materialize" in factors["headline_finding"]
+        assert "did NOT materialize" in report_c
+
+    def test_boundary_and_external_attribution(self, factors: dict[str, Any]) -> None:
+        assert "does NOT perform probabilistic" in factors["attribution_boundary"]
+        ext = factors["external_published_attribution"]
+        assert len(ext) == 1 and "10.1088/2752-5295/acf4b6" in ext[0]["source"]["dataset"]

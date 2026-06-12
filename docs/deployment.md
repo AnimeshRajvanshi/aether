@@ -78,6 +78,65 @@ because Fly's edge terminates TLS, no `Server:` banner.
 - **OGIM**: CC BY 4.0 — the served attribution artifacts embed the OGIM DOI in-band.
 - **NASA EMIT / MODIS, USGS Landsat**: open data; cited in the references panel per event.
 
-## Stage C runbook
+## Stage C runbook (the deploy choreography — exact [Human] vs [You] steps)
 
-Appended at Stage C (exact [Human] vs [You] steps; no secret value ever transits the repo or chat).
+**Rules:** every secret value is entered by the human directly into the platform (dashboard or
+their own authenticated CLI); none transits the repo or the chat. The agent PAUSES at each
+[Human] step. Config that is not secret (origins, app name, region) lives in committed files
+(`fly.toml`, this doc).
+
+**DNS facts** (reviewer-verified via direct NS/A/CNAME lookups, 2026-06-12): `arkaneworks.co` is
+on Namecheap default nameservers (`dns1`/`dns2.registrar-servers.com`); apex = GitHub Pages A
+records (185.199.108–111.153); `www` = CNAME `animeshrajvanshi.github.io`;
+`aether.arkaneworks.co` is currently **NXDOMAIN (free)**. Existing apex/`www` records are not
+touched by anything below.
+
+### Order of operations
+
+1. **[Human] Push + CI green.** `git push` main (publishes Sprint 10 Stages A+B). Confirm the
+   Actions run at the head SHA is green — nothing deploys from a SHA that CI has not verified.
+2. **[Human] Fly account.** Sign up at fly.io, add the credit card (required for all orgs).
+   Install flyctl locally if absent (`brew install flyctl`), then authenticate your own terminal:
+   `fly auth login` (browser flow; the resulting token lives in `~/.fly/config.yml`, never in the
+   repo or the chat).
+3. **[Human] Create the Fly app.** `fly apps create aether-api-arkaneworks` (names are global; if
+   taken, pick another and say so — `fly.toml` and `NEXT_PUBLIC_API_BASE` get updated to match).
+4. **[You] Deploy the API.** From the repo root, on the pushed SHA:
+   `fly deploy --remote-only --build-arg GIT_SHA=$(git rev-parse HEAD)`
+   (remote builder; the local Docker daemon is not required). Then verify:
+   `/api/version` on `https://<app>.fly.dev` returns exactly that SHA; run the live guards
+   (`AETHER_LIVE_BASE_URL=https://<app>.fly.dev AETHER_LIVE_EXPECT_SHA=<sha> uv run pytest
+   apps/api/tests/test_container_live.py`); record first-request latency (always-on — this is the
+   honest "cold start" number for the report).
+5. **[Human] Vercel account + Git import.** Sign up with the GitHub account that owns
+   `AnimeshRajvanshi/aether` (Hobby; personal private repos are supported). Add New Project →
+   import the repo → **Root Directory = `apps/web`**, Framework = Next.js → BEFORE deploying, add
+   the Production env var `NEXT_PUBLIC_API_BASE = https://<app>.fly.dev` → Deploy.
+6. **[Human] Add the domain in Vercel.** Project → Settings → Domains → add
+   `aether.arkaneworks.co`. **Note the exact CNAME target the dialog shows** — that dashboard
+   value is authoritative (do not assume `cname.vercel-dns.com`).
+7. **[Human] Namecheap CNAME.** Namecheap → Domain List → `arkaneworks.co` → Advanced DNS → Add
+   New Record → **CNAME**, Host `aether`, Value = the exact target from step 6. Leave apex/`www`
+   untouched.
+8. **[You] Hosted verification.** Wait out DNS propagation; verify `https://aether.arkaneworks.co`
+   loads over the custom domain, the footer BUILD chip equals the deployed SHA, all three events
+   open with caveats intact (hosted shot list), CORS holds (the API refuses foreign origins —
+   including, by design, the default `*.vercel.app` domain, which is intentionally NOT in
+   `AETHER_ALLOWED_ORIGINS`; the canonical origin is the custom domain). Record observed
+   first-paint and API first-request times. STOP for the Stage C gate.
+9. **[Human] CI deploy token (for Stage D).** `fly tokens create deploy -x 999999h` in the app
+   directory; copy the full output (including the leading `FlyV1 `); GitHub repo → Settings →
+   Secrets and variables → Actions → New repository secret `FLY_API_TOKEN`. The value goes
+   directly from your terminal to GitHub — never through the repo or the chat.
+
+`api.aether.arkaneworks.co` (optional, per the Gate A amendment) is deferred unless requested at
+the Stage C gate, and only after a LIVE check of Fly's current custom-domain certificate pricing —
+never asserted from memory.
+
+### Pre-deploy invariant (Stage B gate addition)
+
+Before any deploy, the **image-inventory guard** must be green on the image being shipped:
+`uv run python tools/verify_image_inventory.py <image>` — every file under `/app/data` committed
+at the baked SHA (positive subset check; `.dockerignore` is belt, this is suspenders). For
+`--remote-only` deploys the same invariant is enforced by deploying only from a clean, pushed
+checkout (CI-verified SHA) — and the guard runs against a locally built twin of the same SHA.

@@ -78,3 +78,9 @@ A public URL serving the full globe → event → inspector experience for all t
 ## Build order
 
 Stage A probe → STOP. Stage B hardening → STOP. Stage C deploy (human-in-the-loop) → STOP. Stage D verifier + CI → STOP, sprint close.
+
+## Gate A amendment (2026-06-12, recorded at the Stage A gate)
+
+**Hosts decided:** web = Vercel Hobby (native Git integration); API = Fly.io container, always-on (`auto_stop_machines = "off"`), ~$2/mo accepted. Render eliminated (60 s free-tier wake; Starter dominated by Fly). ESRI keyless endpoint retained ("Powered by Esri" + Vantor-era credit line = Stage B compliance item); Cesium ion NOT provisioned (no secret, no ion-logo ToS obligation; in-code fallback retained). ERA5 CC-BY attribution = Stage B UI/docs item. F1 split evaluated suite-green or abandoned; F2 event_id whitelist guard-tested; F4/F5 env-schema fixes; F7 docs endpoints ON (reason in docs/deployment.md); F8 repo private this sprint.
+
+**Custom domain is now IN scope.** The web app deploys to **https://aether.arkaneworks.co** (CNAME at the human's registrar → Vercel; [Human] Stage C step; registrar identity TBD). Path-based hosting under `arkaneworks.co/aether` is explicitly REJECTED (proxy fragility; Next.js basePath/Cesium asset-path ripple; coupling to the portfolio site). The API remains at its fly.dev hostname; `api.aether.arkaneworks.co` is an optional Stage C add pending a LIVE check of Fly certificate pricing — do not assert it from memory. Production CORS origin and `NEXT_PUBLIC_API_BASE` in the Stage B env schema reflect these hostnames. `docs/deployment.md` must record: Vercel Hobby is non-commercial; any future commercial turn of Aether requires a plan upgrade.

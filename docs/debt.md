@@ -49,3 +49,12 @@ CI enforces `ruff check .` == 0 from Sprint 8 onward, which retires the
   enforces ruff 0 + full pytest (deselection asserted visible) + guard-suite
   listing + web typecheck/build on every push/PR to main. (Green-on-a-real-push
   confirmation happens at the human `git push`, per the standing rule.)
+- **C3 value line leaks the raw criterion string (Sprint 9 Stage D review,
+  cosmetic)**: the per-quantity tier table's C3 `value_display` renders
+  `area_frac >= 0.05 (IMD-style qualifying cells)` — the code-shaped phrasing
+  from `air_lane.json` — while C3's `criterion_dataset` line uses the humanized
+  form ("area ≥5% of bbox land, IMD-style cells (≥40 °C & ≥+4.5 K)"). Unify on
+  the humanized phrasing wherever the criterion renders (loaders should
+  humanize at the source so artifact strings stay verbatim in artifacts but
+  display-shaped in display fields). Cosmetic only — the values are correct
+  and criterion+dataset attachment is guard-enforced.

@@ -327,8 +327,9 @@ def build_factor_hypothesis_set(event_id: str, diag: dict[str, Any]) -> FactorHy
             value=round(ridge_pct, 3),
             weight=0.6,
             rationale=(
-                f"window-mean regional z500 ({z['window_mean_2022_m']} m, anomaly "
-                f"+{z['anomaly_m']} m) ranks at the {ridge_pct:.0%} percentile of the "
+                f"window-mean regional z500 ({z['window_mean_2022_corrected_m']} m "
+                f"corrected, anomaly +{z['anomaly_m']} m) ranks at the "
+                f"{ridge_pct:.0%} percentile of the "
                 f"{diag['clim_years'][0]}-{diag['clim_years'][1]} same-window means"
             ),
         ),
@@ -351,7 +352,8 @@ def build_factor_hypothesis_set(event_id: str, diag: dict[str, Any]) -> FactorHy
         role=FactorRole.WARMING_CONTRIBUTOR,
         claim=(
             f"A persistent mid-tropospheric ridge sat over the region: window-mean "
-            f"regional 500 hPa height {z['window_mean_2022_m']} m vs climatology "
+            f"regional 500 hPa height {z['window_mean_2022_corrected_m']} m "
+            f"(cross-store-corrected from {z['window_mean_2022_m']} m) vs climatology "
             f"{z['clim_window_mean_m']} m (+{z['anomaly_m']} m, "
             f"{ridge_pct:.0%} percentile of 30 same-window years; "
             f"{z['days_above_pooled_p90']}/{z['n_window_days']} days above the pooled "
@@ -476,6 +478,21 @@ def build_factor_hypothesis_set(event_id: str, diag: dict[str, Any]) -> FactorHy
             f"diagnostic: March 2022 regional soil moisture was near climatology "
             f"(dryness rank {ant_dry:.0%})."
         )
+    # Falsification must target the COMMITTED position (the branch taken), not
+    # the rejected prior (Stage C gate ruling 2).
+    if ant_dry >= 0.65:
+        f2_falsification = (
+            "Independent soil-moisture observations (in-situ networks, satellite "
+            "retrievals) showing normal-or-wetter antecedent soils over the region "
+            "would overturn the preconditioning claim."
+        )
+    else:
+        f2_falsification = (
+            "Independent soil-moisture observations (in-situ networks, satellite "
+            "retrievals) showing anomalously DRY antecedent soils over the region "
+            "would overturn this against-prior finding (and would support the "
+            "preconditioning narrative this diagnostic does not)."
+        )
     f2 = FactorHypothesis(
         id="F2",
         rank=1,
@@ -542,11 +559,7 @@ def build_factor_hypothesis_set(event_id: str, diag: dict[str, Any]) -> FactorHy
             "No in-situ or independent satellite soil-moisture diagnostic was computed "
             "in this stage (SMAP/ASCAT are out of the locked source list).",
         ],
-        falsification=(
-            "Independent soil-moisture observations (in-situ networks, satellite "
-            "retrievals) showing normal antecedent moisture over the region would "
-            "falsify the preconditioning claim."
-        ),
+        falsification=f2_falsification,
         generation_method="aether_causal.heat_factors v1 (deterministic templating)",
     )
 
@@ -583,15 +596,28 @@ def build_factor_hypothesis_set(event_id: str, diag: dict[str, Any]) -> FactorHy
         if anom_ratio < 0.5
         else "anomalously strong/shifted flow relative to climatology"
     )
+    if anom_ratio < 0.5:
+        f3_falsification = (
+            "Back-trajectory analysis (e.g., HYSPLIT on reanalysis winds) "
+            "demonstrating anomalously strong or persistent transport from the arid "
+            "sector relative to climatology would overturn the "
+            "no-anomalous-advection finding."
+        )
+    else:
+        f3_falsification = (
+            "Back-trajectory analysis showing air-mass origins outside the arid "
+            "sector for most window days would overturn the anomalous-advection "
+            "claim."
+        )
     f3 = FactorHypothesis(
         id="F3",
         rank=1,
         factor_name="Low-level advection from the arid continental sector",
         role=FactorRole.WARMING_CONTRIBUTOR,
         claim=(
-            f"Window-mean near-surface flow was FROM {from_dir:.0f} deg at "
+            f"Window-mean near-surface flow was FROM {from_dir:.1f} deg at "
             f"{winds['window_mean_speed_ms']} m/s, vs climatology FROM "
-            f"{winds['clim_from_direction_deg']:.0f} deg — anomaly vector magnitude "
+            f"{winds['clim_from_direction_deg']:.1f} deg — anomaly vector magnitude "
             f"{winds['anomaly_magnitude_ms']} m/s: {f3_reading}. The "
             f"{'arid-sector' if in_dry_sector else 'non-arid-sector'} direction is "
             "the climatological norm here and is reported as state, not as event "
@@ -625,8 +651,8 @@ def build_factor_hypothesis_set(event_id: str, diag: dict[str, Any]) -> FactorHy
             EvidenceItem(
                 kind="reanalysis_diagnostic",
                 statement=(
-                    f"Mean flow from {from_dir:.0f} deg vs climatological "
-                    f"{winds['clim_from_direction_deg']:.0f} deg."
+                    f"Mean flow from {from_dir:.1f} deg vs climatological "
+                    f"{winds['clim_from_direction_deg']:.1f} deg."
                 ),
                 source=src("winds"),
             )
@@ -643,11 +669,7 @@ def build_factor_hypothesis_set(event_id: str, diag: dict[str, Any]) -> FactorHy
             "No air-mass trajectory analysis was computed — sector membership is a "
             "coarse proxy.",
         ],
-        falsification=(
-            "Back-trajectory analysis (e.g., HYSPLIT on reanalysis winds) showing "
-            "air-mass origins outside the arid sector for most window days would "
-            "falsify the advective contribution."
-        ),
+        falsification=f3_falsification,
         generation_method="aether_causal.heat_factors v1 (deterministic templating)",
     )
 
@@ -677,6 +699,17 @@ def build_factor_hypothesis_set(event_id: str, diag: dict[str, Any]) -> FactorHy
             "Neither a dry-heat mitigation nor a humid-heat amplification of "
             "experienced severity is indicated by this diagnostic — the framing "
             "factor is NOT active for this event at the sampled hour."
+        )
+    if dry_pct >= 0.8 or dry_pct <= 0.2:
+        f4_falsification = (
+            "Station humidity observations (dewpoint/wet-bulb) contradicting the "
+            "anomalous-humidity diagnostic would overturn the framing claim."
+        )
+    else:
+        f4_falsification = (
+            "Station humidity observations (dewpoint/wet-bulb) showing an "
+            "anomalously dry or anomalously humid airmass during the window would "
+            "overturn the not-active finding."
         )
     f4_components = [
         ScoreComponent(
@@ -735,10 +768,7 @@ def build_factor_hypothesis_set(event_id: str, diag: dict[str, Any]) -> FactorHy
             "Dryness interacts with the soil-moisture factor (same land-atmosphere "
             "coupling); it is not independent evidence.",
         ],
-        falsification=(
-            "Station dewpoint/wet-bulb observations contradicting the dry-airmass "
-            "anomaly would falsify the framing."
-        ),
+        falsification=f4_falsification,
         generation_method="aether_causal.heat_factors v1 (deterministic templating)",
     )
 
@@ -828,10 +858,12 @@ def build_factor_hypothesis_set(event_id: str, diag: dict[str, Any]) -> FactorHy
             "One city (Delhi) is not the whole event region.",
         ],
         falsification=(
-            "A nighttime LST analysis (MOD11A1 LST_Night) or an intra-urban "
-            "air-temperature comparison showing a positive urban signal during the "
-            "window would establish the unassessed roles this factor explicitly "
-            "leaves open."
+            "The committed daytime-surface finding would be OVERTURNED by an "
+            "independent LST analysis of the same window (different masks, sensors, "
+            "or QC) showing a positive daytime urban-rural delta. Separately, the "
+            "UNASSESSED nighttime/air-temperature roles would be ESTABLISHED (not "
+            "overturned) by a nighttime LST analysis (MOD11A1 LST_Night) or an "
+            "intra-urban air-temperature comparison showing a positive urban signal."
         ),
         generation_method="aether_causal.heat_factors v1 (deterministic templating)",
     )

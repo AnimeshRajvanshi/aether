@@ -22,7 +22,7 @@
       "rank": 1,
       "factor_name": "Persistent synoptic ridge / anticyclonic mid-troposphere",
       "role": "warming_contributor",
-      "claim": "A persistent mid-tropospheric ridge sat over the region: window-mean regional 500 hPa height 5871.4 m vs climatology 5814.2 m (+61.6 m, 100% percentile of 30 same-window years; 10/10 days above the pooled p90). Anticyclonic subsidence and clear skies under such ridges are an established heatwave driver; the diagnostic establishes presence and rarity, not a quantified temperature contribution.",
+      "claim": "A persistent mid-tropospheric ridge sat over the region: window-mean regional 500 hPa height 5875.8 m (cross-store-corrected from 5871.4 m) vs climatology 5814.2 m (+61.6 m, 100% percentile of 30 same-window years; 10/10 days above the pooled p90). Anticyclonic subsidence and clear skies under such ridges are an established heatwave driver; the diagnostic establishes presence and rarity, not a quantified temperature contribution.",
       "confidence_tier": "moderate",
       "confidence_rationale": "Heuristic score 1.00 (band above ceiling, CAPPED to moderate) — the ridge is present, rare, and persistent by diagnostic, but diagnostics cannot separate its contribution from the co-varying land-surface state (see headline).",
       "score": 1.0,
@@ -31,7 +31,7 @@
           "name": "ridge_anomaly_percentile",
           "value": 1.0,
           "weight": 0.6,
-          "rationale": "window-mean regional z500 (5871.4 m, anomaly +61.6 m) ranks at the 100% percentile of the 1991-2020 same-window means",
+          "rationale": "window-mean regional z500 (5875.8 m corrected, anomaly +61.6 m) ranks at the 100% percentile of the 1991-2020 same-window means",
           "contribution": 0.6
         },
         {
@@ -177,7 +177,7 @@
         "Soil dryness is partly CAUSED by the same circulation pattern (rainfall deficit under persistent ridging) — circularity with F1 is intrinsic and is why the engine does not claim discrimination.",
         "No in-situ or independent satellite soil-moisture diagnostic was computed in this stage (SMAP/ASCAT are out of the locked source list)."
       ],
-      "falsification": "Independent soil-moisture observations (in-situ networks, satellite retrievals) showing normal antecedent moisture over the region would falsify the preconditioning claim.",
+      "falsification": "Independent soil-moisture observations (in-situ networks, satellite retrievals) showing anomalously DRY antecedent soils over the region would overturn this against-prior finding (and would support the preconditioning narrative this diagnostic does not).",
       "generation_method": "aether_causal.heat_factors v1 (deterministic templating)"
     },
     {
@@ -185,7 +185,7 @@
       "rank": 3,
       "factor_name": "Low-level advection from the arid continental sector",
       "role": "warming_contributor",
-      "claim": "Window-mean near-surface flow was FROM 266 deg at 1.41 m/s, vs climatology FROM 268 deg — anomaly vector magnitude 0.39 m/s: essentially climatological flow — no anomalous advective contribution is indicated. The arid-sector direction is the climatological norm here and is reported as state, not as event evidence (no trajectory analysis in scope).",
+      "claim": "Window-mean near-surface flow was FROM 265.6 deg at 1.41 m/s, vs climatology FROM 267.5 deg — anomaly vector magnitude 0.39 m/s: essentially climatological flow — no anomalous advective contribution is indicated. The arid-sector direction is the climatological norm here and is reported as state, not as event evidence (no trajectory analysis in scope).",
       "confidence_tier": "low",
       "confidence_rationale": "Heuristic score 0.28 — a bulk vector diagnostic only; back-trajectories were not computed.",
       "score": 0.277,
@@ -227,7 +227,7 @@
       "evidence": [
         {
           "kind": "reanalysis_diagnostic",
-          "statement": "Mean flow from 266 deg vs climatological 268 deg.",
+          "statement": "Mean flow from 265.6 deg vs climatological 267.5 deg.",
           "source": {
             "dataset": "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
             "locator": "attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#winds",
@@ -245,7 +245,7 @@
         "10 m winds under a ridge are weak; advection may be secondary to subsidence + local heating.",
         "No air-mass trajectory analysis was computed — sector membership is a coarse proxy."
       ],
-      "falsification": "Back-trajectory analysis (e.g., HYSPLIT on reanalysis winds) showing air-mass origins outside the arid sector for most window days would falsify the advective contribution.",
+      "falsification": "Back-trajectory analysis (e.g., HYSPLIT on reanalysis winds) demonstrating anomalously strong or persistent transport from the arid sector relative to climatology would overturn the no-anomalous-advection finding.",
       "generation_method": "aether_causal.heat_factors v1 (deterministic templating)"
     },
     {
@@ -299,7 +299,7 @@
       "counter_considerations": [
         "Dryness interacts with the soil-moisture factor (same land-atmosphere coupling); it is not independent evidence."
       ],
-      "falsification": "Station dewpoint/wet-bulb observations contradicting the dry-airmass anomaly would falsify the framing.",
+      "falsification": "Station humidity observations (dewpoint/wet-bulb) showing an anomalously dry or anomalously humid airmass during the window would overturn the not-active finding.",
       "generation_method": "aether_causal.heat_factors v1 (deterministic templating)"
     },
     {
@@ -355,7 +355,7 @@
         "Urban heat islands are classically strongest at NIGHT and in 2 m air — neither was observed in this stack; absence of a daytime surface signal does not refute a nighttime/air urban contribution.",
         "One city (Delhi) is not the whole event region."
       ],
-      "falsification": "A nighttime LST analysis (MOD11A1 LST_Night) or an intra-urban air-temperature comparison showing a positive urban signal during the window would establish the unassessed roles this factor explicitly leaves open.",
+      "falsification": "The committed daytime-surface finding would be OVERTURNED by an independent LST analysis of the same window (different masks, sensors, or QC) showing a positive daytime urban-rural delta. Separately, the UNASSESSED nighttime/air-temperature roles would be ESTABLISHED (not overturned) by a nighttime LST analysis (MOD11A1 LST_Night) or an intra-urban air-temperature comparison showing a positive urban signal.",
       "generation_method": "aether_causal.heat_factors v1 (deterministic templating)"
     }
   ],

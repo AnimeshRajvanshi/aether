@@ -72,7 +72,7 @@ support). The computed diagnostics then CONTRADICTED three of them:
 |---|---|---|
 | pre-dried soil preconditioning | antecedent March swvl1 at the 43rd percentile (near median); only in-window moisture is low (87th dryness), concurrent with the heat | "the pre-dried-soil narrative is NOT supported"; in-window drying cannot establish preconditioning; score from rarity-above-median ⇒ 0.31, LOW |
 | dry heat (humidity framing) | window dewpoint anomaly +0.13 K, 53rd percentile | framing factor "NOT active for this event at the sampled hour"; INSUFFICIENT |
-| anomalous arid-sector advection | flow FROM 266° vs climatological 267°, anomaly 0.39 m/s | "essentially climatological flow — no anomalous advective contribution"; direction is state, not event evidence; scored on the anomaly only ⇒ 0.28 |
+| anomalous arid-sector advection | flow FROM 265.6° vs climatological 267.5°, anomaly 0.39 m/s | "essentially climatological flow — no anomalous advective contribution"; direction is state, not event evidence; scored on the anomaly only ⇒ 0.28 |
 
 The engine was rewritten so templates and scores follow the diagnostics
 (rarity-above-median scoring: a 57th-percentile state earns ~0.14, not 0.57),
@@ -150,3 +150,38 @@ The factor hypotheses (`factor_hypotheses.md`) are written for your read, like
 the Sprint 4/7C gates. Next (gated on your review): Stage D — heat in the UI
 (area rendering, factor hypotheses with all honesty elements, per-quantity
 tier badges, LST-vs-air as a first-class block), methane pixel-identical.
+
+---
+
+## Addendum — Stage C review corrections (applied before Stage D)
+
+The artifact read passed with two required fixes, both found by reconciling
+claims against `diagnostics.json`, both regenerated into the committed
+artifacts and both now guarded:
+
+1. **F1 arithmetic closure.** The claim had quoted the UNCORRECTED window mean
+   (5871.4 m) beside the corrected anomaly (+61.6 m) — a reader's subtraction
+   gave 57.2. The claim now quotes **5875.8 m (cross-store-corrected from
+   5871.4 m) vs 5814.2 m → +61.6 m**. New guard
+   (`TestNumericReconciliation`): every level/baseline/anomaly triple rendered
+   in a factor claim must reconcile arithmetically within 0.15 m rounding
+   tolerance, non-vacuously (≥1 triple asserted), on both built and COMMITTED
+   claims — negative-tested with a deliberately mismatched triple.
+2. **Falsification direction.** F2's falsification targeted the rejected prior
+   ("normal moisture would falsify preconditioning") instead of the committed
+   against-prior position. All five factors audited; falsifications are now
+   **generated from the taken position branch**: F2 (unsupported branch →
+   anomalously-DRY observations would overturn), F3 (climatological-flow
+   branch → anomalously strong arid-sector transport would overturn), F4
+   (not-active branch → any anomalous humidity would overturn), F5 (the
+   committed daytime finding's OVERTURN condition stated separately from the
+   ESTABLISH condition for the explicitly-open nighttime/air roles). F1 was
+   already directionally correct. New guard (`TestFalsificationDirection`):
+   both branches of F2/F3/F4 are built from fixture variants and the
+   falsification text is asserted to match the branch — the cheap structural
+   form of the ruling.
+3. Rounding nit: the climatological FROM-direction renders at one decimal
+   (267.5°) everywhere.
+
+Regenerated artifacts are committed; the byte-identity regen guards now hold
+against the corrected outputs; suite green.

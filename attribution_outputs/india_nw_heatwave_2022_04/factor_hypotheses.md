@@ -12,7 +12,7 @@
 
 *Role:* warming_contributor · *Tier:* **moderate** · *Score:* 1.00 (heuristic)
 
-A persistent mid-tropospheric ridge sat over the region: window-mean regional 500 hPa height 5871.4 m vs climatology 5814.2 m (+61.6 m, 100% percentile of 30 same-window years; 10/10 days above the pooled p90). Anticyclonic subsidence and clear skies under such ridges are an established heatwave driver; the diagnostic establishes presence and rarity, not a quantified temperature contribution.
+A persistent mid-tropospheric ridge sat over the region: window-mean regional 500 hPa height 5875.8 m (cross-store-corrected from 5871.4 m) vs climatology 5814.2 m (+61.6 m, 100% percentile of 30 same-window years; 10/10 days above the pooled p90). Anticyclonic subsidence and clear skies under such ridges are an established heatwave driver; the diagnostic establishes presence and rarity, not a quantified temperature contribution.
 
 **Diagnostics (every claim binds to these):**
 - `z500_window_mean_anomaly` = 61.6 m — 2022 window-mean regional z500 minus 1991-2020 same-window mean (source: attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#z500)
@@ -48,13 +48,13 @@ The popular pre-dried-soil narrative is NOT supported by this diagnostic: March 
 - Soil dryness is partly CAUSED by the same circulation pattern (rainfall deficit under persistent ridging) — circularity with F1 is intrinsic and is why the engine does not claim discrimination.
 - No in-situ or independent satellite soil-moisture diagnostic was computed in this stage (SMAP/ASCAT are out of the locked source list).
 
-**Falsification:** Independent soil-moisture observations (in-situ networks, satellite retrievals) showing normal antecedent moisture over the region would falsify the preconditioning claim.
+**Falsification:** Independent soil-moisture observations (in-situ networks, satellite retrievals) showing anomalously DRY antecedent soils over the region would overturn this against-prior finding (and would support the preconditioning narrative this diagnostic does not).
 
 ## F3 (rank 3) — Low-level advection from the arid continental sector
 
 *Role:* warming_contributor · *Tier:* **low** · *Score:* 0.28 (heuristic)
 
-Window-mean near-surface flow was FROM 266 deg at 1.41 m/s, vs climatology FROM 268 deg — anomaly vector magnitude 0.39 m/s: essentially climatological flow — no anomalous advective contribution is indicated. The arid-sector direction is the climatological norm here and is reported as state, not as event evidence (no trajectory analysis in scope).
+Window-mean near-surface flow was FROM 265.6 deg at 1.41 m/s, vs climatology FROM 267.5 deg — anomaly vector magnitude 0.39 m/s: essentially climatological flow — no anomalous advective contribution is indicated. The arid-sector direction is the climatological norm here and is reported as state, not as event evidence (no trajectory analysis in scope).
 
 **Diagnostics (every claim binds to these):**
 - `window_from_direction` = 265.6 deg — meteorological FROM-direction of the window-mean 10 m wind (source: attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#winds)
@@ -68,7 +68,7 @@ Window-mean near-surface flow was FROM 266 deg at 1.41 m/s, vs climatology FROM 
 - 10 m winds under a ridge are weak; advection may be secondary to subsidence + local heating.
 - No air-mass trajectory analysis was computed — sector membership is a coarse proxy.
 
-**Falsification:** Back-trajectory analysis (e.g., HYSPLIT on reanalysis winds) showing air-mass origins outside the arid sector for most window days would falsify the advective contribution.
+**Falsification:** Back-trajectory analysis (e.g., HYSPLIT on reanalysis winds) demonstrating anomalously strong or persistent transport from the arid sector relative to climatology would overturn the no-anomalous-advection finding.
 
 ## F4 (rank 4) — Airmass humidity (severity framing, not a warming driver)
 
@@ -85,7 +85,7 @@ Airmass humidity was near climatology (dewpoint anomaly +0.13 K, dryness rank 47
 **Counter-considerations:**
 - Dryness interacts with the soil-moisture factor (same land-atmosphere coupling); it is not independent evidence.
 
-**Falsification:** Station dewpoint/wet-bulb observations contradicting the dry-airmass anomaly would falsify the framing.
+**Falsification:** Station humidity observations (dewpoint/wet-bulb) showing an anomalously dry or anomalously humid airmass during the window would overturn the not-active finding.
 
 ## F5 (rank 5) — Urban fabric (daytime surface signal NEGATIVE at the observed time)
 
@@ -104,7 +104,7 @@ The measured Delhi daytime SURFACE urban-rural delta during the window is NEGATI
 - Urban heat islands are classically strongest at NIGHT and in 2 m air — neither was observed in this stack; absence of a daytime surface signal does not refute a nighttime/air urban contribution.
 - One city (Delhi) is not the whole event region.
 
-**Falsification:** A nighttime LST analysis (MOD11A1 LST_Night) or an intra-urban air-temperature comparison showing a positive urban signal during the window would establish the unassessed roles this factor explicitly leaves open.
+**Falsification:** The committed daytime-surface finding would be OVERTURNED by an independent LST analysis of the same window (different masks, sensors, or QC) showing a positive daytime urban-rural delta. Separately, the UNASSESSED nighttime/air-temperature roles would be ESTABLISHED (not overturned) by a nighttime LST analysis (MOD11A1 LST_Night) or an intra-urban air-temperature comparison showing a positive urban signal.
 
 ## External published attribution (cited, never scored)
 

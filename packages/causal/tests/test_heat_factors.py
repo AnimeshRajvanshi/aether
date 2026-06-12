@@ -41,9 +41,13 @@ def synthetic_diagnostics() -> dict[str, Any]:
         "clim_years": [1991, 2020],
         "z500": {
             "window_mean_2022_m": 5870.0,
+            "cross_store_offset_m": -2.0,
+            "cross_store_offset_per_year_m": [-1.5, -2.5],
+            "window_mean_2022_corrected_m": 5872.0,
+            "anomaly_uncorrected_m": 60.0,
             "clim_window_mean_m": 5810.0,
             "clim_window_std_m": 20.0,
-            "anomaly_m": 60.0,
+            "anomaly_m": 62.0,
             "percentile_vs_30_window_means": 1.0,
             "days_above_pooled_p90": 9,
             "n_window_days": 10,
@@ -252,3 +256,116 @@ class TestCommittedArtifactsRegen:
         urban = [f for f in committed["factors"] if "rban" in f["factor_name"]]
         assert urban and urban[0]["role"] == "counter_evidence"
         assert all(len(f["diagnostics"]) >= 1 for f in committed["factors"])
+
+
+# Reconciles every level/baseline/anomaly triple rendered in a factor claim
+# against simple arithmetic (Stage C review ruling 1). Tolerance covers the
+# independent rounding of the three numbers.
+TRIPLE_RE = (
+    r"([\d.]+) m \(cross-store-corrected from [\d.]+ m\) "
+    r"vs climatology ([\d.]+) m \(\+([\d.]+) m"
+)
+TRIPLE_TOL_M = 0.15
+
+
+def reconcile_claim_triples(claim: str) -> list[tuple[float, float, float]]:
+    """All (level, baseline, anomaly) triples in a claim that fail arithmetic."""
+    import re
+
+    bad = []
+    for m in re.finditer(TRIPLE_RE, claim):
+        level, baseline, anomaly = (float(g) for g in m.groups())
+        if abs((level - baseline) - anomaly) > TRIPLE_TOL_M:
+            bad.append((level, baseline, anomaly))
+    return bad
+
+
+class TestNumericReconciliation:
+    """Stage C review ruling 1: rendered triples must close arithmetically."""
+
+    def test_built_claims_reconcile(self) -> None:
+        hs = build_factor_hypothesis_set(EVENT, synthetic_diagnostics())
+        import re
+
+        n_triples = 0
+        for f in hs.factors:
+            assert reconcile_claim_triples(f.claim) == [], f"{f.id} triple mismatch"
+            n_triples += len(re.findall(TRIPLE_RE, f.claim))
+        assert n_triples >= 1  # the guard must not pass vacuously (F1 has one)
+
+    def test_committed_claims_reconcile(self) -> None:
+        path = REPO_ROOT / "attribution_outputs" / EVENT / "factor_hypotheses.json"
+        if not path.exists():
+            pytest.skip("Stage C artifacts not yet committed")
+        committed = json.loads(path.read_text())
+        for f in committed["factors"]:
+            assert reconcile_claim_triples(f["claim"]) == [], f"{f['id']} triple mismatch"
+
+    def test_negative_mismatched_triple_caught(self) -> None:
+        doctored = (
+            "height 5871.4 m (cross-store-corrected from 5871.4 m) vs climatology "
+            "5814.2 m (+61.6 m, ...)"  # 5871.4-5814.2 = 57.2 != 61.6
+        )
+        assert reconcile_claim_triples(doctored) == [(5871.4, 5814.2, 61.6)]
+
+    def test_diagnostics_level_arithmetic_closes(self) -> None:
+        path = REPO_ROOT / "attribution_outputs" / EVENT / "diagnostics.json"
+        if not path.exists():
+            pytest.skip("Stage C artifacts not yet committed")
+        z = json.loads(path.read_text())["z500"]
+        assert abs(
+            (z["window_mean_2022_corrected_m"] - z["clim_window_mean_m"]) - z["anomaly_m"]
+        ) <= TRIPLE_TOL_M
+
+
+class TestFalsificationDirection:
+    """Stage C review ruling 2: falsification targets the COMMITTED position
+    (branch-generated), never the rejected prior."""
+
+    def test_unsupported_precondition_branch(self) -> None:
+        # synthetic fixture variant: NEAR-NORMAL antecedent (the committed event case)
+        diag = synthetic_diagnostics()
+        diag["soil_moisture"]["antecedent_percentile"] = 0.433  # dryness rank 57%
+        hs = build_factor_hypothesis_set(EVENT, diag)
+        f2 = next(f for f in hs.factors if f.id == "F2")
+        assert "NOT supported" in f2.claim
+        assert "anomalously DRY" in f2.falsification  # dry obs would OVERTURN
+        assert "normal antecedent" not in f2.falsification
+
+    def test_supported_precondition_branch(self) -> None:
+        diag = synthetic_diagnostics()  # antecedent_percentile 0.03 -> dryness 97%
+        hs = build_factor_hypothesis_set(EVENT, diag)
+        f2 = next(f for f in hs.factors if f.id == "F2")
+        assert "anomalously pre-dried" in f2.claim
+        assert "normal-or-wetter" in f2.falsification  # wet obs would overturn
+
+    def test_advection_branches(self) -> None:
+        # climatological-flow branch (the committed event case)
+        diag = synthetic_diagnostics()
+        diag["winds"]["anomaly_magnitude_ms"] = 0.39
+        diag["winds"]["window_mean_speed_ms"] = 1.41
+        hs = build_factor_hypothesis_set(EVENT, diag)
+        f3 = next(f for f in hs.factors if f.id == "F3")
+        assert "no-anomalous-advection" in f3.falsification
+        # anomalous-flow branch
+        diag["winds"]["anomaly_magnitude_ms"] = 1.2
+        hs2 = build_factor_hypothesis_set(EVENT, diag)
+        f3b = next(f for f in hs2.factors if f.id == "F3")
+        assert "outside the arid sector" in f3b.falsification
+
+    def test_humidity_branches(self) -> None:
+        diag = synthetic_diagnostics()
+        diag["dewpoint"]["percentile"] = 0.533  # neutral (committed event case)
+        hs = build_factor_hypothesis_set(EVENT, diag)
+        f4 = next(f for f in hs.factors if f.id == "F4")
+        assert "not-active finding" in f4.falsification
+        diag["dewpoint"]["percentile"] = 0.05  # anomalously dry
+        hs2 = build_factor_hypothesis_set(EVENT, diag)
+        f4b = next(f for f in hs2.factors if f.id == "F4")
+        assert "contradicting the" in f4b.falsification
+
+    def test_urban_overturn_vs_establish_distinct(self) -> None:
+        hs = build_factor_hypothesis_set(EVENT, synthetic_diagnostics())
+        f5 = next(f for f in hs.factors if f.id == "F5")
+        assert "OVERTURNED" in f5.falsification  # the committed daytime finding
+        assert "ESTABLISHED" in f5.falsification  # the explicitly-open roles

@@ -1502,25 +1502,175 @@ button {
 .lst-caveat { border-left: 3px solid #ffb347; margin: 8px 0; }
 .episode-criterion { color: #ffb347; }
 
-/* factor attribution */
-.role-chip { font-size: 9.5px; padding: 1px 6px; border-radius: 3px; letter-spacing: 0.06em; }
+/* ===== FACTOR ATTRIBUTION (heat, Stage C visual-fidelity fix) =====
+   The Sprint 9 pass styled only the accent bits (role chips, boundary,
+   diagnostics, cited-external) and left the card container, header button,
+   factor name, claim/rationale, expanded body, sub-headings and score
+   components UNstyled — so the header fell back to a native <button>
+   (light-grey chrome, black text) and the prose lost its face/size. These
+   rules mirror the methane .attr-card* family EXACTLY (same tokens), so the
+   factor cards read identically to Source Attribution. No text changes — the
+   F1 CAPPED rationale, F5 counter-evidence, diagnostics and falsification stay
+   fully rendered (no clamp/ellipsis). */
+.hypo {
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  margin-bottom: 9px;
+  overflow: hidden;
+}
+.hypo.counter-evidence {
+  border-left: 3px solid #8fd2ff;
+  background: rgba(120, 200, 255, 0.04);
+}
+.hypo-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 11px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--t-fast);
+}
+.hypo-head:hover {
+  background: var(--bg-raised);
+}
+.hypo-rank {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--amber);
+  flex-shrink: 0;
+}
+.hypo-name {
+  flex: 1;
+  font-family: var(--font-label), sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.3;
+}
+.hypo-score {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.hypo-caret {
+  color: var(--text-3);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.hypo-claim {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-2);
+  padding: 0 11px 4px;
+}
+.hypo-rationale {
+  font-family: var(--font-mono), monospace;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--text-2);
+  padding: 0 11px 10px;
+}
+.hypo-body {
+  padding: 4px 11px 12px;
+  border-top: 1px solid var(--grid);
+}
+.hypo-sub {
+  font-family: var(--font-label), sans-serif;
+  font-size: 9px;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin: 13px 0 7px;
+}
+.hypo-body ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hypo-body li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.hypo-body li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--text-3);
+}
+.hypo-body > p {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-2);
+  font-style: italic;
+}
+.scomp {
+  margin-bottom: 9px;
+}
+.scomp .k {
+  font-family: var(--font-mono), monospace;
+  font-size: 10.5px;
+  color: var(--text-2);
+  margin-right: 8px;
+}
+.scomp .v {
+  font-family: var(--font-mono), monospace;
+  font-size: 10.5px;
+  color: var(--text);
+}
+.scomp > p {
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: var(--text-3);
+  margin-top: 4px;
+}
+
+/* accent rules — role chips harmonized with the .tier-badge family; chips are
+   flex-pinned so they sit cleanly in the (now themed) header. */
+.role-chip {
+  font-family: var(--font-label), sans-serif;
+  font-size: 9px;
+  letter-spacing: var(--track-ui);
+  padding: 2px 7px;
+  text-transform: uppercase;
+  font-weight: 600;
+  flex-shrink: 0;
+}
 .role-chip.role-warming_contributor { background: rgba(255, 122, 90, 0.14); color: #ff9d83; }
 .role-chip.role-severity_framing { background: rgba(160, 160, 180, 0.14); color: #b9bdd1; }
 .role-chip.role-counter_evidence { background: rgba(120, 200, 255, 0.16); color: #8fd2ff; border: 1px solid #2e5d7d; }
-.hypo.counter-evidence { border-left: 3px solid #8fd2ff; background: rgba(120, 200, 255, 0.04); }
 .attr-boundary { border: 1px dashed #5a4a7a; padding: 8px 10px; margin: 8px 0; font-size: 11px; }
 .attr-boundary .ch { color: #b9a3e8; font-size: 10px; letter-spacing: 0.08em; margin-bottom: 4px; }
-.diag-list { margin: 6px 0; }
+.diag-list { margin: 6px 0; padding: 0 11px; }
 .diag { display: grid; grid-template-columns: auto auto 1fr; gap: 8px; font-size: 10.5px; padding: 2px 0; align-items: baseline; }
-.diag-name { font-family: var(--mono, monospace); color: #8fd2ff; }
-.diag-val { font-weight: 700; }
-.diag-def { opacity: 0.6; }
+.diag-name { font-family: var(--font-mono), monospace; color: #8fd2ff; }
+.diag-val { font-family: var(--font-mono), monospace; font-weight: 700; color: var(--text); }
+.diag-def { color: var(--text-3); }
 
 /* cited external attribution — visually distinct from computed factors */
 .ext-attr { border: 1px solid #5a4a7a; background: rgba(122, 96, 170, 0.07); padding: 10px 12px; margin-top: 10px; }
-.ext-attr .ch { color: #b9a3e8; font-size: 10px; letter-spacing: 0.1em; margin-bottom: 6px; }
-.ext-attr-item p { font-size: 11.5px; margin: 0 0 4px; }
-.ext-attr-src { opacity: 0.65; font-size: 10.5px; }
+.ext-attr .ch {
+  font-family: var(--font-label), sans-serif;
+  color: #b9a3e8;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.ext-attr-item { margin-bottom: 8px; }
+.ext-attr-item p { font-size: 11.5px; line-height: 1.5; color: var(--text-2); margin: 0 0 4px; }
+.ext-attr-src { font-family: var(--font-mono), monospace; color: var(--text-3); font-size: 10.5px; }
 
 /* Sprint 10: statusbar additions — imagery/data attribution (license audit)
    and the deployed build SHA (fetched from /api/version; absent when unknown). */

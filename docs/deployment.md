@@ -80,6 +80,10 @@ because Fly's edge terminates TLS, no `Server:` banner.
 
 ## Stage C runbook (the deploy choreography — exact [Human] vs [You] steps)
 
+> **Executed 2026-06-15** at SHA `c960cfd` — live at https://aether.arkaneworks.co (web) and
+> https://aether-api-arkaneworks.fly.dev (API). As-executed record + hosted verification:
+> `docs/reports/sprint10_stage_c_report.md`. Step 9 (`FLY_API_TOKEN` for CI) is deferred to Stage D.
+
 **Rules:** every secret value is entered by the human directly into the platform (dashboard or
 their own authenticated CLI); none transits the repo or the chat. The agent PAUSES at each
 [Human] step. Config that is not secret (origins, app name, region) lives in committed files

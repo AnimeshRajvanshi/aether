@@ -1,0 +1,96 @@
+# Sprint 10 Stage D: the deployed-integrity verifier as a post-deploy guard.
+#
+# The repo's badge story becomes: tests green, guards green, AND the deployed
+# instance is provably the committed one. This workflow proves the last clause
+# against the live production API.
+#
+# Triggers: scheduled (continuous proof the live deploy still matches what the
+# repo committed at the SHA it reports) + manual dispatch. Once the human creates
+# the FLY_API_TOKEN deploy secret and an automated deploy job, chain this after
+# it with `workflow_run` so every deploy is verified on completion.
+#
+# Exit semantics (see docs/deployment.md "Failure semantics"): the verifier
+# exits 0 for GREEN and for WARNING (a stale-but-internally-consistent deploy is
+# not a drift), and exits 1 for RED (byte mismatch / deep-equality failure /
+# negative-space leak / unverifiable pin). WARNING is surfaced as an annotation.
+
+name: verify-deployment
+
+on:
+  schedule:
+    - cron: "0 12 * * *" # daily
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "API base URL to verify"
+        default: "https://aether-api-arkaneworks.fly.dev"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      BASE_URL: ${{ github.event.inputs.base_url || 'https://aether-api-arkaneworks.fly.dev' }}
+      FLY_APP: aether-api-arkaneworks
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # The verifier reads the repo AT THE DEPLOYED SHA (often an ancestor of
+          # HEAD). Full history is required, never a shallow clone.
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v8.2.0
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      - name: Sync workspace (locked)
+        run: uv sync --frozen
+
+      - name: Assert Fly machine count == 1 (auto-HA re-add guard, Stage C finding)
+        run: |
+          if [ -z "$FLY_API_TOKEN" ]; then
+            echo "::notice::FLY_API_TOKEN not set — machine-count assertion skipped ([Human] runbook step). The integrity verifier below needs no token and still runs."
+            exit 0
+          fi
+          curl -L https://fly.io/install.sh | sh
+          export FLYCTL_INSTALL="$HOME/.fly"
+          export PATH="$FLYCTL_INSTALL/bin:$PATH"
+          fly machines list --app "$FLY_APP" --json > machines.json
+          COUNT=$(python -c "import json,sys; print(len(json.load(open('machines.json'))))")
+          echo "Fly machines for $FLY_APP: $COUNT"
+          if [ "$COUNT" -ne 1 ]; then
+            echo "::error::Fly machine count is $COUNT, expected 1 — auto-HA re-added a machine? Run 'fly scale count 1'."
+            exit 1
+          fi
+
+      - name: Deployed-integrity verifier
+        run: |
+          set +e
+          uv run python tools/verify_deployment.py "$BASE_URL" \
+            --json-out verify_deployment.json | tee verify.txt
+          CODE=${PIPESTATUS[0]}
+          set -e
+          RESULT=$(python -c "import json; print(json.load(open('verify_deployment.json'))['result'])")
+          REASON=$(python -c "import json; print(json.load(open('verify_deployment.json'))['reason'])")
+          if [ "$RESULT" = "WARNING" ]; then echo "::warning::$REASON"; fi
+          {
+            echo "## Deployed-integrity verification"
+            echo ""
+            echo "Result: **$RESULT** — $REASON"
+            echo ""
+            echo '```'
+            cat verify.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $CODE
+
+      - name: Upload verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-integrity-report
+          path: verify_deployment.json

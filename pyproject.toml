@@ -70,7 +70,7 @@ warn_return_any = true
 warn_unused_configs = true
 
 [tool.pytest.ini_options]
-testpaths = ["packages", "eval/harness", "apps/api"]
+testpaths = ["packages", "eval/harness", "apps/api", "tools/tests"]
 python_files = ["test_*.py"]
 addopts = "-ra --strict-markers -m 'not integration'"
 markers = [

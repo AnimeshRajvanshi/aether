@@ -144,3 +144,47 @@ Before any deploy, the **image-inventory guard** must be green on the image bein
 at the baked SHA (positive subset check; `.dockerignore` is belt, this is suspenders). For
 `--remote-only` deploys the same invariant is enforced by deploying only from a clean, pushed
 checkout (CI-verified SHA) — and the guard runs against a locally built twin of the same SHA.
+
+## Stage D — deployed-integrity verifier
+
+`tools/verify_deployment.py <base_url>` proves the live API serves byte-identical committed
+artifacts **at the SHA it reports** — the pin is the guard's validity, so a stale deploy is
+distinguishable from drift. It (a) reads `/api/version` for the deployed SHA; (b) reads the repo
+**at that SHA** via `git show` (never the working tree); (c) hashes the **transport-decoded** body
+of every raw endpoint against the manifest at the pinned SHA, over **two transport paths** —
+default (server may gzip/br; decoded) and `Accept-Encoding: identity` — failing red with the first
+differing byte offset on any mismatch; (d) deep-equals every composed endpoint against a
+reconstruction built by running the **pinned-SHA code over the pinned-SHA data** (`git archive` +
+PYTHONPATH-imported, asserted to load from the extract); (e) asserts the negative space — NOAA ISD
+raw, the route-unreachable `_nasa_k` siblings, composed-source files, and non-whitelisted
+events/layers all 404.
+
+CI: `.github/workflows/verify-deployment.yml` (scheduled + manual; chain after an automated deploy
+once it exists) runs the verifier against production and **asserts the Fly machine count == 1**
+(the Stage C auto-HA re-add finding). It needs `fetch-depth: 0` — the deployed SHA is often an
+ancestor of HEAD.
+
+### Failure semantics
+
+| Result | Meaning | Exit | CI |
+|---|---|---|---|
+| **GREEN** | Pinned SHA == main HEAD and every check passes — the deployed instance is provably the committed one. | 0 | pass |
+| **WARNING** | Every integrity check passes, but the deploy is **not** main HEAD: either *stale* (pinned SHA is an ancestor of HEAD — e.g. a web-only fix advanced main without an API redeploy) or *diverged* (not an ancestor). Internally consistent; **not a drift.** | 0 | pass + `::warning::` |
+| **RED** | A raw byte mismatch (after transport decoding — i.e. real platform transformation or deploy drift), a composed deep-equality failure, a negative-space leak, or an **unverifiable pin** (the deployed SHA is absent from local history, or no manifest at that SHA). | 1 | fail |
+
+**The SHA pin is what separates WARNING from RED.** A stale-but-consistent deploy passes every
+byte check *because it is checked against its own SHA's manifest* — so "the deploy is old" surfaces
+as a warning, while "the deploy serves bytes that differ from what that SHA committed" is red. Use
+`--strict` to make WARNING fail too (a lane that demands the deploy be exactly main HEAD).
+
+A current WARNING is expected and benign: the Stage C UI fix advanced `main` (web redeployed by
+Vercel) while the Fly API stayed at its prior SHA. It clears the moment the API is next deployed —
+e.g. the first automated deploy after the human creates `FLY_API_TOKEN` (below).
+
+### [Human] step — `FLY_API_TOKEN` (CI deploy + machine-count assertion)
+
+Not created by the agent. In the app directory: `fly tokens create deploy -x 999999h`; copy the full
+output (including the leading `FlyV1 `); GitHub repo → Settings → Secrets and variables → Actions →
+New repository secret **`FLY_API_TOKEN`**. The value goes directly from your terminal to GitHub,
+never through the repo or the chat. Until it exists, the verifier still runs in CI (it needs no
+token); only the Fly machine-count assertion is skipped (with a notice).

@@ -6,140 +6,97 @@
 ## Re-verify before trusting anything
 
 **Verification results must NOT be transcribed forward. The next session must re-run
-pytest and ruff itself and update PROJECT_STATUS.md per existing discipline.**
+pytest and ruff itself.** Before new work: `git status` + `git log --oneline -8`, then
+`uv run pytest`, `uv run ruff check .`, and (only for `packages/detection`/`packages/causal`
+changes) `uv run aether-eval run`. Last known good (2026-06-15 closeout, re-verify don't trust):
+pytest **388 passed, 6 skipped, 7 deselected**; ruff **0**; mypy clean on the verifier.
 
-Concretely, before doing new work: `git status` + `git log --oneline -5`, then
-`uv run pytest`, `uv run ruff check .`, and (for `packages/detection`/`packages/causal`
-changes) `uv run aether-eval run`. Note: **PROJECT_STATUS.md is currently stale** — it
-still describes Sprint 6 and predates the Sprint 7 commits below; update it after you
-re-verify.
+## Where things stand — SPRINT 10 (DEPLOYMENT) CLOSED
 
-## Where things stand
+The finished app is **live on a public URL** with the same honesty guarantees it has locally.
+Sprint 10 was infrastructure only — **no new science, events, or features**.
 
-- **Branch:** `main`, **ahead of `origin/main` by 6 commits (unpushed)**. Do not push
-  unless explicitly told to.
-- **Latest commit:** `984bb78` — *docs(reports): Sprint 7 Stage A — Permian
-  reference-data probe (gate)*.
-- **Current sprint: Sprint 7 (generality — Permian).** Stage A (reference-data probe)
-  is **done and committed**; the brief gates Stages B/C/D behind human review of each
-  prior stage. Build order: Stage A probe → **STOP (here now)** → Stage B → Stage C →
-  Stage D, each a STOP gate.
-- **Sprint 6 (HITRAN independence):** functionally **COMPLETE and green**, still
-  **awaiting human review sign-off** to formally close (it was an outward-facing change
-  — the Goturdepe headline moved 27.1 → 23.4 t/hr ours-cal). Two human decisions remain
-  open (see Open threads).
+- **Live web:** https://aether.arkaneworks.co (Vercel Hobby, custom domain; Next.js/Cesium).
+- **Live API:** https://aether-api-arkaneworks.fly.dev (Fly.io Docker container, **single always-on
+  machine** in `lax`, `auto_stop="off"`). Serves committed artifacts only — no runtime data fetching.
+- **Branch:** `main`, **in sync with `origin/main`** (everything pushed; CI green). HEAD is the
+  closeout commit `15263f7`.
+- **Deployed API SHA:** `1eeb176` (the closeout commit `15263f7` is **one docs-only commit ahead**,
+  not present in the image — see the nuance below). `/api/version` and the footer BUILD chip both
+  surface the deployed SHA.
 
-## Migration gate status — what remains
+All four stages + one out-of-band UI fix are reviewed and closed:
+- **A** — deployment probe + license audit (hosts verified from live docs; NOAA ISD raw *provably
+  absent*; secrets are [Human]).
+- **B** — hardening: read-only/CORS/config guards, raw-streaming byte-identity, integrity manifest +
+  staleness guard, image-inventory guard, multi-stage digest-pinned Dockerfile.
+- **C** — deploy (web on Vercel, API on Fly); caveats survive deployment.
+- **C fix** — heat factor-attribution cards were unstyled in prod *and* dev (missing `.hypo-*` CSS,
+  not a prod-only bug); restyled to the design system, caveats verbatim, re-shot Chrome + WebKit.
+- **D** — the deployed-integrity verifier (`tools/verify_deployment.py`): **GREEN** against the live
+  API at the pinned SHA (0 failures across 17 raw ×2 transport paths + 4 composed + 10
+  negative-space), wired into CI with the Fly machine-count==1 assertion.
 
-- **Sprint 6 gate:** PASSED technically (operational migration done, all guards green).
-  *Remaining to formally close:* human sign-off on `docs/reports/sprint6_migration_report.md`
-  + `docs/reports/sprint6_dashboard_panels.md`, and the filing-decision confirmation
-  (v2 lives at canonical operational filenames; NASA-k preserved as `*.nasa_k.*`
-  siblings — the reviewer may request the inverse filing, which is just a rename).
-- **Sprint 7 gate (current):** Stage A probe complete and stopped for review. *Remaining
-  to pass into Stage B:* human review of the probe report, then run Stage B. The probe
-  decided the earnable tier is **CROSS-CHECKED** (a NASA L2B CH4ENH raster exists for the
-  granule → a Pearson spatial cross-check is possible), **not VALIDATED** (no
-  peer-reviewed per-source flux; the 18.3 t/hr figure is press-release context only).
+## The one nuance to understand (not a bug)
 
-## Key decisions made in recent work (and why)
+The committed gate evidence (`docs/reports/sprint10_stage_d_verification.json`) is **GREEN**:
+deployed == main HEAD == `1eeb176`, zero failures. But committing that evidence advanced `main` by
+one **docs-only** commit (`15263f7`) that is **not in the image** — so a *scheduled* verifier run now
+reads the live deploy as **stale-by-one** (a benign `WARNING`, never `RED`; the byte-integrity proof
+is unaffected — the SHA pin is exactly what distinguishes "old deploy" from "drift"). An evidence
+commit can't be its own ancestor; this is inherent. To get the scheduled verifier `GREEN`-at-rest,
+one no-op `fly deploy --build-arg GIT_SHA=$(git rev-parse HEAD)` at the current HEAD does it.
 
-1. **Sprint 6 — v2 HITRAN k is now the OPERATIONAL Goturdepe retrieval.** Re-ran Stage
-   A/B offline+reproducibly via `scripts/run_migration_v2_operational.py`; regenerated
-   every derived artifact from the new outputs. Why: independence is only real if the
-   *displayed* numbers come from the independent k, not just a validation artifact.
-2. **"Alongside, not over" filing.** v2 results took the canonical operational filenames
-   (so API/dashboard/guards validate the *served* artifacts); the NASA-k originals are
-   preserved as committed `*.nasa_k.*` siblings. Why: keep the served data authoritative
-   while never deleting the NASA-k scientific record. (Reviewer may prefer the inverse —
-   flagged.)
-3. **Uncertainty budget re-propagated, not transcribed.** Wind terms unchanged *by
-   construction* (same ERA5 grid cell, asserted in the runner); mask sensitivity
-   recomputed; MF-amplitude systematic is now the **independently measured 1.46×** (not
-   the hand-carried 1.66×). The 1.46-vs-1.66 residual is labelled a **hypothesis**
-   (effective-layer/flat-continuum), not an established cause.
-4. **No-staleness guard suite** (`apps/api/tests/test_no_staleness.py`). Parses the
-   numbers embedded in derived-artifact *prose* (hypotheses, brief, scope %, API notes,
-   references) and asserts each traces to its upstream committed source — catching
-   hardcoded literals that byte-match/regenerate guards cannot. It caught real stale
-   `~27 t/hr` literals, a stale provenance reference still calling NASA's file "our k",
-   and a stale `~20 deg` H1 bearing gap; all fixed by templating from source.
-5. **Sprint 6 review fixes (`3319d64`).** The inspector's Provenance·References list is
-   sourced from the **benchmark YAML** (`loaders._references`), not from
-   `stage_a_report.target_spectrum_source` — which is why the first provenance flip
-   missed it. Fixed the YAML entry (NASA target → spectral-shape cross-check only,
-   r=0.993; added HITRAN2020 (Gordon 2022) + HAPI (Kochanov 2016) citations with
-   verified DOIs). H1's bearing-gap rationale templated from the computed value.
-6. **Sprint 7 Stage A — generality via parameterization, not a fork.** The OGIM acquire
-   script was Goturdepe-hardcoded; refactored it to an `EVENTS` registry keyed by
-   `event_id` (one shared code path). Goturdepe's committed outputs are byte-identical/
-   untouched. The committed Permian OGIM subset is **dense** (12,284 features incl.
-   10,744 wells vs Goturdepe's 114) — the first real test of facility-level attribution,
-   and a ~12 MB artifact flagged for review.
-7. **Cardinal rule honored throughout Sprint 7 probe:** 18.3 t/hr is context only (NASA
-   JPL press release, no date/method/uncertainty — WebFetch-confirmed). The validation
-   tier is decided by probe evidence, never asserted.
+## Open threads (priority order; none blocking)
 
-## Open threads & exact next steps (priority order)
+1. **OPTIONAL [Human]:** redeploy the API at the current HEAD for scheduled-verifier GREEN-at-rest
+   (above). Guard-verified no-op for artifacts.
+2. **OPTIONAL [Human], per the Gate A amendment:** the `api.aether.arkaneworks.co` subdomain —
+   **pending a LIVE check of Fly's current custom-domain certificate pricing** (never asserted from
+   memory). The API stays on its `fly.dev` hostname until then.
+3. **PORTFOLIO PACKAGE (separately scheduled, out of this sprint's scope):** README polish, demo
+   video, outreach. The live deployment + integrity proof this sprint built is its precondition.
+4. **Deferred physics** for the 1.46×-vs-1.66× residual (a hypothesis: effective-layer/flat-continuum)
+   — layered background, H₂O/SZA LUT, per-pixel sensitivity, RFM cross-check. See `docs/debt.md`.
 
-1. **Sprint 7 Stage B** (the immediate next gated step, after human review of the probe):
-   - Generate the Permian **per-granule v2 HITRAN k** from this granule's own
-     geometry/SRF; extend independence + reproducibility guards to the new k. (No NASA
-     per-granule target exists for this granule → no shape cross-check available; state
-     it.)
-   - Run the **shared parameterized pipeline** (MF → ortho → segmentation → IME → Q with
-     ERA5 U_eff). **Parameterize the Goturdepe-shaped assumptions** still in the run/
-     attribution/loader code (listed in the Stage A report) — do NOT fork a `_permian`
-     variant.
-   - Mandatory scene checks (re-run, don't assume): wind source-vs-centroid ΔQ%; U_eff
-     regime vs the Varon 2–8 m/s range (preliminary |U₁₀|≈3.83 m/s, in-range but re-check
-     at the true source); plume-mask sensitivity sweep.
-   - Re-propagate the uncertainty budget from scratch; carry the +1.46× systematic as a
-     Goturdepe-measured value with an explicit "transfer to this scene is unvalidated"
-     note.
-   - Internal-consistency diagnostics; honest comparison to 18.3 t/hr as context only.
-   - Write `docs/science/sprint7_permian.md` + `docs/reports/sprint7_stage_b_report.md`;
-     extend the no-staleness guards to the new artifacts. **STOP for review.**
-2. **Sprint 6 close-out** (human): sign off the migration gate report + confirm the
-   filing decision (canonical-v2 vs inverse). Until then Sprint 6 is "complete pending
-   sign-off".
-3. **Update PROJECT_STATUS.md** to reflect Sprint 7 (it currently stops at Sprint 6) —
-   only after re-running verification (see top section).
-4. **Stage C / Stage D** (gated, later): dense-coverage facility attribution with
-   discrimination-honest confidence; then UI integration with visible validation-tier
-   badges. Do not start until Stage B is reviewed.
-5. **Lower priority / still deferred:** wire the real matched filter into the eval
-   harness (it runs a `stub_pipeline`, 0/3 recall); the deferred physics refinements for
-   the 1.46×-vs-1.66× residual; refresh README.md / CLAUDE.md "Where we are" (stale,
-   still say Sprint 1). The 72 pre-existing ruff errors are tracked in `docs/debt.md`.
+`FLY_API_TOKEN` exists (the human created it at closeout) — the CI machine-count assertion is now
+active. No secret is ever held by an agent.
 
-## Relevant file paths
+## Deployment cardinal rules (still in force — `docs/tasks/sprint10_deployment.md`)
 
-- **Task brief / gates:** `docs/tasks/sprint7_permian.md`
-- **Sprint 7 probe report:** `docs/reports/sprint7_stage_a_report.md`
-- **Sprint 6 gate reports:** `docs/reports/sprint6_migration_report.md`,
-  `docs/reports/sprint6_dashboard_panels.md`,
-  `docs/reports/screenshots/provenance_panel_fixed.png`
-- **Science docs:** `docs/science/sprint6_hitran_independence.md` (§9 = migration),
-  `docs/science/sprint2_validation.md`, `docs/science/sprint4_attribution.md`
-- **Tech-debt register:** `docs/debt.md`
-- **Operational runner (Sprint 6):** `scripts/run_migration_v2_operational.py`
-- **OGIM subset (parameterized):** `scripts/acquire_ogim_subset.py`;
-  committed subset `packages/causal/aether_causal/resources/ogim/ogim_v2.7_permian_basin_region.geojson`
-  (+ `.provenance.json`); Goturdepe `ogim_v2.7_goturdepe_region.geojson`
-- **Guards:** `apps/api/tests/test_no_staleness.py`, `packages/causal/tests/test_no_fabrication.py`
-- **Pipeline/attribution to parameterize in Stage B:** `scripts/run_stage_a_goturdepe.py`,
-  `scripts/run_stage_b_goturdepe.py`, `packages/causal/aether_causal/attribution.py`,
-  `scripts/build_dashboard_assets.py`, `apps/api/aether_api/loaders.py`
-- **Benchmarks:** `eval/benchmark/turkmenistan_goturdepe_2022_08_15.yaml`,
-  `eval/benchmark/permian_basin_2022.yaml`
-- **Status:** `PROJECT_STATUS.md` (stale re Sprint 7), `CLAUDE.md` (operating manual)
+- The deployed app serves **committed artifacts only** — no runtime fetching, no credentialed access.
+- **No secrets** in the repo, image, or build logs — ever. Account creation + secret values are
+  **[Human]**; configs reference env vars, never their values.
+- **Public means licensed-for-public** — NOAA ISD raw is non-redistributable (WMO Res. 40) and is
+  provably absent (the verifier's negative-space checks enforce this live).
+- **No fake liveness** — the footer shows the real deployed SHA + the honest data-coverage line; no
+  "LIVE" theater.
+
+## Relevant file paths (Sprint 10)
+
+- **Task brief / gates:** `docs/tasks/sprint10_deployment.md` (+ Gate A amendment at the end).
+- **Gate reports:** `docs/reports/sprint10_stage_{a_probe,a_gate,b_report,b_gate,c_report,c_fix,d_report}.md`;
+  evidence `docs/reports/sprint10_stage_d_verification.json`; shots under
+  `docs/reports/screenshots/sprint10_stage_c{,_fix}/`.
+- **The verifier:** `tools/verify_deployment.py` (+ `tools/tests/test_verify_deployment.py`).
+- **Integrity manifest:** `artifacts.manifest.json` (generator `scripts/build_artifact_manifest.py`,
+  logic `apps/api/aether_api/manifest.py`, staleness guard `apps/api/tests/test_artifact_manifest.py`).
+- **API hardening:** `apps/api/aether_api/{main,config,loaders}.py`;
+  guards `apps/api/tests/test_deploy_guards.py`; live/image guards `test_container_live.py`,
+  `test_image_inventory.py` (env-gated). Image-inventory tool `tools/verify_image_inventory.py`.
+- **Container / deploy:** `Dockerfile`, `.dockerignore`, `fly.toml`, `.env.example`,
+  `docs/deployment.md` (env schema + failure semantics + the executed runbook).
+- **CI:** `.github/workflows/ci.yml` (tests/lint/build) + `verify-deployment.yml` (post-deploy guard).
+- **Web:** `apps/web/src/components/Dashboard.tsx` (footer BUILD chip + attribution),
+  `apps/web/src/app/globals.css` (the `.hypo-*` factor-card fix), `apps/web/src/lib/api.ts`.
 
 ## Environment notes (no secrets)
 
-- `uv` workspace, Python 3.12 pinned. Frontend: `pnpm` in `apps/web` (`tsc --noEmit`
-  must pass; `next build`).
-- Caches in `~/.aether_cache/` (gitignored): EMIT L1B/L2A/L2B granules, the OGIM v2.7
-  global GeoPackage (~2.9 GB, SHA-256 verified — no re-download needed), ERA5 via
-  ARCO (token-free). NASA Earthdata auth via the user's `~/.netrc` (do not print it).
-- Never commit raw data (`.tif`/`.zarr`/`.nc`/large `.npz`) — gitignored.
+- `uv` workspace, Python 3.12 pinned. Frontend: `pnpm` in `apps/web` (`tsc --noEmit` + `next build`).
+- The verifier reads the repo **at the deployed SHA** — it needs that SHA in local history (CI uses
+  `fetch-depth: 0`). It needs no Fly token; only the machine-count CI step uses `FLY_API_TOKEN`.
+- Caches in `~/.aether_cache/` (gitignored). NASA Earthdata auth via `~/.netrc` (never print it).
+  Never commit raw data (`.tif`/`.zarr`/`.nc`/large `.npz`) — gitignored, and the Dockerfile's
+  `.dockerignore` mirrors that so they cannot leak into the image.
+- **Watcher hygiene:** any poller/watcher shell must be timeout-bounded, use a non-self-matching
+  pgrep pattern, and be cleaned up at stage end.

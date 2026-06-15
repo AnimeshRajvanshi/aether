@@ -1,16 +1,27 @@
 # PROJECT_STATUS.md
 
-> Last verified at the SPRINT 9 CLOSEOUT run (2026-06-12):
-> `uv run pytest` exit code 0 — 352 passed, 7 deselected, 2 warnings.
-> `uv run ruff check .` exit code 0 — All checks passed.
-> `uv run aether-eval run` exit code 0 — Events: 4 (3 runnable, 1 not_runnable); detection recall 3/3 (precision 1.000); regression vs committed artifacts 14/14 GREEN (10 methane + 4 heat); quantification: no MAPE claimable, every external reference not_comparable with machine-readable reasons; Aliso not_runnable.
-> Frontend: `pnpm exec tsc --noEmit` clean + `pnpm build` OK (verified at Stage D close, unchanged since).
-> Methane byte-identity: git status 0 lines over all methane artifact/asset dirs.
+> Last verified at the SPRINT 10 CLOSEOUT run (2026-06-15):
+> `uv run pytest` exit code 0 — 388 passed, 6 skipped, 7 deselected, 2 warnings.
+> `uv run ruff check .` exit code 0 — All checks passed; `mypy` clean on the verifier.
+> Deployed-integrity verifier vs the live API (https://aether-api-arkaneworks.fly.dev): **GREEN** —
+> pinned SHA == main HEAD == 1eeb176; 17 raw (x2 transport paths) + 4 composed + 10 negative-space; 0 failures.
+> Live: web https://aether.arkaneworks.co + API at HEAD; Fly single always-on machine (count == 1); footer BUILD chip = 1eeb176.
+> Prior-sprint baselines unchanged: `aether-eval run` 3/3 recall + 14/14 regression GREEN; methane byte-identity intact.
+
+## Sprint 10 — DEPLOYMENT: CLOSED (2026-06-15)
+
+The finished app is on a public URL with the same honesty guarantees it has locally. Four gated
+stages + one out-of-band UI fix, all reviewed:
+- **Stage A** (probe + license audit): hosts verified from live docs; ISD raw provably absent; secrets [Human]-only.
+- **Stage B** (hardening): read-only/CORS/config guards, raw-streaming byte-identity, integrity manifest + staleness guard, image-inventory guard (positive subset check), multi-stage digest-pinned Dockerfile (~50 MiB RAM).
+- **Stage C** (deploy): web on Vercel at https://aether.arkaneworks.co, API container on Fly.io (always-on, lax); caveats survive deployment.
+- **Stage C fix** (web-only): heat factor-attribution cards were unstyled in prod AND dev (missing `.hypo-*` CSS, not a prod-only bug) — restyled to the design system, caveats verbatim, re-shot in Chrome + WebKit.
+- **Stage D** (the point of the sprint): `tools/verify_deployment.py` proves the live API serves byte-identical committed artifacts at the SHA it reports (transport-decoded + `identity` paths, pinned-code composed reconstruction, negative-space 404s); wired into CI (`verify-deployment.yml`) with the Fly machine-count==1 assertion; failure semantics (GREEN/WARNING/RED, the SHA pin separating stale from drift) documented. **Closeout: API redeployed at HEAD → verifier GREEN, committed as `docs/reports/sprint10_stage_d_verification.json`.**
 
 ```yaml
-phase: "SPRINT 9 (HEAT VERTICAL) CLOSED — all four stage gates passed review (A probe approved; B approved with the FIRST VALIDATED CLAIMS in Aether history — C1 peak 46.68 degC and C2 regional anomaly +5.10 K, per-quantity, pre-registered; C passed with corrections applied+guarded; D approved pending the F2-falsification confirmation, provided verbatim at closeout). Heat is a first-class second phenomenon domain: ontology instantiated not forked (ADR 0003/0004/0005), eval recall/regression cover it, the factor engine argues against priors from diagnostics, and the dashboard renders it with methane pixel/byte-identical. Next sprint: TBD at review (candidates: Sprint 8 review + push fallout; portfolio sprint; deferred physics). Sprint 8 review + Sprint 6 close-out sign-offs still nominally open."
-status: "SPRINT 9 CLOSED (reviewer approval, 2026-06-12; Stage D confirmation item — F2 falsification direction — verified verbatim from the committed artifact). Closeout verification all exit-code 0 (see header). One cosmetic debt logged (C3 raw-criterion leak, docs/debt.md). Branch UNPUSHED — human will push and watch the first CI run."
-last_updated: "2026-06-11"
+phase: "SPRINT 10 (DEPLOYMENT) CLOSED — the app is live at https://aether.arkaneworks.co (web, Vercel) + https://aether-api-arkaneworks.fly.dev (API, Fly.io, single always-on machine in lax), both at main HEAD 1eeb176. Infrastructure only: no new science, events, or features. The deliverable is a URL PLUS a machine-checked proof that what the URL serves is byte-identical to what the repo committed (tools/verify_deployment.py, GREEN at the pinned SHA) PLUS a committed license audit (ISD raw provably absent). Read-only/CORS/config guards, integrity manifest + staleness guard, image-inventory guard, and the deployed-integrity verifier are in the suite/CI. Next sprint: TBD (the portfolio package — README polish, video, outreach — was deferred and separately scheduled; custom domain done early per the Gate A amendment)."
+status: "SPRINT 10 CLOSED (2026-06-15). Closeout: API redeployed at HEAD, Fly machine count == 1, /api/version == 1eeb176, deployed-integrity verifier GREEN (0 failures across 17 raw x2 + 4 composed + 10 negative-space), evidence committed. Suite 388 passed / ruff 0 / mypy clean. Open [Human] follow-ups: FLY_API_TOKEN was created (machine-count CI assertion now active); optional api.aether.arkaneworks.co subdomain pending a live Fly cert-pricing check; api.aether stays on fly.dev for now."
+last_updated: "2026-06-15"
 updated_by: "Claude"
 confidence: "High"
 links:

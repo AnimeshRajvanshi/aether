@@ -85,6 +85,29 @@ artifacts, since the API Python is byte-identical between `c960cfd` and HEAD).
 - The deselected count is unchanged (7) — the new tests are not integration-marked, so the CI
   deselection assertion still holds.
 
+## Closeout (2026-06-15) — GREEN at HEAD
+
+After the human created `FLY_API_TOKEN`, the API was redeployed at main HEAD
+(`fly deploy --remote-only --build-arg GIT_SHA=$(git rev-parse HEAD)`): the existing single machine
+updated in place (no auto-HA re-add this time; machine count == 1 confirmed), `/api/version` returns
+`1eeb176`, and the footer BUILD chip auto-renders `1eeb176` (it reads `/api/version` at runtime — no
+web change needed; web and API are now coherent at HEAD). The verifier re-run is **GREEN**:
+
+```
+pinned SHA : 1eeb176fd476e3544b3adf55618eb954a19a8815
+main HEAD  : 1eeb176fd476e3544b3adf55618eb954a19a8815
+checked    : 17 raw (x2 transport paths) + 4 composed + 10 negative-space
+RESULT     : GREEN   (failures: 0)
+reason     : Deployed instance is provably the committed one at 1eeb176fd476.
+```
+
+The committed evidence (`sprint10_stage_d_verification.json`) is regenerated from this GREEN run
+(`pinned_sha == head_sha == 1eeb176`). Note the inherent one-commit nuance: this closeout commit
+(which contains the regenerated JSON) advances `main` by one **docs-only** commit not present in the
+image, so a later scheduled verifier run would read the deploy as stale-by-one until the next API
+deploy — a benign WARNING, cleared by any redeploy at the then-current HEAD. The integrity proof
+(deployed bytes == committed bytes at the pinned SHA) is unaffected.
+
 ## STOP — Stage D gate
 
 The deployed-integrity verifier is built, unit-tested (incl. the RED byte-mismatch path), CI-wired

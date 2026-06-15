@@ -1,7 +1,7 @@
 {
   "base_url": "https://aether-api-arkaneworks.fly.dev",
-  "pinned_sha": "c960cfdb7dfcd7249c83b7f000bd3d4e0221cd69",
-  "head_sha": "c1e900703fcc0f61e967774ce617f12f84acd988",
+  "pinned_sha": "1eeb176fd476e3544b3adf55618eb954a19a8815",
+  "head_sha": "1eeb176fd476e3544b3adf55618eb954a19a8815",
   "manifest_generated_at_commit": "115af07a235d8b8f177c14c011396ce3388dab9c",
   "failures": [],
   "counts": {
@@ -9,6 +9,6 @@
     "composed_endpoints": 4,
     "negative_space_checks": 10
   },
-  "result": "WARNING",
-  "reason": "Deploy is internally consistent at c960cfdb7dfc but STALE: it is an ancestor of main HEAD c1e900703fcc. Redeploy to advance; not a drift."
+  "result": "GREEN",
+  "reason": "Deployed instance is provably the committed one at 1eeb176fd476."
 }

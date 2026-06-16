@@ -8,13 +8,32 @@
 **Verification results must NOT be transcribed forward. The next session must re-run
 pytest and ruff itself.** Before new work: `git status` + `git log --oneline -8`, then
 `uv run pytest`, `uv run ruff check .`, and (only for `packages/detection`/`packages/causal`
-changes) `uv run aether-eval run`. Last known good — Sprint 11 Stage C (2026-06-15, re-verify don't trust):
-pytest **400 passed, 6 skipped, 7 deselected**; ruff **0**; mypy clean on the verifier. (The Sprint 10
-closeout run was **389**, not the 388 first recorded — an environment miscount; Sprint 11 adds the
-key-results snippet guard + report-completeness cases over the 5 new Sprint 11 reports — the count ticks
-up one per committed Stage report.)
+changes) `uv run aether-eval run`. Last known good — SPRINT 11 CLOSEOUT (2026-06-16, re-verify don't trust):
+pytest **401 passed, 6 skipped, 7 deselected**; ruff **0**; mypy clean on the verifier. (The Sprint 10
+closeout run was **389**, not the 388 first recorded — an environment miscount; Sprint 11 added the
+key-results snippet guard (6 tests) + report-completeness cases over its 6 new Sprint 11 reports = +12.)
 
-## Where things stand — SPRINT 10 (DEPLOYMENT) CLOSED
+## Where things stand — SPRINT 11 (PORTFOLIO PACKAGE) CLOSED
+
+**Sprints 1–11 are all CLOSED.** Sprint 11 narrated the work into a public portfolio package — no new
+science. It is **live and public**:
+- **Case study:** https://arkaneworks.co/ape (arkaneworks website repo, `ape.html`) — honest hook first,
+  leads with the C3/C4 failures, full-bleed hero + single launch + side-by-side numbers/lineage, a
+  click-to-load embed FACADE that opens the live demo in a new tab (no iframe — the API's CORS allowlist
+  forbids framing).
+- **Live demo:** https://aether.arkaneworks.co. **aether repo: PUBLIC** with an honest `README.md` +
+  `docs/science/sprint11_validation_writeup.md`. Source-of-truth: `docs/key_results.json`
+  (`tools/build_key_results.py`, guarded by `tools/tests/test_key_results.py`). Stage D read-through
+  PASS: figures consistent, no overclaim, caveats survive, links resolve logged-out, site integrity intact.
+
+**SPRINT 11 STANDING FACTS (binding):** Aether's intended scope is **MULTI-BODY** (Earth/Moon/Mars,
+Earth-populated, others honestly "NO DATA · EARTH MVP") — correct scope, **not overclaim**, do not flag
+in future gates. **`lunar.html` is a separate, unrelated program** (Moon-Presence / NASA HeroX), never
+conflated with Aether. The **arkaneworks website repo is single-writer** — edit the local clone and push
+from there; never have a browser-based Claude edit GitHub directly (a divergent-history fork was
+reconciled this sprint).
+
+### Sprint 10 (DEPLOYMENT) — also CLOSED
 
 The finished app is **live on a public URL** with the same honesty guarantees it has locally.
 Sprint 10 was infrastructure only — **no new science, events, or features**.
@@ -57,11 +76,13 @@ one no-op `fly deploy --build-arg GIT_SHA=$(git rev-parse HEAD)` at the current 
 2. **OPTIONAL [Human], per the Gate A amendment:** the `api.aether.arkaneworks.co` subdomain —
    **pending a LIVE check of Fly's current custom-domain certificate pricing** (never asserted from
    memory). The API stays on its `fly.dev` hostname until then.
-3. **PORTFOLIO PACKAGE — NOW IN PROGRESS as Sprint 11** (`docs/tasks/sprint11_portfolio.md`): the
-   README, the scientific validation write-up, and the source-of-truth key-results snippet
-   (`docs/key_results.json` + `tools/build_key_results.py`) are done at the Stage B gate; the
-   arkaneworks case-study page (revamp `ape.html` in place) is Stage C. Demo video + outreach remain
-   separately scheduled.
+3. **PORTFOLIO PACKAGE — DONE (Sprint 11 CLOSED).** Case study live at `arkaneworks.co/ape`, aether repo
+   PUBLIC with README + validation write-up, source-of-truth snippet `docs/key_results.json`. Remaining
+   carried items (non-blocking): **(a)** swap `assets/aether/preview-hero.png` (~4 MB) for a
+   **~200–400 KB / JPG** drop-in at the **same path** (full-bleed first-paint hero; no markup change);
+   **(b)** align the validation write-up's thin-space thousands separators to the comma style elsewhere;
+   **(c)** aether **gitignore hardening** — add `.netrc`, `*.key`, `id_*` (defense-in-depth; the
+   full-history secret scan matched nothing). Demo video + outreach remain separately scheduled.
 4. **DEFERRED OPEN-THREAD — automated visual-fidelity verification harness** (recorded Sprint 11
    Stage B): an *automated* computed-style assertion or visual-diff baseline for the dashboard's
    inspector blocks, so an unthemed/unstyled block fails **RED** in CI without a human eye. **Distinct

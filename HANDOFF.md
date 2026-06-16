@@ -8,10 +8,11 @@
 **Verification results must NOT be transcribed forward. The next session must re-run
 pytest and ruff itself.** Before new work: `git status` + `git log --oneline -8`, then
 `uv run pytest`, `uv run ruff check .`, and (only for `packages/detection`/`packages/causal`
-changes) `uv run aether-eval run`. Last known good — Sprint 11 Stage B (2026-06-15, re-verify don't trust):
-pytest **398 passed, 6 skipped, 7 deselected**; ruff **0**; mypy clean on the verifier. (The Sprint 10
-closeout run was **389**, not the 388 first recorded — an environment miscount; Stage B adds the
-key-results snippet guard + report-completeness cases over the new Sprint 11 reports.)
+changes) `uv run aether-eval run`. Last known good — Sprint 11 Stage C (2026-06-15, re-verify don't trust):
+pytest **400 passed, 6 skipped, 7 deselected**; ruff **0**; mypy clean on the verifier. (The Sprint 10
+closeout run was **389**, not the 388 first recorded — an environment miscount; Sprint 11 adds the
+key-results snippet guard + report-completeness cases over the 5 new Sprint 11 reports — the count ticks
+up one per committed Stage report.)
 
 ## Where things stand — SPRINT 10 (DEPLOYMENT) CLOSED
 

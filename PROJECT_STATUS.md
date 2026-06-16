@@ -1,10 +1,10 @@
 # PROJECT_STATUS.md
 
-> Last verified at the SPRINT 11 STAGE B run (2026-06-15):
-> `uv run pytest` exit code 0 — 398 passed, 6 skipped, 7 deselected, 2 warnings.
-> (Sprint 11 Stage B adds the key-results snippet guard + report-completeness cases over the new
-> Sprint 11 reports; the Sprint 10 CLOSEOUT run was **389**, not the 388 first recorded — an
-> environment miscount, corrected below.)
+> Last verified at the SPRINT 11 STAGE C run (2026-06-15):
+> `uv run pytest` exit code 0 — 400 passed, 6 skipped, 7 deselected, 2 warnings.
+> (Sprint 11 through Stage C adds the key-results snippet guard + report-completeness cases over the 5
+> new Sprint 11 reports; the count ticks up by one per committed Stage report. The Sprint 10 CLOSEOUT
+> run was **389**, not the 388 first recorded — an environment miscount, corrected below.)
 > `uv run ruff check .` exit code 0 — All checks passed; `mypy` clean on the verifier.
 > Deployed-integrity verifier vs the live API (https://aether-api-arkaneworks.fly.dev): **GREEN** —
 > pinned SHA == main HEAD == 1eeb176; 17 raw (x2 transport paths) + 4 composed + 10 negative-space; 0 failures.
@@ -90,8 +90,8 @@ recent_changes:
   - "Sprint 6 Stage A: independent methane k from HITRAN2020/HAPI; shape r=0.93 vs NASA target (cross-check only)."
   - "Sprint 5: SOURCE ATTRIBUTION inspector section rendering committed hypotheses.json verbatim. Sprint 4: field/sector source-attribution engine (OGIM-backed, no fabricated facilities)."
 validation_status:
-  verified_at: "2026-06-15, Sprint 11 Stage B: pytest exit 0 (398 passed, 6 skipped, 7 deselected), ruff exit 0, mypy clean on the verifier. The Sprint 10 closeout run was 389 (the 388 first recorded was an environment miscount). Deployed-integrity verifier GREEN vs the live API at the Sprint 10 pinned SHA 1eeb176 (0 failures). Prior aether-eval / methane-byte-identity baselines unchanged from Sprint 9."
-  tests: "uv run pytest -> 398 passed, 6 skipped, 7 deselected, 2 warnings (exit code 0). SPRINT 11 STAGE B: +9 vs the Sprint 10 closeout run of 389 (the recorded 388 was an environment miscount) = the key-results snippet guard tools/tests/test_key_results.py (6) + report-completeness cases over the 3 new Sprint 11 reports (3). The 6 skips are the env-gated live guards (test_container_live AETHER_LIVE_BASE_URL, test_image_inventory AETHER_IMAGE_REF). The 7 deselected = exactly the integration-marked set (asserted in CI). Sprint 10 added +18 vs Sprint 9's 351: deployment guard suite (read-only/CORS/config/version/byte-identity/whitelist/headers/startup-schema), manifest staleness + negative-space guards, and the 14 verifier unit tests (classify, first_diff/json_diff, verify_raw flipped-byte, negative-space leak). NOT proof of the science thesis — see 'Validated vs. Unvalidated'."
+  verified_at: "2026-06-15, Sprint 11 Stage C: pytest exit 0 (400 passed, 6 skipped, 7 deselected), ruff exit 0, mypy clean on the verifier. The Sprint 10 closeout run was 389 (the 388 first recorded was an environment miscount). Deployed-integrity verifier GREEN vs the live API at the Sprint 10 pinned SHA 1eeb176 (0 failures). Prior aether-eval / methane-byte-identity baselines unchanged from Sprint 9."
+  tests: "uv run pytest -> 400 passed, 6 skipped, 7 deselected, 2 warnings (exit code 0). SPRINT 11 (through Stage C): +11 vs the Sprint 10 closeout run of 389 (the recorded 388 was an environment miscount) = the key-results snippet guard tools/tests/test_key_results.py (6) + report-completeness cases over the 5 new Sprint 11 reports (5; the count ticks up one per committed Stage report). The 6 skips are the env-gated live guards (test_container_live AETHER_LIVE_BASE_URL, test_image_inventory AETHER_IMAGE_REF). The 7 deselected = exactly the integration-marked set (asserted in CI). Sprint 10 added +18 vs Sprint 9's 351: deployment guard suite (read-only/CORS/config/version/byte-identity/whitelist/headers/startup-schema), manifest staleness + negative-space guards, and the 14 verifier unit tests (classify, first_diff/json_diff, verify_raw flipped-byte, negative-space leak). NOT proof of the science thesis — see 'Validated vs. Unvalidated'."
   frontend: "apps/web: tsc --noEmit clean + next build OK, RE-VERIFIED 2026-06-15 (Stage C UI visual-fidelity fix; production build against the live Fly API)."
   lint: "uv run ruff check . -> 0 errors (exit code 0). CI enforces zero. mypy strict clean on tools/verify_deployment.py."
   sprint_gate: "Sprint 1 PASSED. Sprints 6/7 CLOSED. Sprint 8 COMPLETE at review gate. Sprint 9 CLOSED (2026-06-12). SPRINT 10 (DEPLOYMENT) CLOSED (2026-06-15) — four stages + the Stage C UI fix reviewed; app live; deployed-integrity verifier GREEN at the pinned SHA."

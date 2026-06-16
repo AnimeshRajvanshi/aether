@@ -8,8 +8,10 @@
 **Verification results must NOT be transcribed forward. The next session must re-run
 pytest and ruff itself.** Before new work: `git status` + `git log --oneline -8`, then
 `uv run pytest`, `uv run ruff check .`, and (only for `packages/detection`/`packages/causal`
-changes) `uv run aether-eval run`. Last known good (2026-06-15 closeout, re-verify don't trust):
-pytest **388 passed, 6 skipped, 7 deselected**; ruff **0**; mypy clean on the verifier.
+changes) `uv run aether-eval run`. Last known good — Sprint 11 Stage B (2026-06-15, re-verify don't trust):
+pytest **398 passed, 6 skipped, 7 deselected**; ruff **0**; mypy clean on the verifier. (The Sprint 10
+closeout run was **389**, not the 388 first recorded — an environment miscount; Stage B adds the
+key-results snippet guard + report-completeness cases over the new Sprint 11 reports.)
 
 ## Where things stand — SPRINT 10 (DEPLOYMENT) CLOSED
 
@@ -54,9 +56,17 @@ one no-op `fly deploy --build-arg GIT_SHA=$(git rev-parse HEAD)` at the current 
 2. **OPTIONAL [Human], per the Gate A amendment:** the `api.aether.arkaneworks.co` subdomain —
    **pending a LIVE check of Fly's current custom-domain certificate pricing** (never asserted from
    memory). The API stays on its `fly.dev` hostname until then.
-3. **PORTFOLIO PACKAGE (separately scheduled, out of this sprint's scope):** README polish, demo
-   video, outreach. The live deployment + integrity proof this sprint built is its precondition.
-4. **Deferred physics** for the 1.46×-vs-1.66× residual (a hypothesis: effective-layer/flat-continuum)
+3. **PORTFOLIO PACKAGE — NOW IN PROGRESS as Sprint 11** (`docs/tasks/sprint11_portfolio.md`): the
+   README, the scientific validation write-up, and the source-of-truth key-results snippet
+   (`docs/key_results.json` + `tools/build_key_results.py`) are done at the Stage B gate; the
+   arkaneworks case-study page (revamp `ape.html` in place) is Stage C. Demo video + outreach remain
+   separately scheduled.
+4. **DEFERRED OPEN-THREAD — automated visual-fidelity verification harness** (recorded Sprint 11
+   Stage B): an *automated* computed-style assertion or visual-diff baseline for the dashboard's
+   inspector blocks, so an unthemed/unstyled block fails **RED** in CI without a human eye. **Distinct
+   from** the completed Sprint 10 Stage C manual shot-list-criterion fix (a one-time human-eye fix, not
+   a guard). The intent had been carried only in the reviewer's head and was never recorded until now.
+5. **Deferred physics** for the 1.46×-vs-1.66× residual (a hypothesis: effective-layer/flat-continuum)
    — layered background, H₂O/SZA LUT, per-pixel sensitivity, RFM cross-check. See `docs/debt.md`.
 
 `FLY_API_TOKEN` exists (the human created it at closeout) — the CI machine-count assertion is now

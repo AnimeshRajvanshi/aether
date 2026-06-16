@@ -1,0 +1,339 @@
+{
+  "_about": "Source-of-truth key-results for the Sprint 11 portfolio package (README, validation write-up, arkaneworks case study). EXTRACTED from committed artifacts by tools/build_key_results.py — do not hand-edit; regenerate. Cardinal rule 5: figures are sourced, never retyped.",
+  "_regenerate": "uv run python tools/build_key_results.py",
+  "as_of_sha": "91620d588cae72db6b0bb1ae2ace9f75018a90a3",
+  "as_of_sha_note": "aether commit whose committed artifacts these figures were read from; deliverables cite 'as of aether <sha>'. The figures move only when an artifact moves.",
+  "shipped": {
+    "events": [
+      "Goturdepe (EMIT 2022-08-15)",
+      "Permian/Carlsbad (EMIT 2022-08-26)",
+      "NW/central India heat wave (Mar–Apr 2022)"
+    ],
+    "phenomenon_domains": [
+      "methane super-emitter emission",
+      "heat"
+    ],
+    "deployment": {
+      "web": "https://aether.arkaneworks.co",
+      "integrity": "tools/verify_deployment.py — GREEN at the pinned SHA",
+      "evidence": "docs/reports/sprint10_stage_d_verification.json"
+    }
+  },
+  "methane": {
+    "goturdepe": {
+      "name": "Turkmenistan Goturdepe / Barsagelmez O&G methane plume",
+      "tier": "CROSS-CHECKED (strong)",
+      "acquisition_utc": {
+        "value": "2022-08-15T04:28:38Z",
+        "display": "2022-08-15T04:28:38Z",
+        "source": "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/stage_a_report.json#acquisition_utc"
+      },
+      "granule_l1b": {
+        "value": "EMIT_L1B_RAD_001_20220815T042838_2222703_003",
+        "display": "EMIT_L1B_RAD_001_20220815T042838_2222703_003",
+        "source": "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/stage_a_report.json#l1b_granule_ur"
+      },
+      "flux_ours_cal_t_hr": {
+        "value": 23.404806417186464,
+        "display": "23.4 t/hr",
+        "source": "stage_b_outputs/turkmenistan_goturdepe_2022_08_15/q_estimate.json#q_central_t_hr"
+      },
+      "flux_nasa_anchored_t_hr": {
+        "value": 16.027941696603943,
+        "display": "16.0 t/hr",
+        "source": "stage_b_outputs/turkmenistan_goturdepe_2022_08_15/q_estimate.json#q_central_nasa_calibrated_t_hr"
+      },
+      "flux_range_t_hr": {
+        "value": [
+          13.974261253668564,
+          26.403693867584956
+        ],
+        "display": "14.0–26.4 t/hr",
+        "source": "stage_b_outputs/turkmenistan_goturdepe_2022_08_15/q_estimate.json#q_low_t_hr,q_high_t_hr"
+      },
+      "flux_fractional_sigma": {
+        "value": 0.12813126487542192,
+        "display": "±12.8%",
+        "source": "stage_b_outputs/turkmenistan_goturdepe_2022_08_15/q_estimate.json#q_total_fractional_sigma"
+      },
+      "pearson_in_bbox": {
+        "value": 0.7314199018679506,
+        "display": "0.731",
+        "source": "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/stage_a_report.json#pearson_in_bbox"
+      },
+      "pearson_full_scene": {
+        "value": 0.715395738270241,
+        "display": "0.715",
+        "source": "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/stage_a_report.json#pearson_full_scene"
+      },
+      "k_shape_r_vs_nasa": {
+        "value": 0.9933596340467942,
+        "display": "0.993",
+        "source": "stage_a_outputs/turkmenistan_goturdepe_2022_08_15/hitran_k/hitran_k_sat_provenance.json#shape_pearson_r_vs_nasa"
+      },
+      "mf_amplitude_bias": {
+        "value": 1.4602502841737661,
+        "display": "1.46×",
+        "source": "stage_b_outputs/turkmenistan_goturdepe_2022_08_15/q_estimate.json#enhancement_bias_factor"
+      }
+    },
+    "permian": {
+      "name": "Permian / Carlsbad NM O&G methane plume",
+      "tier": "CROSS-CHECKED (weaker)",
+      "acquisition_utc": {
+        "value": "2022-08-26T17:46:42Z",
+        "display": "2022-08-26T17:46:42Z",
+        "source": "stage_a_outputs/permian_basin_2022/stage_a_report.json#acquisition_utc"
+      },
+      "granule_l2b": {
+        "value": "EMIT_L2B_CH4ENH_002_20220826T174642_2223812_024",
+        "display": "EMIT_L2B_CH4ENH_002_20220826T174642_2223812_024",
+        "source": "stage_a_outputs/permian_basin_2022/stage_a_report.json#l2b_ch4_granule_ur"
+      },
+      "flux_ours_cal_t_hr": {
+        "value": 0.8505414104249462,
+        "display": "0.85 t/hr",
+        "source": "stage_b_outputs/permian_basin_2022/q_estimate.json#q_central_t_hr"
+      },
+      "flux_nasa_same_footprint_t_hr": {
+        "value": 0.8849812129514733,
+        "display": "0.88 t/hr",
+        "source": "stage_b_outputs/permian_basin_2022/q_estimate.json#q_nasa_l2b_same_footprint_t_hr"
+      },
+      "integrated_mass_ratio_ours_over_nasa": {
+        "value": 0.9610841427789547,
+        "display": "0.96×",
+        "source": "stage_b_outputs/permian_basin_2022/q_estimate.json#q_central_t_hr/q_nasa_l2b_same_footprint_t_hr"
+      },
+      "pixel_pearson_on_footprint": {
+        "value": 0.13680060614983602,
+        "display": "0.14 (=0.137)",
+        "source": "stage_b_outputs/permian_basin_2022/diagnostics.json#pixelwise_pearson_on_footprint_ours_vs_nasa"
+      },
+      "pearson_full_scene": {
+        "value": 0.5269452466425109,
+        "display": "0.527",
+        "source": "stage_a_outputs/permian_basin_2022/stage_a_report.json#pearson_full_scene"
+      },
+      "carried_goturdepe_mf_bias_does_not_transfer": {
+        "value": 1.46,
+        "display": "1.46× measured on Goturdepe; flips to 0.96× here (does NOT transfer)",
+        "source": "stage_b_outputs/permian_basin_2022/q_estimate.json#carried_goturdepe_mf_bias_note"
+      },
+      "self_segmentation_isolated_plume": {
+        "value": false,
+        "display": "False",
+        "source": "stage_b_outputs/permian_basin_2022/q_estimate.json#self_segmentation_isolated_plume"
+      }
+    }
+  },
+  "heat": {
+    "india_nw_heatwave_2022_04": {
+      "name": "Northwest/central India heat wave (Mar–Apr 2022)",
+      "event_badge": "PER-QUANTITY",
+      "c1_peak_2m_tmax": {
+        "tier": "VALIDATED",
+        "value": {
+          "value": 46.68,
+          "display": "46.68 °C",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/air_lane.json#c1_peak_tmax.value_c"
+        },
+        "criterion": {
+          "value": true,
+          "display": "pre-registered V1: ERA5 peak 46.68 °C vs max station 45.0 °C, within ±2.5 K → pass=True",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/validation.json#v1_station_peak_bracket"
+        }
+      },
+      "c2_regional_anomaly": {
+        "tier": "VALIDATED",
+        "peak_k": {
+          "value": 5.67,
+          "display": "+5.67 K",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/air_lane.json#c2_anomaly.peak_regional_mean_anomaly_k"
+        },
+        "window_mean_k": {
+          "value": 5.103,
+          "display": "+5.10 K",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/air_lane.json#c2_anomaly.window_mean_regional_mean_anomaly_k"
+        },
+        "criterion": {
+          "value": true,
+          "display": "pre-registered V3: ERA5 +4.501 K vs ERA5-independent IMD +4.307 K (|Δ| 0.194 K < 1.0), pattern r 0.874 → pass=True",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/validation.json#v3_imd_anomaly_agreement"
+        }
+      },
+      "c3_duration_FAILED": {
+        "tier": "NOT VALIDATED (honest negative)",
+        "value": {
+          "value": 26,
+          "display": "26 days (ERA5) vs 7 days (IMD)",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/air_lane.json#c3_duration.n_days; stage_b_outputs/india_nw_heatwave_2022_04/validation.json#v4_duration_extent"
+        },
+        "criterion": {
+          "value": false,
+          "display": "pre-registered V4a FAILED (pass=False): ERA5 26 d vs IMD 7 d — criterion-edge fragility is the finding",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/validation.json#v4_duration_extent"
+        }
+      },
+      "c4_extent_FAILED": {
+        "tier": "NOT VALIDATED (honest negative)",
+        "value": {
+          "value": 889700.0,
+          "display": "889,700 km² (47.5% of bbox land)",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/air_lane.json#c4_extent"
+        },
+        "criterion": {
+          "value": false,
+          "display": "pre-registered V4b FAILED (pass=False): ERA5 887,700 vs IMD 606,300 km² common-grid, rel diff 0.464 > 0.30",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/validation.json#v4_duration_extent"
+        }
+      },
+      "v2_era5_station_consistency_NOT_CLAIMED": {
+        "value": false,
+        "display": "V2 FAILED (pass=False): pooled r 0.728 < 0.85 (bias 0.37 K and RMSD 1.05 K were within threshold) — consistency permanently not claimed",
+        "source": "stage_b_outputs/india_nw_heatwave_2022_04/validation.json#v2_era5_station_consistency"
+      },
+      "lst_window_mean_anomaly": {
+        "tier": "≤ CROSS-CHECKED (no in-situ skin truth)",
+        "value": {
+          "value": 4.6,
+          "display": "+4.60 K",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/lst_lane.json#window_mean_bbox_anomaly_k"
+        },
+        "caveat": {
+          "value": 10.68,
+          "display": "Terra snapshot at ~10.7 h local — never a daily maximum; Aqua absent for the window",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/lst_lane.json#observation_time_caveat"
+        }
+      },
+      "uhi_window_mean_NEGATIVE": {
+        "tier": "≤ CROSS-CHECKED",
+        "value": {
+          "value": -0.77,
+          "display": "-0.77 ± 0.80 K (NEGATIVE daytime surface UHI — urban cool island, counter to the prior)",
+          "source": "stage_b_outputs/india_nw_heatwave_2022_04/uhi.json#window_mean_uhi_k"
+        }
+      },
+      "factor_attribution": {
+        "ranking_not_apportionment": true,
+        "confidence_cap": {
+          "value": "Warming-contributor tiers are capped at moderate: diagnostics establish presence and rarity of co-varying factors but cannot causally separate them without counterfactual experiments (out of scope). HIGH is reserved and unearned.",
+          "display": "warming-contributor tiers capped at moderate; HIGH reserved",
+          "source": "attribution_outputs/india_nw_heatwave_2022_04/factor_hypotheses.json#confidence_cap"
+        },
+        "f1_ridge": {
+          "value": {
+            "score": 1.0,
+            "tier": "moderate",
+            "z500_anomaly_m": 61.6
+          },
+          "display": "F1 persistent synoptic ridge: heuristic score 1.00 (CAPPED to moderate); z500 +61.6 m, 100th pct of 30 windows, 10/10 days above pooled p90",
+          "source": "attribution_outputs/india_nw_heatwave_2022_04/factor_hypotheses.json#factors[0]; attribution_outputs/india_nw_heatwave_2022_04/diagnostics.json#z500"
+        },
+        "f5_urban_counter_evidence": {
+          "value": {
+            "score": 0.0,
+            "role": "counter_evidence"
+          },
+          "display": "F5 urban fabric is COUNTER_EVIDENCE (role=counter_evidence, score 0.00) — the negative daytime UHI argues AGAINST the urban-heat prior",
+          "source": "attribution_outputs/india_nw_heatwave_2022_04/factor_hypotheses.json#factors[4]"
+        },
+        "scoring_disclaimer": {
+          "value": "Scores are documented heuristics over computed diagnostics — weighted presence/rarity/persistence indices, NOT calibrated probabilities and NOT contribution fractions. Use the tiers and the headline, not the decimals.",
+          "display": "scores are documented heuristics, NOT calibrated probabilities or contribution fractions",
+          "source": "attribution_outputs/india_nw_heatwave_2022_04/factor_hypotheses.json#scoring_disclaimer"
+        }
+      }
+    }
+  },
+  "citations": [
+    {
+      "citation": "Thorpe, A. K., et al. (2023). Attribution of individual methane and carbon dioxide emission sources using EMIT observations from space. Science Advances, 9(46), eadh2391.",
+      "source": "eval/benchmark/turkmenistan_goturdepe_2022_08_15.yaml#references",
+      "doi": "10.1126/sciadv.adh2391",
+      "url": "https://www.science.org/doi/10.1126/sciadv.adh2391"
+    },
+    {
+      "citation": "NASA LP DAAC. EMIT L2B Estimated Methane Plume Complexes 60 m V002. Plume complex EMIT_L2B_CH4PLM_002_20220815T042838_000494 corresponds to this granule.",
+      "source": "eval/benchmark/turkmenistan_goturdepe_2022_08_15.yaml#references",
+      "doi": "10.5067/EMIT/EMITL2BCH4PLM.002",
+      "url": "https://www.earthdata.nasa.gov/data/catalog/lpcloud-emitl2bch4plm-002"
+    },
+    {
+      "citation": "NASA LP DAAC. EMIT L2B Methane Enhancement Data 60 m V002. The raster EMIT_L2B_CH4ENH_002_20220815T042838_2222703_003 is used as the Stage A spatial-agreement reference.",
+      "source": "eval/benchmark/turkmenistan_goturdepe_2022_08_15.yaml#references",
+      "doi": "10.5067/EMIT/EMITL2BCH4ENH.002",
+      "url": "https://www.earthdata.nasa.gov/data/catalog/lpcloud-emitl2bch4enh-002"
+    },
+    {
+      "citation": "Gordon, I. E., et al. (2022). The HITRAN2020 molecular spectroscopic database. Journal of Quantitative Spectroscopy and Radiative Transfer, 277, 107949. Line-by-line CH4 source for our INDEPENDENTLY GENERATED matched-filter unit absorption spectrum k (the operational retrieval since the Sprint 6 migration).",
+      "source": "eval/benchmark/turkmenistan_goturdepe_2022_08_15.yaml#references",
+      "doi": "10.1016/j.jqsrt.2021.107949",
+      "url": "https://doi.org/10.1016/j.jqsrt.2021.107949"
+    },
+    {
+      "citation": "Kochanov, R. V., et al. (2016). HITRAN Application Programming Interface and efficient spectroscopic tools (HAPI). Journal of Quantitative Spectroscopy and Radiative Transfer, 177, 15-30. Computes the Voigt cross-sections used to build our independent k.",
+      "source": "eval/benchmark/turkmenistan_goturdepe_2022_08_15.yaml#references",
+      "doi": "10.1016/j.jqsrt.2016.03.005",
+      "url": "https://doi.org/10.1016/j.jqsrt.2016.03.005"
+    },
+    {
+      "citation": "NASA EMIT-Data-Resources tutorial Generating_Methane_Spectral_Fingerprint.ipynb. Ships the per-granule methane target spectrum file emit20220815t042838_ch4_target, used as a SPECTRAL-SHAPE CROSS-CHECK ONLY (Pearson r = 0.993 vs our independent HITRAN2020 k) — NOT a pipeline input since the Sprint 6 migration. Our matched filter no longer reads this file.",
+      "source": "eval/benchmark/turkmenistan_goturdepe_2022_08_15.yaml#references",
+      "url": "https://github.com/nasa/EMIT-Data-Resources/blob/main/python/tutorials/Generating_Methane_Spectral_Fingerprint.ipynb"
+    },
+    {
+      "citation": "Srivastava, A., Kumar, N., & Mohapatra, M. (2024). Unprecedented hot weather diagnosis in India during March-April 2022. MAUSAM, 75(2), 551-558. (India Meteorological Department; documents the IMD heat-wave definition, the 2022 March/April records, and major spells 11-21 Mar, 26-31 Mar, 25-30 Apr.)",
+      "source": "eval/benchmark/india_nw_heatwave_2022_04.yaml#references",
+      "doi": "10.54302/mausam.v75i2.6196",
+      "url": "https://mausamjournal.imd.gov.in/index.php/MAUSAM/article/view/6196"
+    },
+    {
+      "citation": "Zachariah, M., Arulalan, T., AchutaRao, K., Saeed, F., Jha, R., Dhasmana, M. K., Mondal, A., Bonnet, R., Vautard, R., Philip, S., et al. (2023). Attribution of 2022 early-spring heatwave in India and Pakistan to climate change: lessons in assessing vulnerability and preparedness in reducing impacts. Environmental Research: Climate, 2(4), 045005. (Peer-reviewed event definition: March-April 2022 daily-maximum temperature over north Indian plains and southern Pakistan; ~1-in-100-yr; ~30x likelier and ~1 K hotter than preindustrial.)",
+      "source": "eval/benchmark/india_nw_heatwave_2022_04.yaml#references",
+      "doi": "10.1088/2752-5295/acf4b6",
+      "url": "https://iopscience.iop.org/article/10.1088/2752-5295/acf4b6"
+    },
+    {
+      "citation": "World Weather Attribution (2022, May). Climate change made devastating early heat in India and Pakistan 30 times more likely. (Rapid attribution report preceding the peer-reviewed paper.)",
+      "source": "eval/benchmark/india_nw_heatwave_2022_04.yaml#references",
+      "url": "https://www.worldweatherattribution.org/climate-change-made-devastating-early-heat-in-india-and-pakistan-30-times-more-likely/"
+    },
+    {
+      "citation": "NASA Earth Observatory (2022, April 29). Early Season Heat Waves Strike India. (Dated station values for the late-April wave; GEOS-5 2 m air temperature map for 2022-04-27.)",
+      "source": "eval/benchmark/india_nw_heatwave_2022_04.yaml#references",
+      "url": "https://science.nasa.gov/earth/earth-observatory/early-season-heat-waves-strike-india-149766/"
+    },
+    {
+      "citation": "ESA (2022, April). Heatwave across India — Copernicus Sentinel-3 SLSTR land-surface temperature, 2022-04-29 10:30 local. LST exceeding 60 degC in places while air temperatures were 43-46 degC — a citable, official articulation of the LST-vs-air-temperature distinction (cardinal rule 2). Citation/context only; Sentinel-3 is not an Aether data source.",
+      "source": "eval/benchmark/india_nw_heatwave_2022_04.yaml#references",
+      "url": "https://www.esa.int/ESA_Multimedia/Images/2022/04/Heatwave_across_India"
+    },
+    {
+      "citation": "BusinessToday (2022, April 30). Northwest, central India experience hottest April in 122 years: IMD. (Secondary press reporting of the IMD Director General's statement: NW India April 2022 average maximum 35.9 degC, central India 37.78 degC, 10-20 heat-wave days vs a normal of 1-5. Used because IMD's primary press-release URLs now 404; status stated, not hidden.)",
+      "source": "eval/benchmark/india_nw_heatwave_2022_04.yaml#references",
+      "url": "https://www.businesstoday.in/latest/trends/story/northwest-central-india-experience-hottest-april-in-122-years-imd-331915-2022-04-30"
+    },
+    {
+      "citation": "NASA Jet Propulsion Laboratory. (2022, October 25). Methane 'Super-Emitters' Mapped by NASA's New Earth Space Mission. Press release.",
+      "source": "eval/benchmark/permian_basin_2022.yaml#references",
+      "url": "https://www.nasa.gov/centers-and-facilities/jpl/methane-super-emitters-mapped-by-nasas-new-earth-space-mission/"
+    },
+    {
+      "citation": "OGIM_v2.7 (Oil and Gas Infrastructure Mapping database)",
+      "source": "packages/causal/aether_causal/resources/ogim/provenance.json",
+      "doi": "10.5281/zenodo.15103476",
+      "url": "https://zenodo.org/api/records/15103476/files/OGIM_v2.7.gpkg/content"
+    },
+    {
+      "citation": "Duren, R. M., et al. (2019). California's methane super-emitters. Nature 575.",
+      "source": "attribution_outputs/permian_basin_2022/hypotheses.json#magnitude_prior_basis",
+      "doi": "10.1038/s41586-019-1720-3"
+    },
+    {
+      "citation": "Cusworth, D. H., et al. (2021). Intermittency of large methane emitters in the Permian Basin. Environ. Sci. Technol. Lett.",
+      "source": "attribution_outputs/permian_basin_2022/hypotheses.json#magnitude_prior_basis",
+      "doi": "10.1021/acs.estlett.1c00173"
+    }
+  ]
+}

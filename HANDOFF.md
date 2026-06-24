@@ -20,7 +20,9 @@ science. It is **live and public**:
 - **Case study:** https://arkaneworks.co/ape (arkaneworks website repo, `ape.html`) — honest hook first,
   leads with the C3/C4 failures, full-bleed hero + single launch + side-by-side numbers/lineage, a
   click-to-load embed FACADE that opens the live demo in a new tab (no iframe — the API's CORS allowlist
-  forbids framing).
+  forbids framing). It also carries a **"How It Was Built" (.10)** section openly disclosing the
+  AI-assisted, human-architected, gated single-writer workflow — framed as rigor; a pre-outreach
+  credibility safeguard (added + pushed live post-close, 2026-06-17; website hard invariant held).
 - **Live demo:** https://aether.arkaneworks.co. **aether repo: PUBLIC** with an honest `README.md` +
   `docs/science/sprint11_validation_writeup.md`. Source-of-truth: `docs/key_results.json`
   (`tools/build_key_results.py`, guarded by `tools/tests/test_key_results.py`). Stage D read-through
